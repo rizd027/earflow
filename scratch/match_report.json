@@ -1,0 +1,857 @@
+[
+  {
+    "index": 1,
+    "nkNo": "80098",
+    "nkName": "Siti Rohmawati",
+    "matchedNameInBackup": "Siti Rohmawati",
+    "currentNikInBackup": "W-850461",
+    "backupMemberId": "W-850461",
+    "status": "EXACT"
+  },
+  {
+    "index": 2,
+    "nkNo": "80099",
+    "nkName": "Syaifira Ila",
+    "matchedNameInBackup": "Syaifira Ila",
+    "currentNikInBackup": "W-905912",
+    "backupMemberId": "W-905912",
+    "status": "EXACT"
+  },
+  {
+    "index": 3,
+    "nkNo": "80100",
+    "nkName": "Hidayatus Sholikhah",
+    "matchedNameInBackup": "Hidayatus Sholikhah",
+    "currentNikInBackup": "W-927503",
+    "backupMemberId": "W-927503",
+    "status": "EXACT"
+  },
+  {
+    "index": 4,
+    "nkNo": "80101",
+    "nkName": "Erikan Nur Manda",
+    "matchedNameInBackup": "Erika Nur Manda",
+    "currentNikInBackup": "W-945260",
+    "backupMemberId": "W-945260",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 5,
+    "nkNo": "80102",
+    "nkName": "M. Alfariz",
+    "matchedNameInBackup": "M. Alfarizd",
+    "currentNikInBackup": "W-933240",
+    "backupMemberId": "W-933240",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 6,
+    "nkNo": "80103",
+    "nkName": "Nazzar Putra A",
+    "matchedNameInBackup": "Nazar Putra A.",
+    "currentNikInBackup": "W-959878",
+    "backupMemberId": "W-959878",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 7,
+    "nkNo": "80104",
+    "nkName": "Dewi Masfufah",
+    "matchedNameInBackup": "Dewi Masfufah",
+    "currentNikInBackup": "W-024642",
+    "backupMemberId": "W-024642",
+    "status": "EXACT"
+  },
+  {
+    "index": 8,
+    "nkNo": "80105",
+    "nkName": "Erika Cahya",
+    "matchedNameInBackup": "Erika Cahya",
+    "currentNikInBackup": "W-009880",
+    "backupMemberId": "W-009880",
+    "status": "EXACT"
+  },
+  {
+    "index": 9,
+    "nkNo": "80106",
+    "nkName": "Heri Setiawan",
+    "matchedNameInBackup": "Heri Setyawan",
+    "currentNikInBackup": "W-025708",
+    "backupMemberId": "W-025708",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 10,
+    "nkNo": "80107",
+    "nkName": "Aisyatul Khasanah",
+    "matchedNameInBackup": "Aisyatul Khasanah",
+    "currentNikInBackup": "W-037491",
+    "backupMemberId": "W-037491",
+    "status": "EXACT"
+  },
+  {
+    "index": 11,
+    "nkNo": "80108",
+    "nkName": "Afridatun Dina",
+    "matchedNameInBackup": "Lola Afridatu Dina",
+    "currentNikInBackup": "W-047279",
+    "backupMemberId": "W-047279",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 12,
+    "nkNo": "80109",
+    "nkName": "Novi Wulandari",
+    "matchedNameInBackup": "Sarah Wulandari",
+    "currentNikInBackup": "W-090120",
+    "backupMemberId": "W-090120",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 13,
+    "nkNo": "80110",
+    "nkName": "Rahel",
+    "matchedNameInBackup": null,
+    "currentNikInBackup": null,
+    "backupMemberId": null,
+    "status": "UNMATCHED"
+  },
+  {
+    "index": 14,
+    "nkNo": "80111",
+    "nkName": "Heni Ning Azizah",
+    "matchedNameInBackup": null,
+    "currentNikInBackup": null,
+    "backupMemberId": null,
+    "status": "UNMATCHED"
+  },
+  {
+    "index": 15,
+    "nkNo": "80112",
+    "nkName": "Zahrotul Irnanda",
+    "matchedNameInBackup": null,
+    "currentNikInBackup": null,
+    "backupMemberId": null,
+    "status": "UNMATCHED"
+  },
+  {
+    "index": 16,
+    "nkNo": "80113",
+    "nkName": "Wahyu Tirta Ningtyas",
+    "matchedNameInBackup": null,
+    "currentNikInBackup": null,
+    "backupMemberId": null,
+    "status": "UNMATCHED"
+  },
+  {
+    "index": 17,
+    "nkNo": "80114",
+    "nkName": "Cantika",
+    "matchedNameInBackup": "Yanti Oktavia",
+    "currentNikInBackup": "W-420358",
+    "backupMemberId": "W-420358",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 18,
+    "nkNo": "80115",
+    "nkName": "Inayah Firdaus",
+    "matchedNameInBackup": null,
+    "currentNikInBackup": null,
+    "backupMemberId": null,
+    "status": "UNMATCHED"
+  },
+  {
+    "index": 19,
+    "nkNo": "80116",
+    "nkName": "Ernawati",
+    "matchedNameInBackup": "Wiwik Ermawati",
+    "currentNikInBackup": "W-187336",
+    "backupMemberId": "W-187336",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 20,
+    "nkNo": "80117",
+    "nkName": "Intan Lestari",
+    "matchedNameInBackup": "Anggun Lestari",
+    "currentNikInBackup": "W-853089",
+    "backupMemberId": "W-853089",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 21,
+    "nkNo": "80118",
+    "nkName": "Dewi Putri Anjani",
+    "matchedNameInBackup": "Aprillia Putri Cahyani",
+    "currentNikInBackup": "W-669466",
+    "backupMemberId": "W-669466",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 22,
+    "nkNo": "80119",
+    "nkName": "Alfin Nabila Maulidiyah",
+    "matchedNameInBackup": null,
+    "currentNikInBackup": null,
+    "backupMemberId": null,
+    "status": "UNMATCHED"
+  },
+  {
+    "index": 23,
+    "nkNo": "80120",
+    "nkName": "Ziya",
+    "matchedNameInBackup": null,
+    "currentNikInBackup": null,
+    "backupMemberId": null,
+    "status": "UNMATCHED"
+  },
+  {
+    "index": 24,
+    "nkNo": "80121",
+    "nkName": "Kamilatus Zahra",
+    "matchedNameInBackup": null,
+    "currentNikInBackup": null,
+    "backupMemberId": null,
+    "status": "UNMATCHED"
+  },
+  {
+    "index": 25,
+    "nkNo": "80122",
+    "nkName": "Lissel Nazua Lauren",
+    "matchedNameInBackup": null,
+    "currentNikInBackup": null,
+    "backupMemberId": null,
+    "status": "UNMATCHED"
+  },
+  {
+    "index": 26,
+    "nkNo": "80123",
+    "nkName": "Yanti Oktavia",
+    "matchedNameInBackup": "Yanti Oktavia",
+    "currentNikInBackup": "W-420358",
+    "backupMemberId": "W-420358",
+    "status": "EXACT"
+  },
+  {
+    "index": 27,
+    "nkNo": "80124",
+    "nkName": "Desi Handayani",
+    "matchedNameInBackup": "Desi Handayani",
+    "currentNikInBackup": "W-932523",
+    "backupMemberId": "W-932523",
+    "status": "EXACT"
+  },
+  {
+    "index": 28,
+    "nkNo": "80125",
+    "nkName": "Feni Eka",
+    "matchedNameInBackup": "Feni Eka A",
+    "currentNikInBackup": "W-458035",
+    "backupMemberId": "W-458035",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 29,
+    "nkNo": "80126",
+    "nkName": "Sabita Alya",
+    "matchedNameInBackup": "Sabita Alya",
+    "currentNikInBackup": "W-364522",
+    "backupMemberId": "W-364522",
+    "status": "EXACT"
+  },
+  {
+    "index": 30,
+    "nkNo": "80127",
+    "nkName": "Nur Aini",
+    "matchedNameInBackup": "Nur Aini",
+    "currentNikInBackup": "W-332522",
+    "backupMemberId": "W-332522",
+    "status": "EXACT"
+  },
+  {
+    "index": 31,
+    "nkNo": "80128",
+    "nkName": "Vanida Herawati",
+    "matchedNameInBackup": "Vanida Herawati",
+    "currentNikInBackup": "W-154829",
+    "backupMemberId": "W-154829",
+    "status": "EXACT"
+  },
+  {
+    "index": 32,
+    "nkNo": "80129",
+    "nkName": "Faiq Ardha Sava",
+    "matchedNameInBackup": "Faiq Ardha Sava",
+    "currentNikInBackup": "W-141028",
+    "backupMemberId": "W-141028",
+    "status": "EXACT"
+  },
+  {
+    "index": 33,
+    "nkNo": "80130",
+    "nkName": "Fania Dwi",
+    "matchedNameInBackup": "Fania Dwi W",
+    "currentNikInBackup": "W-341074",
+    "backupMemberId": "W-341074",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 34,
+    "nkNo": "80131",
+    "nkName": "Lintang M",
+    "matchedNameInBackup": "Lintang M",
+    "currentNikInBackup": "W-470806",
+    "backupMemberId": "W-470806",
+    "status": "EXACT"
+  },
+  {
+    "index": 35,
+    "nkNo": "80132",
+    "nkName": "Nandita Aurelia",
+    "matchedNameInBackup": "Nandita Aurelia",
+    "currentNikInBackup": "W-217984",
+    "backupMemberId": "W-217984",
+    "status": "EXACT"
+  },
+  {
+    "index": 36,
+    "nkNo": "80133",
+    "nkName": "Purwati",
+    "matchedNameInBackup": "Purwati",
+    "currentNikInBackup": "W-101120",
+    "backupMemberId": "W-101120",
+    "status": "EXACT"
+  },
+  {
+    "index": 37,
+    "nkNo": "80134",
+    "nkName": "Sylvana Damayanti",
+    "matchedNameInBackup": "Sylvana Damayanti",
+    "currentNikInBackup": "W-090091",
+    "backupMemberId": "W-090091",
+    "status": "EXACT"
+  },
+  {
+    "index": 38,
+    "nkNo": "80135",
+    "nkName": "Sarah Wulandari",
+    "matchedNameInBackup": "Sarah Wulandari",
+    "currentNikInBackup": "W-090120",
+    "backupMemberId": "W-090120",
+    "status": "EXACT"
+  },
+  {
+    "index": 39,
+    "nkNo": "80136",
+    "nkName": "Uma Purwati",
+    "matchedNameInBackup": "Uma Parwati",
+    "currentNikInBackup": "W-613645",
+    "backupMemberId": "W-613645",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 40,
+    "nkNo": "80137",
+    "nkName": "Aulia April",
+    "matchedNameInBackup": "Aulia april liana",
+    "currentNikInBackup": "W-494484",
+    "backupMemberId": "W-494484",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 41,
+    "nkNo": "80138",
+    "nkName": "Ardina Vivi",
+    "matchedNameInBackup": "Ardina vivi Amelia",
+    "currentNikInBackup": "W-593411",
+    "backupMemberId": "W-593411",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 42,
+    "nkNo": "80139",
+    "nkName": "Oktavia Nur",
+    "matchedNameInBackup": "Oktavia Nur R",
+    "currentNikInBackup": "W-627527",
+    "backupMemberId": "W-627527",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 43,
+    "nkNo": "80140",
+    "nkName": "Putrinika",
+    "matchedNameInBackup": "Putrinika",
+    "currentNikInBackup": "W-638843",
+    "backupMemberId": "W-638843",
+    "status": "EXACT"
+  },
+  {
+    "index": 44,
+    "nkNo": "80141",
+    "nkName": "Aurelia Shinta",
+    "matchedNameInBackup": "Aurelia Shinta P",
+    "currentNikInBackup": "W-655433",
+    "backupMemberId": "W-655433",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 45,
+    "nkNo": "80142",
+    "nkName": "MAfduka Khoiriyah",
+    "matchedNameInBackup": "Mafdukha Khoiriyah S",
+    "currentNikInBackup": "W-264509",
+    "backupMemberId": "W-264509",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 46,
+    "nkNo": "80143",
+    "nkName": "Henny Wulandari",
+    "matchedNameInBackup": "Henny Wulandari",
+    "currentNikInBackup": "W-175626",
+    "backupMemberId": "W-175626",
+    "status": "EXACT"
+  },
+  {
+    "index": 47,
+    "nkNo": "80144",
+    "nkName": "Dinda Amelia \\",
+    "matchedNameInBackup": "Dinda Amelia Putri",
+    "currentNikInBackup": "W-754131",
+    "backupMemberId": "W-754131",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 48,
+    "nkNo": "80145",
+    "nkName": "Rini Ristanti",
+    "matchedNameInBackup": "Rini Ristanti",
+    "currentNikInBackup": "W-117040",
+    "backupMemberId": "W-117040",
+    "status": "EXACT"
+  },
+  {
+    "index": 49,
+    "nkNo": "80146",
+    "nkName": "Zunia Putri",
+    "matchedNameInBackup": "Zunia Putri P.",
+    "currentNikInBackup": "W-127471",
+    "backupMemberId": "W-127471",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 50,
+    "nkNo": "80147",
+    "nkName": "Siti Aisah",
+    "matchedNameInBackup": "Siti Aisah",
+    "currentNikInBackup": "W-137948",
+    "backupMemberId": "W-137948",
+    "status": "EXACT"
+  },
+  {
+    "index": 51,
+    "nkNo": "80148",
+    "nkName": "Wiwik Ernawati",
+    "matchedNameInBackup": "Wiwik Ermawati",
+    "currentNikInBackup": "W-187336",
+    "backupMemberId": "W-187336",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 52,
+    "nkNo": "80149",
+    "nkName": "Ana Choirun Nisa",
+    "matchedNameInBackup": "Ana Choirohun Nisa",
+    "currentNikInBackup": "W-207704",
+    "backupMemberId": "W-207704",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 53,
+    "nkNo": "80150",
+    "nkName": "Aprillia Putri",
+    "matchedNameInBackup": "Aprillia Putri Cahyani",
+    "currentNikInBackup": "W-669466",
+    "backupMemberId": "W-669466",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 54,
+    "nkNo": "80151",
+    "nkName": "Esti Armilatus",
+    "matchedNameInBackup": "Esti Armilatus",
+    "currentNikInBackup": "W-315236",
+    "backupMemberId": "W-315236",
+    "status": "EXACT"
+  },
+  {
+    "index": 55,
+    "nkNo": "80152",
+    "nkName": "Athala Rania",
+    "matchedNameInBackup": "Athala Rania",
+    "currentNikInBackup": "W-130867",
+    "backupMemberId": "W-130867",
+    "status": "EXACT"
+  },
+  {
+    "index": 56,
+    "nkNo": "80153",
+    "nkName": "Anisa Bil Hikmah",
+    "matchedNameInBackup": "Anisa Bil Hikmah",
+    "currentNikInBackup": "W-351697",
+    "backupMemberId": "W-351697",
+    "status": "EXACT"
+  },
+  {
+    "index": 57,
+    "nkNo": "80154",
+    "nkName": "Arbecha Trivany",
+    "matchedNameInBackup": "Arbecha Trivany M.A",
+    "currentNikInBackup": "W-523871",
+    "backupMemberId": "W-523871",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 58,
+    "nkNo": "80155",
+    "nkName": "Fitri Permatasari",
+    "matchedNameInBackup": "Fitri Permatasari",
+    "currentNikInBackup": "W-651190",
+    "backupMemberId": "W-651190",
+    "status": "EXACT"
+  },
+  {
+    "index": 59,
+    "nkNo": "80156",
+    "nkName": "Kovivah",
+    "matchedNameInBackup": "Kovivah",
+    "currentNikInBackup": "W-455582",
+    "backupMemberId": "W-455582",
+    "status": "EXACT"
+  },
+  {
+    "index": 60,
+    "nkNo": "80157",
+    "nkName": "Nadin Candra Winata",
+    "matchedNameInBackup": "Nadin Candra Winata",
+    "currentNikInBackup": "W-536199",
+    "backupMemberId": "W-536199",
+    "status": "EXACT"
+  },
+  {
+    "index": 61,
+    "nkNo": "80158",
+    "nkName": "Nur Hidayah",
+    "matchedNameInBackup": "Nur Hidayah",
+    "currentNikInBackup": "W-584636",
+    "backupMemberId": "W-584636",
+    "status": "EXACT"
+  },
+  {
+    "index": 62,
+    "nkNo": "80159",
+    "nkName": "Wulan Khusnul",
+    "matchedNameInBackup": "Wulan Khusnul K",
+    "currentNikInBackup": "W-046462",
+    "backupMemberId": "W-046462",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 63,
+    "nkNo": "80160",
+    "nkName": "Dian Fitnani",
+    "matchedNameInBackup": "Dina Fitnani",
+    "currentNikInBackup": "W-875083",
+    "backupMemberId": "W-875083",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 64,
+    "nkNo": "80161",
+    "nkName": "Keren",
+    "matchedNameInBackup": "Keren Triesya Despita",
+    "currentNikInBackup": "W-782729",
+    "backupMemberId": "W-782729",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 65,
+    "nkNo": "80162",
+    "nkName": "Natasya Dwi",
+    "matchedNameInBackup": "Natasya Dwi F",
+    "currentNikInBackup": "W-458370",
+    "backupMemberId": "W-458370",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 66,
+    "nkNo": "80163",
+    "nkName": "Fatima Aprilia",
+    "matchedNameInBackup": "Fatima Aprillia",
+    "currentNikInBackup": "W-987587",
+    "backupMemberId": "W-987587",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 67,
+    "nkNo": "80164",
+    "nkName": "Nur Fani",
+    "matchedNameInBackup": "Nur Fani O.",
+    "currentNikInBackup": "W-067216",
+    "backupMemberId": "W-067216",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 68,
+    "nkNo": "80165",
+    "nkName": "Saskia",
+    "matchedNameInBackup": null,
+    "currentNikInBackup": null,
+    "backupMemberId": null,
+    "status": "UNMATCHED"
+  },
+  {
+    "index": 69,
+    "nkNo": "80166",
+    "nkName": "Anesa Putri",
+    "matchedNameInBackup": "Anesa Putri",
+    "currentNikInBackup": "W-196607",
+    "backupMemberId": "W-196607",
+    "status": "EXACT"
+  },
+  {
+    "index": 70,
+    "nkNo": "80167",
+    "nkName": "Nabila Dwi",
+    "matchedNameInBackup": "Nabila Dwi",
+    "currentNikInBackup": "W-228523",
+    "backupMemberId": "W-228523",
+    "status": "EXACT"
+  },
+  {
+    "index": 71,
+    "nkNo": "80168",
+    "nkName": "Nurul Afidatun",
+    "matchedNameInBackup": "Nurul Afidatun",
+    "currentNikInBackup": "W-489700",
+    "backupMemberId": "W-489700",
+    "status": "EXACT"
+  },
+  {
+    "index": 72,
+    "nkNo": "80169",
+    "nkName": "Ayu Maulida",
+    "matchedNameInBackup": "Ayu Maulida",
+    "currentNikInBackup": "W-442562",
+    "backupMemberId": "W-442562",
+    "status": "EXACT"
+  },
+  {
+    "index": 73,
+    "nkNo": "80170",
+    "nkName": "Ayu Afrani",
+    "matchedNameInBackup": "Ayu Afrani",
+    "currentNikInBackup": "W-464822",
+    "backupMemberId": "W-464822",
+    "status": "EXACT"
+  },
+  {
+    "index": 74,
+    "nkNo": "80171",
+    "nkName": "Secma Agustina",
+    "matchedNameInBackup": "Secma Agustina",
+    "currentNikInBackup": "W-501728",
+    "backupMemberId": "W-501728",
+    "status": "EXACT"
+  },
+  {
+    "index": 75,
+    "nkNo": "80172",
+    "nkName": "Elfareta Dwi",
+    "matchedNameInBackup": "Elfareta Dwi Agustina",
+    "currentNikInBackup": "W-489291",
+    "backupMemberId": "W-489291",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 76,
+    "nkNo": "80173",
+    "nkName": "Lutfi Juniar",
+    "matchedNameInBackup": "Lutfi Juniar Mafikhasani",
+    "currentNikInBackup": "W-150635",
+    "backupMemberId": "W-150635",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 77,
+    "nkNo": "80174",
+    "nkName": "Martha Soraya",
+    "matchedNameInBackup": "Martha Soraya",
+    "currentNikInBackup": "W-219796",
+    "backupMemberId": "W-219796",
+    "status": "EXACT"
+  },
+  {
+    "index": 78,
+    "nkNo": "80175",
+    "nkName": "Nunik Wigiastutik",
+    "matchedNameInBackup": "Nunik Wigiastutik",
+    "currentNikInBackup": "W-714463",
+    "backupMemberId": "W-714463",
+    "status": "EXACT"
+  },
+  {
+    "index": 79,
+    "nkNo": "80176",
+    "nkName": "Putri Ajar Sari",
+    "matchedNameInBackup": "Putri Anjar Sari Sulasmi",
+    "currentNikInBackup": "W-248744",
+    "backupMemberId": "W-248744",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 80,
+    "nkNo": "80177",
+    "nkName": "Lintang Saputri",
+    "matchedNameInBackup": "Lintang Saputri",
+    "currentNikInBackup": "W-599482",
+    "backupMemberId": "W-599482",
+    "status": "EXACT"
+  },
+  {
+    "index": 81,
+    "nkNo": "80178",
+    "nkName": "Ananda Putri",
+    "matchedNameInBackup": "Anesa Putri",
+    "currentNikInBackup": "W-196607",
+    "backupMemberId": "W-196607",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 82,
+    "nkNo": "80179",
+    "nkName": "Dwi Sintya",
+    "matchedNameInBackup": "Dwi Sintya Indah",
+    "currentNikInBackup": "W-573188",
+    "backupMemberId": "W-573188",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 83,
+    "nkNo": "80180",
+    "nkName": "Dian Herlina",
+    "matchedNameInBackup": "Dian Herlina Putri",
+    "currentNikInBackup": "W-961017",
+    "backupMemberId": "W-961017",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 84,
+    "nkNo": "80181",
+    "nkName": "Roudlotul Jannah",
+    "matchedNameInBackup": "Roudlotul Jannah",
+    "currentNikInBackup": "W-057445",
+    "backupMemberId": "W-057445",
+    "status": "EXACT"
+  },
+  {
+    "index": 85,
+    "nkNo": "80182",
+    "nkName": "Linda Kurnia",
+    "matchedNameInBackup": "Linda Kurnia R",
+    "currentNikInBackup": "W-987445",
+    "backupMemberId": "W-987445",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 86,
+    "nkNo": "80183",
+    "nkName": "Rindi Oktavia",
+    "matchedNameInBackup": "Rindi Oktaviani",
+    "currentNikInBackup": "W-039254",
+    "backupMemberId": "W-039254",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 87,
+    "nkNo": "80184",
+    "nkName": "Dini Triarinda",
+    "matchedNameInBackup": "Dini Triarinda",
+    "currentNikInBackup": "W-110028",
+    "backupMemberId": "W-110028",
+    "status": "EXACT"
+  },
+  {
+    "index": 88,
+    "nkNo": "80185",
+    "nkName": "Alisya Hadi",
+    "matchedNameInBackup": "Alisya Hadi Putri",
+    "currentNikInBackup": "W-478024",
+    "backupMemberId": "W-478024",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 89,
+    "nkNo": "80186",
+    "nkName": "Arum Dwi",
+    "matchedNameInBackup": "Arum Dwi Cahyani",
+    "currentNikInBackup": "W-518846",
+    "backupMemberId": "W-518846",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 90,
+    "nkNo": "80187",
+    "nkName": "Oktavia Tri",
+    "matchedNameInBackup": "Oktavia Nur R",
+    "currentNikInBackup": "W-627527",
+    "backupMemberId": "W-627527",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 91,
+    "nkNo": "80188",
+    "nkName": "Sinta Rahayu",
+    "matchedNameInBackup": "Sinta Rahayu",
+    "currentNikInBackup": "W-381197",
+    "backupMemberId": "W-381197",
+    "status": "EXACT"
+  },
+  {
+    "index": 92,
+    "nkNo": "80189",
+    "nkName": "Rizky Nindi",
+    "matchedNameInBackup": "Rizky Nindi Bunga H",
+    "currentNikInBackup": "W-295456",
+    "backupMemberId": "W-295456",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 93,
+    "nkNo": "80190",
+    "nkName": "Tasya Alicya",
+    "matchedNameInBackup": "Tasya Alicya",
+    "currentNikInBackup": "W-234885",
+    "backupMemberId": "W-234885",
+    "status": "EXACT"
+  },
+  {
+    "index": 94,
+    "nkNo": "80191",
+    "nkName": "Zaskya Ayundhira",
+    "matchedNameInBackup": "Zaskia Ayundhira",
+    "currentNikInBackup": "W-157768",
+    "backupMemberId": "W-157768",
+    "status": "FUZZY_MATCH"
+  },
+  {
+    "index": 95,
+    "nkNo": "80192",
+    "nkName": "Tiara Putri",
+    "matchedNameInBackup": "Tiara",
+    "currentNikInBackup": "W-946787",
+    "backupMemberId": "W-946787",
+    "status": "FUZZY_MATCH"
+  }
+]

@@ -1,0 +1,580 @@
+@import "tailwindcss";
+
+@theme {
+  --color-slate-950: var(--bg-slate-950);
+  --color-slate-900: var(--bg-slate-900);
+  --color-slate-800: var(--border-slate-800);
+  --color-slate-700: var(--border-slate-700);
+  --color-slate-100: var(--text-slate-100);
+  --color-slate-200: var(--text-slate-200);
+  --color-slate-300: var(--text-slate-300);
+  --color-slate-400: var(--text-slate-400);
+  --color-slate-500: var(--text-slate-500);
+}
+
+:root {
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Dark Theme values (Default) */
+  --bg-slate-950: #0b0f19;
+  --bg-slate-900: #111827;
+  --border-slate-800: #1f2937;
+  --border-slate-700: #374151;
+  --text-slate-100: #f9fafb;
+  --text-slate-200: #f3f4f6;
+  --text-slate-300: #e5e7eb;
+  --text-slate-400: #9ca3af;
+  --text-slate-500: #6b7280;
+}
+
+html.light {
+  /* Light Theme values */
+  --bg-slate-950: #f8fafc;      /* Clean background */
+  --bg-slate-900: #ffffff;      /* Pure white cards */
+  --border-slate-800: #e2e8f0;  /* Very soft borders */
+  --border-slate-700: #cbd5e1;  /* Medium gray borders */
+  --text-slate-100: #0f172a;    /* Near-black text */
+  --text-slate-200: #1e293b;    /* Dark slate text */
+  --text-slate-300: #334155;    /* Gray body text */
+  --text-slate-400: #475569;    /* Medium gray text */
+  --text-slate-500: #64748b;    /* Light gray text */
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-slate-950);
+  color: var(--text-slate-300);
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+html.light body {
+  background-color: #f1f5f9;
+  color: var(--text-slate-300);
+}
+
+/* Glass & Panel Utilities */
+.glass-surface {
+  background: var(--bg-slate-900);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-slate-800);
+}
+
+.flat-panel {
+  background: var(--bg-slate-900);
+  border-radius: 6px;
+  padding: 1.25rem;
+  border: 1px solid var(--border-slate-800);
+}
+
+/* Global Form & Button Uniform Small Radius Overrides */
+input, select, textarea, button {
+  font-family: var(--font-sans);
+}
+
+/* Hide scrollbar for clean touch experience */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Custom Status Accents */
+.status-badge-success {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 4px;
+}
+
+.status-badge-warning {
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: 4px;
+}
+
+/* Bottom Bar Safe Inset for Mobile */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 5.5rem);
+}
+
+/* Force dark text for text-slate-950 class globally to support high-contrast button labels */
+.text-slate-950,
+button.text-slate-950,
+a.text-slate-950 {
+  color: #020617 !important;
+}
+
+/* Specific overrides for light theme inputs & components */
+html.light input,
+html.light select,
+html.light textarea {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+html.light input:focus,
+html.light select:focus {
+  border-color: #14b8a6 !important;
+  box-shadow: 0 0 0 1px #14b8a6 !important;
+}
+
+html.light .text-teal-300 {
+  color: #0d9488 !important; /* Teal 600 for contrast */
+}
+html.light .text-teal-400 {
+  color: #0f766e !important; /* Teal 700 for contrast */
+}
+html.light .text-emerald-400 {
+  color: #15803d !important; /* Emerald 700 */
+}
+html.light .text-white {
+  color: #0f172a !important;
+}
+
+/* Add shadow depth to card elements in light mode */
+html.light .bg-slate-900,
+html.light .flat-panel,
+html.light .bg-slate-900\/60,
+html.light .bg-slate-900\/50,
+html.light .bg-slate-900\/40 {
+  box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23, 42, 0.05) !important;
+}
+
+/* Modal backgrounds in light mode */
+html.light .fixed.inset-0.bg-slate-950 {
+  background-color: #f1f5f9 !important;
+}
+
+html.light .bg-slate-950\/80 {
+  background-color: rgba(241, 245, 249, 0.8) !important;
+}
+
+/* Force high contrast text colors globally in light mode to fix readability */
+html.light .text-slate-400,
+html.light p.text-slate-400,
+html.light span.text-slate-400,
+html.light div.text-slate-400 {
+  color: #334155 !important; /* Dark gray instead of faint white-gray */
+}
+
+html.light .text-slate-300,
+html.light p.text-slate-300,
+html.light span.text-slate-300,
+html.light div.text-slate-300 {
+  color: #1e293b !important;
+}
+
+html.light .text-slate-200,
+html.light p.text-slate-200,
+html.light span.text-slate-200,
+html.light div.text-slate-200 {
+  color: #0f172a !important;
+}
+
+html.light .text-slate-500,
+html.light p.text-slate-500,
+html.light span.text-slate-500,
+html.light div.text-slate-500 {
+  color: #475569 !important;
+}
+
+/* Dynamic container overrides for light theme */
+html.light .bg-slate-950 {
+  background-color: #f1f5f9 !important;
+}
+html.light .bg-slate-950\/60,
+html.light .bg-slate-950\/80,
+html.light .bg-slate-950\/90 {
+  background-color: #f8fafc !important;
+}
+
+html.light .bg-slate-900\/60,
+html.light .bg-slate-900\/50,
+html.light .bg-slate-900\/40 {
+  background-color: #ffffff !important;
+}
+html.light .hover\:bg-slate-800\/40:hover {
+  background-color: #f1f5f9 !important;
+}
+
+/* Sync warnings/offline indicator panels & badge colors in light theme */
+html.light .bg-amber-500\/20,
+html.light .bg-amber-500\/15,
+html.light .bg-amber-500\/10 {
+  background-color: #fef3c7 !important; /* solid warm yellow alert */
+  color: #b45309 !important; /* dark amber text */
+  border-color: #fcd34d !important;
+}
+html.light .text-amber-300,
+html.light .text-amber-400 {
+  color: #b45309 !important;
+}
+
+html.light .bg-rose-500\/20,
+html.light .bg-rose-500\/15,
+html.light .bg-rose-500\/10 {
+  background-color: #ffe4e6 !important;
+  color: #be123c !important;
+  border-color: #fecdd3 !important;
+}
+html.light .text-rose-300,
+html.light .text-rose-400 {
+  color: #be123c !important;
+}
+
+html.light .bg-emerald-500\/25,
+html.light .bg-emerald-500\/20,
+html.light .bg-emerald-500\/15,
+html.light .bg-emerald-500\/10 {
+  background-color: #dcfce7 !important;
+  color: #15803d !important;
+  border-color: #86efac !important;
+}
+html.light .text-emerald-300,
+html.light .text-emerald-400 {
+  color: #15803d !important;
+}
+
+html.light .bg-cyan-500\/20,
+html.light .bg-cyan-500\/10 {
+  background-color: #cffafe !important;
+  color: #0e7490 !important;
+  border-color: #67e8f9 !important;
+}
+html.light .text-cyan-300,
+html.light .text-cyan-400 {
+  color: #0e7490 !important;
+}
+
+html.light .bg-teal-500\/20,
+html.light .bg-teal-500\/10 {
+  background-color: #ccfbf1 !important;
+  color: #0f766e !important;
+  border-color: #5eead4 !important;
+}
+
+/* Role Badge & Shift Badge in light mode */
+html.light .bg-slate-800 {
+  background-color: #e2e8f0 !important;
+  color: #334155 !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* Floating Bulk Action Bar & Selected Row Toolbar Styles */
+.bulk-action-bar {
+  background-color: #0f172a !important; /* Deep dark slate in dark mode */
+  border: 1px solid #334155 !important;
+  color: #f8fafc !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4) !important;
+}
+
+html.light .bulk-action-bar {
+  background-color: #ffffff !important; /* Crisp white card in light mode */
+  border: 1px solid #cbd5e1 !important;
+  color: #0f172a !important;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.15), 0 8px 10px -6px rgba(15, 23, 42, 0.1) !important;
+}
+
+.bulk-select {
+  background-color: #1e293b !important;
+  color: #2dd4bf !important; /* Vibrant Teal 400 */
+  border: 1px solid #334155 !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%232dd4bf' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.5rem center !important;
+  background-size: 1rem !important;
+  padding-right: 2rem !important;
+  font-weight: 700 !important;
+  border-radius: 0.5rem !important;
+  transition: all 0.15s ease !important;
+}
+
+.bulk-select:hover {
+  border-color: #2dd4bf !important;
+}
+
+.bulk-select option {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  padding: 6px 10px !important;
+}
+
+html.light .bulk-select {
+  background-color: #f8fafc !important;
+  color: #0f766e !important; /* Deep Teal 700 */
+  border: 1px solid #cbd5e1 !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%230f766e' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.5rem center !important;
+  background-size: 1rem !important;
+  padding-right: 2rem !important;
+}
+
+html.light .bulk-select:hover {
+  border-color: #0d9488 !important;
+  background-color: #f1f5f9 !important;
+}
+
+html.light .bulk-select option {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+}
+
+/* Checkbox selected row highlight in Light Mode */
+html.light tr.bg-teal-950\/20,
+html.light .bg-teal-950\/20 {
+  background-color: #f0fdf4 !important; /* Clean light mint highlight */
+}
+
+/* Filter Chips Inactive State in Light Mode */
+html.light .filter-chip.bg-slate-900,
+html.light button.filter-chip-inactive {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #334155 !important;
+}
+html.light button.filter-chip-inactive:hover {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+/* Master Table Header in Light Mode */
+html.light thead.bg-slate-950\/80,
+html.light thead {
+  background-color: #f1f5f9 !important;
+  color: #334155 !important;
+  border-bottom: 2px solid #cbd5e1 !important;
+}
+
+/* Naive UI components overrides in light mode */
+html.light .n-config-provider {
+  color: #0f172a !important;
+}
+
+/* Fix printable A4 Excel report card styles specifically to bypass inverted theme scales */
+.printable-report-modal .bg-white,
+.printable-mandor-modal .bg-white,
+.printable-recap-modal .bg-white {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+.printable-report-modal table,
+.printable-mandor-modal table,
+.printable-recap-modal table {
+  background-color: #ffffff !important;
+  border-color: #000000 !important;
+  color: #000000 !important;
+}
+
+.printable-report-modal th,
+.printable-report-modal td,
+.printable-mandor-modal th,
+.printable-mandor-modal td,
+.printable-recap-modal th,
+.printable-recap-modal td {
+  border-color: #000000 !important;
+  color: #000000 !important;
+}
+
+.printable-report-modal thead tr,
+.printable-mandor-modal thead tr,
+.printable-recap-modal thead tr {
+  background-color: #f1f5f9 !important;
+}
+
+.printable-report-modal thead th,
+.printable-mandor-modal thead th,
+.printable-recap-modal thead th {
+  color: #000000 !important;
+  border-color: #000000 !important;
+  font-weight: 800 !important;
+  background-color: #f1f5f9 !important;
+}
+
+.printable-recap-modal thead th {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 20 !important;
+}
+
+@media print {
+  .printable-recap-modal thead th {
+    position: static !important;
+  }
+}
+
+.printable-report-modal tbody tr,
+.printable-mandor-modal tbody tr,
+.printable-recap-modal tbody tr {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+.printable-report-modal tbody tr:hover,
+.printable-mandor-modal tbody tr:hover,
+.printable-recap-modal tbody tr:hover {
+  background-color: #fef08a !important;
+  color: #000000 !important;
+}
+
+.printable-report-modal tbody tr:hover td,
+.printable-mandor-modal tbody tr:hover td,
+.printable-recap-modal tbody tr:hover td,
+.printable-report-modal tbody tr:hover span,
+.printable-mandor-modal tbody tr:hover span,
+.printable-recap-modal tbody tr:hover span {
+  background-color: #fef08a !important;
+  color: #000000 !important;
+}
+
+.printable-report-modal .text-slate-900,
+.printable-report-modal .text-slate-950,
+.printable-report-modal .text-slate-600,
+.printable-report-modal h1,
+.printable-report-modal p,
+.printable-report-modal span,
+.printable-recap-modal h1,
+.printable-recap-modal h2,
+.printable-recap-modal span,
+.printable-recap-modal p,
+.printable-recap-modal div {
+  color: #000000 !important;
+}
+
+.printable-recap-modal input {
+  color: #000000 !important;
+}
+
+.printable-recap-modal .bg-rose-50,
+.printable-recap-modal .bg-rose-100 {
+  background-color: #ffe4e6 !important;
+  color: #9f1239 !important;
+}
+
+.printable-recap-modal .bg-slate-100,
+.printable-recap-modal .bg-slate-200 {
+  background-color: #e2e8f0 !important;
+  color: #000000 !important;
+}
+
+.printable-recap-modal .bg-emerald-100 {
+  background-color: #d1fae5 !important;
+  color: #064e3b !important;
+}
+
+.printable-recap-modal .bg-amber-100 {
+  background-color: #fef3c7 !important;
+  color: #78350f !important;
+}
+
+.printable-report-modal .border-slate-300 {
+  border-color: #cbd5e1 !important;
+}
+
+.printable-report-modal .border-b-2.border-slate-900 {
+  border-bottom: 2px solid #020617 !important;
+}
+
+.printable-report-modal .border-b.border-slate-400 {
+  border-bottom: 1px solid #94a3b8 !important;
+}
+
+.printable-report-modal .bg-slate-200 {
+  background-color: #e2e8f0 !important; /* Clean summary gray */
+}
+
+.printable-report-modal .bg-slate-50\/70,
+.printable-report-modal .bg-rose-500\/15,
+.printable-report-modal .print\:bg-rose-100\/50 {
+  background-color: rgba(244, 63, 94, 0.12) !important; /* Soft transparent red for Sunday row */
+}
+
+/* Universal Print & PDF Export Page Settings for Desktop & Mobile Engines */
+@page {
+  size: A4 landscape;
+  margin: 3mm 4mm;
+}
+
+@media print {
+  #app {
+    display: none !important;
+  }
+
+  html, body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+
+/* Disable all UI transitions and decorative animations, preserving only loading spinners */
+*,
+*::before,
+*::after {
+  transition: none !important;
+}
+
+:not(.spinner):not(.animate-spin):not(.initial-loader *) {
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
+}
+
+.spinner,
+.animate-spin {
+  animation-duration: 0.7s !important;
+}
+
+/* High Contrast Performance Increase Card Styles (Light & Dark Theme) */
+.perf-increase-item {
+  background-color: var(--bg-slate-950);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+html.light .perf-increase-item {
+  background-color: #ffffff !important;
+  border-color: #a7f3d0 !important;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.1) !important;
+}
+
+html.light .perf-increase-badge {
+  background-color: #d1fae5 !important;
+  color: #065f46 !important;
+  border-color: #6ee7b7 !important;
+  font-weight: 800 !important;
+}
+
+html.light .perf-increase-name {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+}
+
+html.light .perf-increase-qty {
+  color: #047857 !important;
+  font-weight: 800 !important;
+}
+
+html.light .perf-increase-diff {
+  color: #059669 !important;
+  font-weight: 800 !important;
+}

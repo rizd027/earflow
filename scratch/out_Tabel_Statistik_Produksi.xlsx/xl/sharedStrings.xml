@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="61" uniqueCount="26"><si><t>Tabel Statistik Produksi</t></si><si><t>No Krywn:</t></si><si><t>Bulan:</t></si><si><t>Nama:</t></si><si><t>Tgl. Masuk:</t></si><si><t>Tgl</t></si><si><t>Jam kerja
+atau
+工时</t></si><si><t>Jml.Kum
+累计</t></si><si><t>Proses Produksi
+生产工序</t></si><si><t>Jml Target
+目标数量</t></si><si><t>Jml Prod
+生产数量</t></si><si><t>Menget.
+管理签名</t></si><si><t>REMARK</t></si><si><t>Total</t></si><si><t>Jam Kerja</t></si><si><t>-</t></si><si><r><t xml:space="preserve">atau
+</t></r><r><rPr><sz val="11"/><color theme="1"/><rFont val="Calibri"/><family val="2"/><scheme val="minor"/></rPr><t>工时</t></r></si><si><r><t xml:space="preserve">Jml.Kum
+</t></r><r><rPr><sz val="11"/><color theme="1"/><rFont val="Calibri"/><family val="2"/><scheme val="minor"/></rPr><t>累计</t></r></si><si><r><t xml:space="preserve">Proses Produksi
+</t></r><r><rPr><sz val="11"/><color theme="1"/><rFont val="Calibri"/><family val="2"/><scheme val="minor"/></rPr><t>生产工序</t></r></si><si><r><t xml:space="preserve">Jml Target
+</t></r><r><rPr><sz val="11"/><color theme="1"/><rFont val="Calibri"/><family val="2"/><scheme val="minor"/></rPr><t>目标数量</t></r></si><si><r><t xml:space="preserve">Jml Prod
+</t></r><r><rPr><sz val="11"/><color theme="1"/><rFont val="Calibri"/><family val="2"/><scheme val="minor"/></rPr><t>生产数量</t></r></si><si><r><t xml:space="preserve">Menget.
+</t></r><r><rPr><sz val="11"/><color theme="1"/><rFont val="Calibri"/><family val="2"/><scheme val="minor"/></rPr><t>管理签名</t></r></si><si><t xml:space="preserve"> No Krywn</t></si><si><t xml:space="preserve"> Nama</t></si><si><t xml:space="preserve"> Bulan</t></si><si><t xml:space="preserve"> Tgl. Masuk</t></si></sst>

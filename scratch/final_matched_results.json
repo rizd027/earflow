@@ -1,0 +1,635 @@
+[
+  {
+    "nkNo": "80098",
+    "nkName": "Siti Rohmawati",
+    "status": "UPDATED",
+    "backupName": "Siti Rohmawati",
+    "oldId": "W-850461"
+  },
+  {
+    "nkNo": "80099",
+    "nkName": "Syaifira Ila",
+    "status": "UPDATED",
+    "backupName": "Syaifira Ila",
+    "oldId": "W-905912"
+  },
+  {
+    "nkNo": "80100",
+    "nkName": "Hidayatus Sholikhah",
+    "status": "UPDATED",
+    "backupName": "Hidayatus Sholikhah",
+    "oldId": "W-927503"
+  },
+  {
+    "nkNo": "80101",
+    "nkName": "Erikan Nur Manda",
+    "status": "UPDATED",
+    "backupName": "Erika Nur Manda",
+    "oldId": "W-945260"
+  },
+  {
+    "nkNo": "80102",
+    "nkName": "M. Alfariz",
+    "status": "UPDATED",
+    "backupName": "M. Alfarizd",
+    "oldId": "W-933240"
+  },
+  {
+    "nkNo": "80103",
+    "nkName": "Nazzar Putra A",
+    "status": "UPDATED",
+    "backupName": "Nazar Putra A.",
+    "oldId": "W-959878"
+  },
+  {
+    "nkNo": "80104",
+    "nkName": "Dewi Masfufah",
+    "status": "UPDATED",
+    "backupName": "Dewi Masfufah",
+    "oldId": "W-024642"
+  },
+  {
+    "nkNo": "80105",
+    "nkName": "Erika Cahya",
+    "status": "UPDATED",
+    "backupName": "Erika Cahya",
+    "oldId": "W-009880"
+  },
+  {
+    "nkNo": "80106",
+    "nkName": "Heri Setiawan",
+    "status": "UPDATED",
+    "backupName": "Heri Setyawan",
+    "oldId": "W-025708"
+  },
+  {
+    "nkNo": "80107",
+    "nkName": "Aisyatul Khasanah",
+    "status": "UPDATED",
+    "backupName": "Aisyatul Khasanah",
+    "oldId": "W-037491"
+  },
+  {
+    "nkNo": "80108",
+    "nkName": "Afridatun Dina",
+    "status": "UPDATED",
+    "backupName": "Lola Afridatu Dina",
+    "oldId": "W-047279"
+  },
+  {
+    "nkNo": "80109",
+    "nkName": "Novi Wulandari",
+    "status": "NEW"
+  },
+  {
+    "nkNo": "80110",
+    "nkName": "Rahel",
+    "status": "NEW"
+  },
+  {
+    "nkNo": "80111",
+    "nkName": "Heni Ning Azizah",
+    "status": "NEW"
+  },
+  {
+    "nkNo": "80112",
+    "nkName": "Zahrotul Irnanda",
+    "status": "NEW"
+  },
+  {
+    "nkNo": "80113",
+    "nkName": "Wahyu Tirta Ningtyas",
+    "status": "NEW"
+  },
+  {
+    "nkNo": "80114",
+    "nkName": "Cantika",
+    "status": "NEW"
+  },
+  {
+    "nkNo": "80115",
+    "nkName": "Inayah Firdaus",
+    "status": "NEW"
+  },
+  {
+    "nkNo": "80116",
+    "nkName": "Ernawati",
+    "status": "NEW"
+  },
+  {
+    "nkNo": "80117",
+    "nkName": "Intan Lestari",
+    "status": "NEW"
+  },
+  {
+    "nkNo": "80118",
+    "nkName": "Dewi Putri Anjani",
+    "status": "NEW"
+  },
+  {
+    "nkNo": "80119",
+    "nkName": "Alfin Nabila Maulidiyah",
+    "status": "NEW"
+  },
+  {
+    "nkNo": "80120",
+    "nkName": "Ziya",
+    "status": "NEW"
+  },
+  {
+    "nkNo": "80121",
+    "nkName": "Kamilatus Zahra",
+    "status": "NEW"
+  },
+  {
+    "nkNo": "80122",
+    "nkName": "Lissel Nazua Lauren",
+    "status": "NEW"
+  },
+  {
+    "nkNo": "80123",
+    "nkName": "Yanti Oktavia",
+    "status": "UPDATED",
+    "backupName": "Yanti Oktavia",
+    "oldId": "W-420358"
+  },
+  {
+    "nkNo": "80124",
+    "nkName": "Desi Handayani",
+    "status": "UPDATED",
+    "backupName": "Desi Handayani",
+    "oldId": "W-932523"
+  },
+  {
+    "nkNo": "80125",
+    "nkName": "Feni Eka",
+    "status": "UPDATED",
+    "backupName": "Feni Eka A",
+    "oldId": "W-458035"
+  },
+  {
+    "nkNo": "80126",
+    "nkName": "Sabita Alya",
+    "status": "UPDATED",
+    "backupName": "Sabita Alya",
+    "oldId": "W-364522"
+  },
+  {
+    "nkNo": "80127",
+    "nkName": "Nur Aini",
+    "status": "UPDATED",
+    "backupName": "Nur Aini",
+    "oldId": "W-332522"
+  },
+  {
+    "nkNo": "80128",
+    "nkName": "Vanida Herawati",
+    "status": "UPDATED",
+    "backupName": "Vanida Herawati",
+    "oldId": "W-154829"
+  },
+  {
+    "nkNo": "80129",
+    "nkName": "Faiq Ardha Sava",
+    "status": "UPDATED",
+    "backupName": "Faiq Ardha Sava",
+    "oldId": "W-141028"
+  },
+  {
+    "nkNo": "80130",
+    "nkName": "Fania Dwi",
+    "status": "UPDATED",
+    "backupName": "Fania Dwi W",
+    "oldId": "W-341074"
+  },
+  {
+    "nkNo": "80131",
+    "nkName": "Lintang M",
+    "status": "UPDATED",
+    "backupName": "Lintang M",
+    "oldId": "W-470806"
+  },
+  {
+    "nkNo": "80132",
+    "nkName": "Nandita Aurelia",
+    "status": "UPDATED",
+    "backupName": "Nandita Aurelia",
+    "oldId": "W-217984"
+  },
+  {
+    "nkNo": "80133",
+    "nkName": "Purwati",
+    "status": "UPDATED",
+    "backupName": "Purwati",
+    "oldId": "W-101120"
+  },
+  {
+    "nkNo": "80134",
+    "nkName": "Sylvana Damayanti",
+    "status": "UPDATED",
+    "backupName": "Sylvana Damayanti",
+    "oldId": "W-090091"
+  },
+  {
+    "nkNo": "80135",
+    "nkName": "Sarah Wulandari",
+    "status": "UPDATED",
+    "backupName": "Sarah Wulandari",
+    "oldId": "W-090120"
+  },
+  {
+    "nkNo": "80136",
+    "nkName": "Uma Purwati",
+    "status": "UPDATED",
+    "backupName": "Uma Parwati",
+    "oldId": "W-613645"
+  },
+  {
+    "nkNo": "80137",
+    "nkName": "Aulia April",
+    "status": "UPDATED",
+    "backupName": "Aulia april liana",
+    "oldId": "W-494484"
+  },
+  {
+    "nkNo": "80138",
+    "nkName": "Ardina Vivi",
+    "status": "UPDATED",
+    "backupName": "Ardina vivi Amelia",
+    "oldId": "W-593411"
+  },
+  {
+    "nkNo": "80139",
+    "nkName": "Oktavia Nur",
+    "status": "UPDATED",
+    "backupName": "Oktavia Nur R",
+    "oldId": "W-627527"
+  },
+  {
+    "nkNo": "80140",
+    "nkName": "Putrinika",
+    "status": "UPDATED",
+    "backupName": "Putrinika",
+    "oldId": "W-638843"
+  },
+  {
+    "nkNo": "80141",
+    "nkName": "Aurelia Shinta",
+    "status": "UPDATED",
+    "backupName": "Aurelia Shinta P",
+    "oldId": "W-655433"
+  },
+  {
+    "nkNo": "80142",
+    "nkName": "MAfduka Khoiriyah",
+    "status": "UPDATED",
+    "backupName": "Mafdukha Khoiriyah S",
+    "oldId": "W-264509"
+  },
+  {
+    "nkNo": "80143",
+    "nkName": "Henny Wulandari",
+    "status": "UPDATED",
+    "backupName": "Henny Wulandari",
+    "oldId": "W-175626"
+  },
+  {
+    "nkNo": "80144",
+    "nkName": "Dinda Amelia ",
+    "status": "UPDATED",
+    "backupName": "Dinda Amelia Putri",
+    "oldId": "W-754131"
+  },
+  {
+    "nkNo": "80145",
+    "nkName": "Rini Ristanti",
+    "status": "UPDATED",
+    "backupName": "Rini Ristanti",
+    "oldId": "W-117040"
+  },
+  {
+    "nkNo": "80146",
+    "nkName": "Zunia Putri",
+    "status": "UPDATED",
+    "backupName": "Zunia Putri P.",
+    "oldId": "W-127471"
+  },
+  {
+    "nkNo": "80147",
+    "nkName": "Siti Aisah",
+    "status": "UPDATED",
+    "backupName": "Siti Aisah",
+    "oldId": "W-137948"
+  },
+  {
+    "nkNo": "80148",
+    "nkName": "Wiwik Ernawati",
+    "status": "UPDATED",
+    "backupName": "Wiwik Ermawati",
+    "oldId": "W-187336"
+  },
+  {
+    "nkNo": "80149",
+    "nkName": "Ana Choirun Nisa",
+    "status": "UPDATED",
+    "backupName": "Ana Choirohun Nisa",
+    "oldId": "W-207704"
+  },
+  {
+    "nkNo": "80150",
+    "nkName": "Aprillia Putri",
+    "status": "UPDATED",
+    "backupName": "Aprillia Putri Cahyani",
+    "oldId": "W-669466"
+  },
+  {
+    "nkNo": "80151",
+    "nkName": "Esti Armilatus",
+    "status": "UPDATED",
+    "backupName": "Esti Armilatus",
+    "oldId": "W-315236"
+  },
+  {
+    "nkNo": "80152",
+    "nkName": "Athala Rania",
+    "status": "UPDATED",
+    "backupName": "Athala Rania",
+    "oldId": "W-130867"
+  },
+  {
+    "nkNo": "80153",
+    "nkName": "Anisa Bil Hikmah",
+    "status": "UPDATED",
+    "backupName": "Anisa Bil Hikmah",
+    "oldId": "W-351697"
+  },
+  {
+    "nkNo": "80154",
+    "nkName": "Arbecha Trivany",
+    "status": "UPDATED",
+    "backupName": "Arbecha Trivany M.A",
+    "oldId": "W-523871"
+  },
+  {
+    "nkNo": "80155",
+    "nkName": "Fitri Permatasari",
+    "status": "UPDATED",
+    "backupName": "Fitri Permatasari",
+    "oldId": "W-651190"
+  },
+  {
+    "nkNo": "80156",
+    "nkName": "Kovivah",
+    "status": "UPDATED",
+    "backupName": "Kovivah",
+    "oldId": "W-455582"
+  },
+  {
+    "nkNo": "80157",
+    "nkName": "Nadin Candra Winata",
+    "status": "UPDATED",
+    "backupName": "Nadin Candra Winata",
+    "oldId": "W-536199"
+  },
+  {
+    "nkNo": "80158",
+    "nkName": "Nur Hidayah",
+    "status": "UPDATED",
+    "backupName": "Nur Hidayah",
+    "oldId": "W-584636"
+  },
+  {
+    "nkNo": "80159",
+    "nkName": "Wulan Khusnul",
+    "status": "UPDATED",
+    "backupName": "Wulan Khusnul K",
+    "oldId": "W-046462"
+  },
+  {
+    "nkNo": "80160",
+    "nkName": "Dian Fitnani",
+    "status": "UPDATED",
+    "backupName": "Dina Fitnani",
+    "oldId": "W-875083"
+  },
+  {
+    "nkNo": "80161",
+    "nkName": "Keren",
+    "status": "UPDATED",
+    "backupName": "Keren Triesya Despita",
+    "oldId": "W-782729"
+  },
+  {
+    "nkNo": "80162",
+    "nkName": "Natasya Dwi",
+    "status": "UPDATED",
+    "backupName": "Natasya Dwi F",
+    "oldId": "W-458370"
+  },
+  {
+    "nkNo": "80163",
+    "nkName": "Fatima Aprilia",
+    "status": "UPDATED",
+    "backupName": "Fatima Aprillia",
+    "oldId": "W-987587"
+  },
+  {
+    "nkNo": "80164",
+    "nkName": "Nur Fani",
+    "status": "UPDATED",
+    "backupName": "Nur Fani O.",
+    "oldId": "W-067216"
+  },
+  {
+    "nkNo": "80165",
+    "nkName": "Saskia",
+    "status": "NEW"
+  },
+  {
+    "nkNo": "80166",
+    "nkName": "Anesa Putri",
+    "status": "UPDATED",
+    "backupName": "Anesa Putri",
+    "oldId": "W-196607"
+  },
+  {
+    "nkNo": "80167",
+    "nkName": "Nabila Dwi",
+    "status": "UPDATED",
+    "backupName": "Nabila Dwi",
+    "oldId": "W-228523"
+  },
+  {
+    "nkNo": "80168",
+    "nkName": "Nurul Afidatun",
+    "status": "UPDATED",
+    "backupName": "Nurul Afidatun",
+    "oldId": "W-489700"
+  },
+  {
+    "nkNo": "80169",
+    "nkName": "Ayu Maulida",
+    "status": "UPDATED",
+    "backupName": "Ayu Maulida",
+    "oldId": "W-442562"
+  },
+  {
+    "nkNo": "80170",
+    "nkName": "Ayu Afrani",
+    "status": "UPDATED",
+    "backupName": "Ayu Afrani",
+    "oldId": "W-464822"
+  },
+  {
+    "nkNo": "80171",
+    "nkName": "Secma Agustina",
+    "status": "UPDATED",
+    "backupName": "Secma Agustina",
+    "oldId": "W-501728"
+  },
+  {
+    "nkNo": "80172",
+    "nkName": "Elfareta Dwi",
+    "status": "UPDATED",
+    "backupName": "Elfareta Dwi Agustina",
+    "oldId": "W-489291"
+  },
+  {
+    "nkNo": "80173",
+    "nkName": "Lutfi Juniar",
+    "status": "UPDATED",
+    "backupName": "Lutfi Juniar Mafikhasani",
+    "oldId": "W-150635"
+  },
+  {
+    "nkNo": "80174",
+    "nkName": "Martha Soraya",
+    "status": "UPDATED",
+    "backupName": "Martha Soraya",
+    "oldId": "W-219796"
+  },
+  {
+    "nkNo": "80175",
+    "nkName": "Nunik Wigiastutik",
+    "status": "UPDATED",
+    "backupName": "Nunik Wigiastutik",
+    "oldId": "W-714463"
+  },
+  {
+    "nkNo": "80176",
+    "nkName": "Putri Ajar Sari",
+    "status": "UPDATED",
+    "backupName": "Putri Anjar Sari Sulasmi",
+    "oldId": "W-248744"
+  },
+  {
+    "nkNo": "80177",
+    "nkName": "Lintang Saputri",
+    "status": "UPDATED",
+    "backupName": "Lintang Saputri",
+    "oldId": "W-599482"
+  },
+  {
+    "nkNo": "80178",
+    "nkName": "Ananda Putri",
+    "status": "UPDATED",
+    "backupName": "Ananda Putri Eronika",
+    "oldId": "W-183557"
+  },
+  {
+    "nkNo": "80179",
+    "nkName": "Dwi Sintya",
+    "status": "UPDATED",
+    "backupName": "Dwi Sintya Indah",
+    "oldId": "W-573188"
+  },
+  {
+    "nkNo": "80180",
+    "nkName": "Dian Herlina",
+    "status": "UPDATED",
+    "backupName": "Dian Herlina Putri",
+    "oldId": "W-961017"
+  },
+  {
+    "nkNo": "80181",
+    "nkName": "Roudlotul Jannah",
+    "status": "UPDATED",
+    "backupName": "Roudlotul Jannah",
+    "oldId": "W-057445"
+  },
+  {
+    "nkNo": "80182",
+    "nkName": "Linda Kurnia",
+    "status": "UPDATED",
+    "backupName": "Linda Kurnia R",
+    "oldId": "W-987445"
+  },
+  {
+    "nkNo": "80183",
+    "nkName": "Rindi Oktavia",
+    "status": "UPDATED",
+    "backupName": "Rindi Oktaviani",
+    "oldId": "W-039254"
+  },
+  {
+    "nkNo": "80184",
+    "nkName": "Dini Triarinda",
+    "status": "UPDATED",
+    "backupName": "Dini Triarinda",
+    "oldId": "W-110028"
+  },
+  {
+    "nkNo": "80185",
+    "nkName": "Alisya Hadi",
+    "status": "UPDATED",
+    "backupName": "Alisya Hadi Putri",
+    "oldId": "W-478024"
+  },
+  {
+    "nkNo": "80186",
+    "nkName": "Arum Dwi",
+    "status": "UPDATED",
+    "backupName": "Arum Dwi Cahyani",
+    "oldId": "W-518846"
+  },
+  {
+    "nkNo": "80187",
+    "nkName": "Oktavia Tri",
+    "status": "UPDATED",
+    "backupName": "Oktavia Tri Ramadhani",
+    "oldId": "W-540105"
+  },
+  {
+    "nkNo": "80188",
+    "nkName": "Sinta Rahayu",
+    "status": "UPDATED",
+    "backupName": "Sinta Rahayu",
+    "oldId": "W-381197"
+  },
+  {
+    "nkNo": "80189",
+    "nkName": "Rizky Nindi",
+    "status": "UPDATED",
+    "backupName": "Rizky Nindi Bunga H",
+    "oldId": "W-295456"
+  },
+  {
+    "nkNo": "80190",
+    "nkName": "Tasya Alicya",
+    "status": "UPDATED",
+    "backupName": "Tasya Alicya",
+    "oldId": "W-234885"
+  },
+  {
+    "nkNo": "80191",
+    "nkName": "Zaskya Ayundhira",
+    "status": "NEW"
+  },
+  {
+    "nkNo": "80192",
+    "nkName": "Tiara Putri",
+    "status": "UPDATED",
+    "backupName": "Tiara",
+    "oldId": "W-946787"
+  }
+]
