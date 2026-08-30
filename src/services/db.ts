@@ -250,23 +250,29 @@ export async function importBackupData(payload: BackupPayload): Promise<boolean>
 }
 
 export async function clearAllLocalData(): Promise<void> {
-  const db = await getDB()
-  const tx = db.transaction(['teams', 'logs', 'users', 'overrides', 'audit_logs'], 'readwrite')
-  await tx.objectStore('teams').clear()
-  await tx.objectStore('logs').clear()
-  await tx.objectStore('users').clear()
-  await tx.objectStore('overrides').clear()
-  await tx.objectStore('audit_logs').clear()
-  await tx.done
-
-  const keysToRemove: string[] = []
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i)
-    if (key && (key.startsWith('earflow_') || key === 'foreman_name')) {
-      keysToRemove.push(key)
-    }
+  try {
+    const db = await getDB()
+    const tx = db.transaction(['teams', 'logs', 'users', 'overrides', 'audit_logs'], 'readwrite')
+    await tx.objectStore('teams').clear()
+    await tx.objectStore('logs').clear()
+    await tx.objectStore('users').clear()
+    await tx.objectStore('overrides').clear()
+    await tx.objectStore('audit_logs').clear()
+    await tx.done
+  } catch (e) {
+    console.warn('IDB clear error:', e)
   }
-  keysToRemove.forEach(k => localStorage.removeItem(k))
+
+  try {
+    const keysToRemove: string[] = []
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)
+      if (key) keysToRemove.push(key)
+    }
+    keysToRemove.forEach(k => localStorage.removeItem(k))
+  } catch (e) {
+    console.warn('LocalStorage clear error:', e)
+  }
 }
 
 
