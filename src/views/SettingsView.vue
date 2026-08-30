@@ -404,29 +404,38 @@
       </div>
 
       <!-- Secondary Actions: Backup JSON & Reset -->
-      <div class="pt-2 border-t border-slate-800/80 grid grid-cols-1 sm:grid-cols-3 gap-2">
+      <div class="pt-2 border-t border-slate-800/80 grid grid-cols-2 sm:grid-cols-4 gap-2">
         <button
           type="button"
           @click="handleExportBackup"
-          class="h-8 px-3 rounded bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition flex items-center justify-center gap-1.5"
+          class="h-8 px-2.5 rounded bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition flex items-center justify-center gap-1.5"
         >
           <Download class="w-3 h-3 text-teal-400" />
-          <span>Ekspor JSON Backup</span>
+          <span>Ekspor JSON</span>
         </button>
 
-        <label class="h-8 px-3 rounded bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition flex items-center justify-center gap-1.5 cursor-pointer">
+        <button
+          type="button"
+          @click="handleShareBackup"
+          class="h-8 px-2.5 rounded bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition flex items-center justify-center gap-1.5"
+        >
+          <Share2 class="w-3 h-3 text-sky-400" />
+          <span>Bagikan JSON</span>
+        </button>
+
+        <label class="h-8 px-2.5 rounded bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition flex items-center justify-center gap-1.5 cursor-pointer">
           <Upload class="w-3 h-3 text-emerald-400" />
-          <span>Ganti Data (Restore JSON)</span>
+          <span>Restore JSON</span>
           <input type="file" accept=".json" @change="handleImportBackup" class="hidden" />
         </label>
 
         <button
           type="button"
           @click="handleResetAllDatabases"
-          class="h-8 px-3 rounded bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 text-xs font-semibold border border-rose-500/30 transition flex items-center justify-center gap-1.5"
+          class="h-8 px-2.5 rounded bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 text-xs font-semibold border border-rose-500/30 transition flex items-center justify-center gap-1.5"
         >
           <Trash2 class="w-3 h-3 text-rose-400" />
-          <span>Hapus Semua Database</span>
+          <span>Hapus Database</span>
         </button>
       </div>
 
