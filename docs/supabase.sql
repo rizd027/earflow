@@ -125,8 +125,30 @@ CREATE POLICY "Allow all for audit_logs" ON public.audit_logs FOR ALL USING (tru
 DROP POLICY IF EXISTS "Allow all for app_settings" ON public.app_settings;
 CREATE POLICY "Allow all for app_settings" ON public.app_settings FOR ALL USING (true) WITH CHECK (true);
 
--- Enable Realtime for all tables in publication
-ALTER PUBLICATION supabase_realtime ADD TABLE public.teams, public.production_logs, public.overrides, public.shifts, public.app_settings;
+-- Enable Realtime for all tables in publication (Idempotent / Safe to re-run)
+DO $$
+BEGIN
+  BEGIN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.teams;
+  EXCEPTION WHEN duplicate_object THEN NULL;
+  END;
+  BEGIN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.production_logs;
+  EXCEPTION WHEN duplicate_object THEN NULL;
+  END;
+  BEGIN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.overrides;
+  EXCEPTION WHEN duplicate_object THEN NULL;
+  END;
+  BEGIN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.shifts;
+  EXCEPTION WHEN duplicate_object THEN NULL;
+  END;
+  BEGIN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.app_settings;
+  EXCEPTION WHEN duplicate_object THEN NULL;
+  END;
+END $$;
 
 -- =========================================================================
 -- DELTA SYNC: Indexes on updated_at for efficient incremental queries
