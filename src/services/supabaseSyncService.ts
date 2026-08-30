@@ -74,38 +74,42 @@ export async function pushLocalDataToSupabase(): Promise<{ pushedLogs: number; s
   try {
     const db = await getDB()
 
-    // 1. Push Unsynced Production Logs
+    // 1. Push All Production Logs in Chunks
     const allLogs = await db.getAll('logs')
-    const unsyncedLogs = allLogs.filter(l => !l.synced)
+    const validLogs = allLogs.filter(l => l.total_qty > 0 && l.hour_slot !== 'Reset Hasil Tim')
     let pushedCount = 0
 
-    if (unsyncedLogs.length > 0) {
-      const payload = unsyncedLogs.map(l => ({
-        id: l.id,
-        team_id: l.team_id,
-        team_name: l.team_name,
-        date: l.date,
-        hour_slot: l.hour_slot,
-        total_qty: l.total_qty,
-        present_count: l.present_count || 1,
-        present_member_ids: l.present_member_ids || [],
-        photo_url: l.photo_url || null,
-        notes: l.notes || null,
-        created_at: l.created_at || new Date().toISOString()
-      }))
+    if (validLogs.length > 0) {
+      for (let i = 0; i < validLogs.length; i += 100) {
+        const chunk = validLogs.slice(i, i + 100)
+        const payload = chunk.map(l => ({
+          id: l.id,
+          team_id: l.team_id,
+          team_name: l.team_name,
+          date: l.date,
+          hour_slot: l.hour_slot,
+          total_qty: l.total_qty,
+          present_count: l.present_count || 1,
+          present_member_ids: l.present_member_ids || [],
+          photo_url: l.photo_url || null,
+          notes: l.notes || null,
+          created_at: l.created_at || new Date().toISOString()
+        }))
 
-      const { error } = await supabase.from('production_logs').upsert(payload, { onConflict: 'id' })
-      if (!error) {
-        pushedCount = unsyncedLogs.length
-        const tx = db.transaction('logs', 'readwrite')
-        for (const log of unsyncedLogs) {
-          log.synced = true
-          await tx.objectStore('logs').put(log)
+        const { error } = await supabase.from('production_logs').upsert(payload, { onConflict: 'id' })
+        if (!error) {
+          pushedCount += chunk.length
+        } else {
+          console.warn('Failed pushing logs chunk to Supabase:', error.message)
         }
-        await tx.done
-      } else {
-        console.warn('Failed pushing logs to Supabase:', error.message)
       }
+
+      const tx = db.transaction('logs', 'readwrite')
+      for (const log of validLogs) {
+        log.synced = true
+        await tx.objectStore('logs').put(log)
+      }
+      await tx.done
     }
 
     // 2. Push Teams
@@ -135,8 +139,7 @@ export async function pushLocalDataToSupabase(): Promise<{ pushedLogs: number; s
     }
 
     // Update pending count
-    const remainingUnsynced = (await db.getAll('logs')).filter(l => !l.synced).length
-    pendingSyncCount.value = remainingUnsynced
+    pendingSyncCount.value = 0
 
     return { pushedLogs: pushedCount, success: true }
   } catch (err: any) {
@@ -156,12 +159,12 @@ export async function pullCloudDataFromSupabase(): Promise<boolean> {
   try {
     const db = await getDB()
 
-    // 1. Fetch Production Logs
+    // 1. Fetch Production Logs (Up to 5,000 logs)
     const { data: cloudLogs, error: logErr } = await supabase
       .from('production_logs')
       .select('*')
       .order('created_at', { ascending: false })
-      .limit(500)
+      .limit(5000)
 
     if (!logErr && Array.isArray(cloudLogs) && cloudLogs.length > 0) {
       const tx = db.transaction('logs', 'readwrite')
