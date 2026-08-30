@@ -41,12 +41,16 @@ import MultiStepLogModal from '@/components/MultiStepLogModal.vue'
 import { useTeamStore } from '@/stores/teamStore'
 import { useProductionStore } from '@/stores/productionStore'
 import { useOverrideStore } from '@/stores/overrideStore'
+import { useShiftStore } from '@/stores/shiftStore'
+import { useAuthStore } from '@/stores/authStore'
 
 const route = useRoute()
 const showLogModal = ref(false)
 const teamStore = useTeamStore()
 const productionStore = useProductionStore()
 const overrideStore = useOverrideStore()
+const shiftStore = useShiftStore()
+const authStore = useAuthStore()
 
 // Modal Back-Button History Support
 let isProgrammaticClose = false
@@ -97,6 +101,8 @@ onMounted(() => {
     teamStore.loadTeams(true)
     productionStore.loadLogs(true)
     overrideStore.loadFromStorage(true)
+    shiftStore.reloadFromStorage()
+    authStore.reloadFromStorage()
   }
 
   window.addEventListener('supabase-data-updated', refreshStoresFromCloud)

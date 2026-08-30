@@ -138,6 +138,65 @@ export async function pushLocalDataToSupabase(): Promise<{ pushedLogs: number; s
       await supabase.from('overrides').upsert(overridesPayload, { onConflict: 'key' })
     }
 
+    // 4. Push Shifts
+    const localShiftsRaw = localStorage.getItem('earflow_shifts')
+    if (localShiftsRaw) {
+      try {
+        const shiftsArr = JSON.parse(localShiftsRaw)
+        if (Array.isArray(shiftsArr) && shiftsArr.length > 0) {
+          const shiftsPayload = shiftsArr.map(s => ({
+            id: s.id,
+            name: s.name,
+            start_time: s.startTime,
+            end_time: s.endTime,
+            updated_at: new Date().toISOString()
+          }))
+          await supabase.from('shifts').upsert(shiftsPayload, { onConflict: 'id' })
+        }
+      } catch {}
+    }
+
+    // 5. Push App Settings (Process Groups, Types, Foreman Name, Options)
+    const settingsPayload: Array<{ key: string; value: any; updated_at: string }> = []
+    const settingKeys = [
+      'earflow_foreman_name',
+      'foreman_name',
+      'earflow_process_groups',
+      'earflow_process_types',
+      'earflow_worker_status_options',
+      'earflow_role_options'
+    ]
+    for (const key of settingKeys) {
+      const val = localStorage.getItem(key)
+      if (val !== null && val !== undefined) {
+        let parsedVal: any = val
+        try { parsedVal = JSON.parse(val) } catch {}
+        settingsPayload.push({
+          key,
+          value: parsedVal,
+          updated_at: new Date().toISOString()
+        })
+      }
+    }
+    if (settingsPayload.length > 0) {
+      await supabase.from('app_settings').upsert(settingsPayload, { onConflict: 'key' })
+    }
+
+    // 6. Push Audit Logs
+    const allAuditLogs = await db.getAll('audit_logs')
+    if (allAuditLogs.length > 0) {
+      const auditPayload = allAuditLogs.map(a => ({
+        id: a.id,
+        timestamp: a.timestamp,
+        category: a.category || 'System',
+        action: a.action,
+        details: a.details || null,
+        user_name: a.user || null,
+        created_at: new Date().toISOString()
+      }))
+      await supabase.from('audit_logs').upsert(auditPayload, { onConflict: 'id' })
+    }
+
     // Update pending count
     pendingSyncCount.value = 0
 
@@ -149,7 +208,7 @@ export async function pushLocalDataToSupabase(): Promise<{ pushedLogs: number; s
 }
 
 /**
- * Pull latest data from Supabase and update local IndexedDB safely.
+ * Pull latest data from Supabase and update local IndexedDB & LocalStorage safely.
  */
 export async function pullCloudDataFromSupabase(): Promise<boolean> {
   if (!isCloudEnabled.value || !navigator.onLine) {
@@ -216,6 +275,46 @@ export async function pullCloudDataFromSupabase(): Promise<boolean> {
           data: co.data || {}
         }
         await tx.objectStore('overrides').put(localOvr)
+      }
+      await tx.done
+    }
+
+    // 4. Fetch Shifts
+    const { data: cloudShifts, error: shiftErr } = await supabase.from('shifts').select('*')
+    if (!shiftErr && Array.isArray(cloudShifts) && cloudShifts.length > 0) {
+      const mappedShifts = cloudShifts.map(s => ({
+        id: s.id,
+        name: s.name,
+        startTime: s.start_time,
+        endTime: s.end_time
+      }))
+      localStorage.setItem('earflow_shifts', JSON.stringify(mappedShifts))
+    }
+
+    // 5. Fetch App Settings
+    const { data: cloudSettings, error: setErr } = await supabase.from('app_settings').select('*')
+    if (!setErr && Array.isArray(cloudSettings) && cloudSettings.length > 0) {
+      for (const setting of cloudSettings) {
+        if (setting.key && setting.value !== undefined && setting.value !== null) {
+          const valToStore = typeof setting.value === 'string' ? setting.value : JSON.stringify(setting.value)
+          localStorage.setItem(setting.key, valToStore)
+        }
+      }
+    }
+
+    // 6. Fetch Audit Logs
+    const { data: cloudAudits, error: auditErr } = await supabase.from('audit_logs').select('*').limit(500)
+    if (!auditErr && Array.isArray(cloudAudits) && cloudAudits.length > 0) {
+      const tx = db.transaction('audit_logs', 'readwrite')
+      for (const ca of cloudAudits) {
+        await tx.objectStore('audit_logs').put({
+          id: ca.id,
+          timestamp: ca.timestamp,
+          category: ca.category || 'System',
+          action: ca.action,
+          details: ca.details || '',
+          user: ca.user_name || undefined
+        })
       }
       await tx.done
     }
