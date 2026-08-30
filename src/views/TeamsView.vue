@@ -2522,7 +2522,7 @@ const selectedTeamName = computed(() => {
 const workerShiftFilterOptions = computed<ComboboxOption[]>(() => [
   { label: 'Semua Shift Karyawan', value: '' },
   ...shiftStore.shifts
-    .filter((s): s is ShiftItem => !!s && typeof s === 'object' && !!s.name)
+    .filter((s: any) => !!s && typeof s === 'object' && !!s.name)
     .map(s => {
       const timeRange = (s.startTime && s.endTime) ? ` (${s.startTime} - ${s.endTime})` : ''
       return {
