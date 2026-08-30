@@ -92,6 +92,14 @@ const onThemeChanged = (e: any) => {
 onMounted(() => {
   applyTheme(activeTheme.value)
   window.addEventListener('theme-changed', onThemeChanged)
+
+  const refreshStoresFromCloud = () => {
+    teamStore.loadTeams(true)
+    productionStore.loadLogs(true)
+    overrideStore.loadFromStorage(true)
+  }
+
+  window.addEventListener('supabase-data-updated', refreshStoresFromCloud)
   
   // Pre-load data in background on initialization for instant view switching
   teamStore.loadTeams()

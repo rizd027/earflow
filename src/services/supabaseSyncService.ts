@@ -217,6 +217,10 @@ export async function pullCloudDataFromSupabase(): Promise<boolean> {
       await tx.done
     }
 
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('supabase-data-updated'))
+    }
+
     return true
   } catch (err: any) {
     console.warn('Error in pullCloudDataFromSupabase:', err)
