@@ -10,28 +10,18 @@ export interface ShiftItem {
 
 const STORAGE_KEY = 'earflow_shifts'
 
-const DEFAULT_SHIFTS: ShiftItem[] = [
-  { id: 'shift_7_14', name: 'Shift Pagi (07:00 - 14:00)', startTime: '07:00', endTime: '14:00' },
-  { id: 'shift_pagi', name: 'Shift Pagi (06:00 - 13:00)', startTime: '06:00', endTime: '13:00' },
-  { id: 'shift_siang', name: 'Shift Siang (13:00 - 20:00)', startTime: '13:00', endTime: '20:00' }
-]
-
 function loadFromStorage(): ShiftItem[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (raw) {
       const parsed = JSON.parse(raw) as ShiftItem[]
       if (Array.isArray(parsed) && parsed.length > 0) {
-        const has714 = parsed.some(s => s.startTime === '07:00' && s.endTime === '14:00') || parsed.some(s => s.id === 'shift_7_14')
-        if (!has714) {
-          parsed.unshift({ id: 'shift_7_14', name: 'Shift Pagi (07:00 - 14:00)', startTime: '07:00', endTime: '14:00' })
-          saveToStorage(parsed)
-        }
         return parsed
       }
     }
   } catch {}
-  return [...DEFAULT_SHIFTS]
+  // Return empty - cloud pull will populate shifts, or user adds them manually
+  return []
 }
 
 function saveToStorage(shifts: ShiftItem[]) {

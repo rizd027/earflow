@@ -193,7 +193,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   function reloadFromStorage() {
-    const fName = localStorage.getItem('earflow_foreman_name') || localStorage.getItem('foreman_name') || 'Karen & Lala'
+    const fName = localStorage.getItem('earflow_foreman_name') || localStorage.getItem('foreman_name') || ''
     foremanName.value = fName
     if (currentUser.value && isMandor.value) {
       currentUser.value.full_name = fName
@@ -207,8 +207,8 @@ export const useAuthStore = defineStore('auth', () => {
     if (parsedTypes && Array.isArray(parsedTypes) && parsedTypes.length > 0) {
       processTypes.value = parsedTypes
     } else {
+      // Don't write defaults back to localStorage — cloud pull will populate it
       processTypes.value = [...DEFAULT_PROCESS_TYPES]
-      localStorage.setItem('earflow_process_types', JSON.stringify(processTypes.value))
     }
 
     const savedGroups = localStorage.getItem('earflow_process_groups')
@@ -219,8 +219,8 @@ export const useAuthStore = defineStore('auth', () => {
     if (parsedGroups && Array.isArray(parsedGroups) && parsedGroups.length > 0 && parsedGroups.some(g => g.roles && g.roles.length > 0)) {
       processGroups.value = parsedGroups
     } else {
+      // Don't write defaults back to localStorage — cloud pull will populate it
       processGroups.value = JSON.parse(JSON.stringify(DEFAULT_PROCESS_GROUPS))
-      localStorage.setItem('earflow_process_groups', JSON.stringify(processGroups.value))
     }
   }
 

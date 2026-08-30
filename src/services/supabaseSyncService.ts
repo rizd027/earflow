@@ -150,49 +150,9 @@ export async function pushLocalDataToSupabase(): Promise<{ pushedLogs: number; p
       }
     }
 
-    // 4. Push Shifts
-    const localShiftsRaw = localStorage.getItem('earflow_shifts')
-    if (localShiftsRaw) {
-      try {
-        const shiftsArr = JSON.parse(localShiftsRaw)
-        if (Array.isArray(shiftsArr) && shiftsArr.length > 0) {
-          const shiftsPayload = shiftsArr.map(s => ({
-            id: s.id,
-            name: s.name,
-            start_time: s.startTime,
-            end_time: s.endTime,
-            updated_at: new Date().toISOString()
-          }))
-          await supabase.from('shifts').upsert(shiftsPayload, { onConflict: 'id' })
-        }
-      } catch {}
-    }
-
-    // 5. Push App Settings (Process Groups, Types, Foreman Name, Options)
-    const settingsPayload: Array<{ key: string; value: any; updated_at: string }> = []
-    const settingKeys = [
-      'earflow_foreman_name',
-      'foreman_name',
-      'earflow_process_groups',
-      'earflow_process_types',
-      'earflow_worker_status_options',
-      'earflow_role_options'
-    ]
-    for (const key of settingKeys) {
-      const val = localStorage.getItem(key)
-      if (val !== null && val !== undefined) {
-        let parsedVal: any = val
-        try { parsedVal = JSON.parse(val) } catch {}
-        settingsPayload.push({
-          key,
-          value: parsedVal,
-          updated_at: new Date().toISOString()
-        })
-      }
-    }
-    if (settingsPayload.length > 0) {
-      await supabase.from('app_settings').upsert(settingsPayload, { onConflict: 'key' })
-    }
+    // NOTE: Shifts and App Settings are NOT auto-pushed here to prevent
+    // local defaults from overwriting valid cloud data. They are only pushed
+    // when the user explicitly clicks "Upload Database ke Cloud".
 
     // 6. Push Audit Logs
     const allAuditLogs = await db.getAll('audit_logs')
@@ -354,7 +314,8 @@ export async function pullCloudDataFromSupabase(): Promise<{ success: boolean; l
 }
 
 /**
- * Executes a full bi-directional synchronization (Push then Pull).
+ * Executes a pull-only sync from cloud (safe startup sync — never auto-pushes local data).
+ * This prevents empty local data from overwriting valid cloud data on first load.
  */
 export async function performFullSync(onDataUpdated?: () => void): Promise<{ success: boolean; message: string }> {
   if (isSyncInProgress) {
@@ -375,10 +336,7 @@ export async function performFullSync(onDataUpdated?: () => void): Promise<{ suc
   syncStatus.value = 'syncing'
 
   try {
-    // 1. Push local changes
-    const pushResult = await pushLocalDataToSupabase()
-
-    // 2. Pull remote changes
+    // Pull-only: cloud data wins on startup. Manual upload must be triggered explicitly.
     const pullResult = await pullCloudDataFromSupabase()
 
     const nowStr = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
@@ -395,7 +353,7 @@ export async function performFullSync(onDataUpdated?: () => void): Promise<{ suc
 
     return {
       success: true,
-      message: `Sinkronisasi selesai pada ${nowStr} (${pushResult.pushedTeams} tim & ${pushResult.pushedLogs} log diunggah | ${pullResult.teamsCount} tim & ${pullResult.logsCount} log diunduh)`
+      message: `Sinkronisasi selesai pada ${nowStr} (${pullResult.teamsCount} tim & ${pullResult.logsCount} log diunduh dari Cloud)`
     }
   } catch (err: any) {
     syncStatus.value = 'error'
