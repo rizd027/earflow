@@ -128,17 +128,53 @@ html.light select:focus {
   box-shadow: 0 0 0 1px #14b8a6 !important;
 }
 
+html.light .text-teal-200,
 html.light .text-teal-300 {
-  color: #0d9488 !important; /* Teal 600 for contrast */
+  color: #0f766e !important; /* Deep Teal 700 for high contrast */
 }
 html.light .text-teal-400 {
-  color: #0f766e !important; /* Teal 700 for contrast */
+  color: #0f766e !important;
 }
-html.light .text-emerald-400 {
+html.light .text-cyan-200,
+html.light .text-cyan-300 {
+  color: #0e7490 !important; /* Deep Cyan 700 */
+}
+html.light .text-cyan-400 {
+  color: #0e7490 !important;
+}
+html.light .text-emerald-200,
+html.light .text-emerald-300 {
   color: #15803d !important; /* Emerald 700 */
 }
-html.light .text-white {
-  color: #0f172a !important;
+html.light .text-emerald-400 {
+  color: #15803d !important;
+}
+html.light .text-amber-200,
+html.light .text-amber-300 {
+  color: #b45309 !important; /* Amber 700 */
+}
+html.light .text-amber-400 {
+  color: #b45309 !important;
+}
+
+/* Ensure solid buttons retain crisp white text in both light and dark themes */
+button.bg-teal-600,
+button.bg-sky-600,
+button.bg-indigo-600,
+button.bg-rose-600,
+button.bg-emerald-600,
+button.bg-blue-600,
+.btn-solid-white {
+  color: #ffffff !important;
+}
+button.bg-teal-600 *,
+button.bg-sky-600 *,
+button.bg-indigo-600 *,
+button.bg-rose-600 *,
+button.bg-emerald-600 *,
+button.bg-blue-600 *,
+.btn-solid-white * {
+  color: #ffffff !important;
 }
 
 /* Add shadow depth to card elements in light mode */
