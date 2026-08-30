@@ -30,14 +30,26 @@ export const useAuthStore = defineStore('auth', () => {
   )
 
   const savedProcessTypes = localStorage.getItem('earflow_process_types')
-  const processTypes = ref<string[]>(
-    savedProcessTypes ? JSON.parse(savedProcessTypes) : DEFAULT_PROCESS_TYPES
-  )
+  let initialProcessTypes = DEFAULT_PROCESS_TYPES
+  try {
+    if (savedProcessTypes) {
+      const parsed = JSON.parse(savedProcessTypes)
+      if (Array.isArray(parsed) && parsed.length > 0) initialProcessTypes = parsed
+    }
+  } catch {}
+  const processTypes = ref<string[]>(initialProcessTypes)
 
   const savedProcessGroups = localStorage.getItem('earflow_process_groups')
-  const processGroups = ref<ProcessCodeGroup[]>(
-    savedProcessGroups ? JSON.parse(savedProcessGroups) : DEFAULT_PROCESS_GROUPS
-  )
+  let initialProcessGroups = DEFAULT_PROCESS_GROUPS
+  try {
+    if (savedProcessGroups) {
+      const parsed = JSON.parse(savedProcessGroups)
+      if (Array.isArray(parsed) && parsed.length > 0 && parsed.some(g => g.roles && g.roles.length > 0)) {
+        initialProcessGroups = parsed
+      }
+    }
+  } catch {}
+  const processGroups = ref<ProcessCodeGroup[]>(JSON.parse(JSON.stringify(initialProcessGroups)))
 
   function saveProcessGroups() {
     localStorage.setItem('earflow_process_groups', JSON.stringify(processGroups.value))
@@ -188,10 +200,28 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     const savedTypes = localStorage.getItem('earflow_process_types')
-    processTypes.value = savedTypes ? JSON.parse(savedTypes) : [...DEFAULT_PROCESS_TYPES]
+    let parsedTypes: string[] | null = null
+    try {
+      if (savedTypes) parsedTypes = JSON.parse(savedTypes)
+    } catch {}
+    if (parsedTypes && Array.isArray(parsedTypes) && parsedTypes.length > 0) {
+      processTypes.value = parsedTypes
+    } else {
+      processTypes.value = [...DEFAULT_PROCESS_TYPES]
+      localStorage.setItem('earflow_process_types', JSON.stringify(processTypes.value))
+    }
 
     const savedGroups = localStorage.getItem('earflow_process_groups')
-    processGroups.value = savedGroups ? JSON.parse(savedGroups) : JSON.parse(JSON.stringify(DEFAULT_PROCESS_GROUPS))
+    let parsedGroups: ProcessCodeGroup[] | null = null
+    try {
+      if (savedGroups) parsedGroups = JSON.parse(savedGroups)
+    } catch {}
+    if (parsedGroups && Array.isArray(parsedGroups) && parsedGroups.length > 0 && parsedGroups.some(g => g.roles && g.roles.length > 0)) {
+      processGroups.value = parsedGroups
+    } else {
+      processGroups.value = JSON.parse(JSON.stringify(DEFAULT_PROCESS_GROUPS))
+      localStorage.setItem('earflow_process_groups', JSON.stringify(processGroups.value))
+    }
   }
 
   return {

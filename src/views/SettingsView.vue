@@ -598,6 +598,10 @@ function setTheme(theme: 'light' | 'dark') {
 
 async function handleExportBackup() {
   try {
+    // 1. Ensure all in-memory cell overrides and worker overrides are flushed to IndexedDB first
+    await overrideStore.flushPendingOverrides()
+    await overrideStore.saveAllToIndexedDB()
+
     const backupObj = await exportBackupData()
     const jsonStr = JSON.stringify(backupObj, null, 2)
     const today = getLocalDateStr()
@@ -644,6 +648,10 @@ async function handleExportBackup() {
 
 async function handleShareBackup() {
   try {
+    // 1. Ensure all in-memory cell overrides and worker overrides are flushed to IndexedDB first
+    await overrideStore.flushPendingOverrides()
+    await overrideStore.saveAllToIndexedDB()
+
     const backupObj = await exportBackupData()
     const jsonStr = JSON.stringify(backupObj, null, 2)
     const today = getLocalDateStr()
@@ -719,10 +727,10 @@ async function handleImportBackup(event: Event) {
 
       await importBackupData(parsed)
 
-      // Reload all Pinia stores to reflect the newly restored data immediately
-      await teamStore.loadTeams()
-      await productionStore.loadLogs()
-      await overrideStore.loadFromStorage()
+      // Force reload all Pinia stores to reflect the newly restored data immediately
+      await teamStore.loadTeams(true)
+      await productionStore.loadLogs(true)
+      await overrideStore.loadFromStorage(true)
       await auditStore.loadLogs()
       shiftStore.reloadFromStorage()
       authStore.reloadFromStorage()

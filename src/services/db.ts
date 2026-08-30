@@ -162,7 +162,7 @@ export async function exportBackupData(): Promise<BackupPayload> {
   const localStore: Record<string, string> = {}
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i)
-    if (key && (key.startsWith('earflow_') || key === 'theme' || key === 'foreman_name')) {
+    if (key) {
       localStore[key] = localStorage.getItem(key) || ''
     }
   }
