@@ -64,7 +64,7 @@
             </button>
             <button
               @click="setToday"
-              class="h-8 px-2.5 rounded-lg bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 border border-teal-500/30 text-xs font-bold shrink-0"
+              class="h-8 px-3 rounded-lg bg-teal-50 hover:bg-teal-100 dark:bg-teal-500/20 text-teal-900 dark:text-teal-100 border border-teal-400 dark:border-teal-500/40 text-xs font-extrabold shrink-0 shadow-2xs active:scale-95 transition"
             >
               Hari Ini
             </button>
@@ -75,7 +75,7 @@
         <div class="grid grid-cols-2 gap-2.5">
           <!-- Filter Tim -->
           <div class="space-y-1">
-            <label class="block text-[10px] sm:text-[11px] font-semibold text-slate-400">Tim / Line</label>
+            <label class="block text-[10px] sm:text-[11px] font-bold text-slate-700 dark:text-slate-300">Tim / Line</label>
             <CustomSelect
               v-model="selectedTeamId"
               :options="teamFilterOptions"
@@ -85,7 +85,7 @@
 
           <!-- Filter Status -->
           <div class="space-y-1">
-            <label class="block text-[10px] sm:text-[11px] font-semibold text-slate-400">Status Absensi</label>
+            <label class="block text-[10px] sm:text-[11px] font-bold text-slate-700 dark:text-slate-300">Status Absensi</label>
             <CustomSelect
               v-model="statusFilter"
               :options="statusFilterOptions"
@@ -96,8 +96,8 @@
 
         <!-- Unified Tools & Laporan Section -->
         <div class="pt-2.5 border-t border-slate-800/80 space-y-2">
-          <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-            <Wrench class="w-3.5 h-3.5 text-teal-400" />
+          <div class="text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+            <Wrench class="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
             <span>Tools & Laporan</span>
           </div>
 
@@ -105,64 +105,64 @@
             <!-- Tool 1: Input Jam-jaman (Primary Action) -->
             <button
               @click="$emit('open-log-modal')"
-              class="h-9 px-2.5 rounded-lg bg-teal-50 hover:bg-teal-100 dark:bg-teal-500/20 dark:hover:bg-teal-500/30 text-teal-800 dark:text-teal-200 border border-teal-300 dark:border-teal-500/40 hover:border-teal-400 font-bold text-xs flex items-center justify-center gap-2 transition active:scale-95 shadow-xs"
+              class="h-9 px-2.5 rounded-lg bg-teal-50 hover:bg-teal-100 dark:bg-teal-500/20 dark:hover:bg-teal-500/30 text-teal-950 dark:text-teal-100 border border-teal-400 dark:border-teal-500/50 font-extrabold text-xs flex items-center justify-center gap-2 transition active:scale-95 shadow-xs"
             >
-              <Plus class="w-4 h-4 text-teal-600 dark:text-teal-300 shrink-0" />
-              <span class="truncate">Input Jam-jaman</span>
+              <Plus class="w-4 h-4 text-teal-700 dark:text-teal-300 shrink-0" />
+              <span class="text-teal-950 dark:text-teal-100 font-extrabold truncate">Input Jam-jaman</span>
             </button>
 
             <!-- Tool: AI Scan Statistik (Smart AI Action) -->
             <button
               @click="showAiScanModal = true"
-              class="h-9 px-2.5 rounded-lg bg-cyan-50 hover:bg-cyan-100 dark:bg-cyan-500/20 dark:hover:bg-cyan-500/30 text-cyan-800 dark:text-cyan-200 border border-cyan-300 dark:border-cyan-500/40 hover:border-cyan-400 font-bold text-xs flex items-center justify-center gap-2 transition active:scale-95 shadow-xs"
+              class="h-9 px-2.5 rounded-lg bg-cyan-50 hover:bg-cyan-100 dark:bg-cyan-500/20 dark:hover:bg-cyan-500/30 text-cyan-950 dark:text-cyan-100 border border-cyan-400 dark:border-cyan-500/50 font-extrabold text-xs flex items-center justify-center gap-2 transition active:scale-95 shadow-xs"
               title="Scan Lembar Cetak Statistik dengan AI"
             >
-              <ScanText class="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400 shrink-0" />
-              <span class="truncate">AI Scan Statistik</span>
+              <ScanText class="w-3.5 h-3.5 text-cyan-700 dark:text-cyan-300 shrink-0" />
+              <span class="text-cyan-950 dark:text-cyan-100 font-extrabold truncate">AI Scan Statistik</span>
             </button>
 
             <!-- Tool 2: Laporan Mandor -->
             <button
               @click="showMandorReportModal = true"
-              class="h-9 px-2.5 rounded-lg bg-amber-50 hover:bg-amber-100 dark:bg-amber-500/20 dark:hover:bg-amber-500/30 text-amber-900 dark:text-amber-200 border border-amber-300 dark:border-amber-500/40 hover:border-amber-400 font-bold text-xs flex items-center justify-center gap-2 transition active:scale-95 shadow-xs"
+              class="h-9 px-2.5 rounded-lg bg-amber-50 hover:bg-amber-100 dark:bg-amber-500/20 dark:hover:bg-amber-500/30 text-amber-950 dark:text-amber-100 border border-amber-400 dark:border-amber-500/50 font-extrabold text-xs flex items-center justify-center gap-2 transition active:scale-95 shadow-xs"
             >
-              <ClipboardList class="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
-              <span class="truncate">Laporan Mandor</span>
+              <ClipboardList class="w-3.5 h-3.5 text-amber-700 dark:text-amber-400 shrink-0" />
+              <span class="text-amber-950 dark:text-amber-100 font-extrabold truncate">Laporan Mandor</span>
             </button>
 
             <!-- Tool 3: Rekap Bulanan -->
             <button
               @click="showMonthlyRecapModal = true"
-              class="h-9 px-2.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-500/20 dark:hover:bg-emerald-500/30 text-emerald-900 dark:text-emerald-200 border border-emerald-300 dark:border-emerald-500/40 hover:border-emerald-400 font-bold text-xs flex items-center justify-center gap-2 transition active:scale-95 shadow-xs"
+              class="h-9 px-2.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-500/20 dark:hover:bg-emerald-500/30 text-emerald-950 dark:text-emerald-100 border border-emerald-400 dark:border-emerald-500/50 font-extrabold text-xs flex items-center justify-center gap-2 transition active:scale-95 shadow-xs"
             >
-              <Table class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-              <span class="truncate">Rekap Bulanan</span>
+              <Table class="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400 shrink-0" />
+              <span class="text-emerald-950 dark:text-emerald-100 font-extrabold truncate">Rekap Bulanan</span>
             </button>
 
             <!-- Tool 4: Set Target Massal (Secondary Action) -->
             <button
               :disabled="isReadOnly"
               @click="showSetAllTargetModal = true"
-              class="h-9 px-2.5 rounded-lg font-bold text-xs flex items-center justify-center gap-2 transition active:scale-95 border"
+              class="h-9 px-2.5 rounded-lg font-extrabold text-xs flex items-center justify-center gap-2 transition active:scale-95 border shadow-2xs"
               :class="isReadOnly
                 ? 'bg-slate-100 text-slate-400 border-slate-200 dark:bg-slate-900 dark:text-slate-500 dark:border-slate-800 cursor-not-allowed opacity-60'
-                : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-300 dark:bg-slate-800/80 dark:hover:bg-slate-800 dark:text-slate-200 dark:border-slate-700'"
+                : 'bg-slate-100 hover:bg-slate-200 text-slate-900 border-slate-300 dark:bg-slate-800/80 dark:hover:bg-slate-800 dark:text-slate-100 dark:border-slate-700'"
             >
-              <Target class="w-3.5 h-3.5 text-slate-600 dark:text-slate-400 shrink-0" />
-              <span class="truncate">Set Target Massal</span>
+              <Target class="w-3.5 h-3.5 text-slate-700 dark:text-slate-300 shrink-0" />
+              <span class="text-slate-900 dark:text-slate-100 font-extrabold truncate">Set Target Massal</span>
             </button>
 
             <!-- Tool 5: Tandai Semua Hadir (Secondary Action) -->
             <button
               :disabled="isReadOnly"
               @click="markAllPresent()"
-              class="h-9 px-2.5 rounded-lg font-bold text-xs flex items-center justify-center gap-2 transition active:scale-95 border"
+              class="h-9 px-2.5 rounded-lg font-extrabold text-xs flex items-center justify-center gap-2 transition active:scale-95 border shadow-2xs"
               :class="isReadOnly
                 ? 'bg-slate-100 text-slate-400 border-slate-200 dark:bg-slate-900 dark:text-slate-500 dark:border-slate-800 cursor-not-allowed opacity-60'
-                : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-300 dark:bg-slate-800/80 dark:hover:bg-slate-800 dark:text-slate-200 dark:border-slate-700'"
+                : 'bg-slate-100 hover:bg-slate-200 text-slate-900 border-slate-300 dark:bg-slate-800/80 dark:hover:bg-slate-800 dark:text-slate-100 dark:border-slate-700'"
             >
-              <CheckCircle2 class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-              <span class="truncate">Semua Hadir</span>
+              <CheckCircle2 class="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400 shrink-0" />
+              <span class="text-slate-900 dark:text-slate-100 font-extrabold truncate">Semua Hadir</span>
             </button>
 
             <!-- Tool 6: Reset Edit Tanggal Ini -->
@@ -170,13 +170,13 @@
               v-if="hasOverridesForDate"
               :disabled="isReadOnly"
               @click="resetDateOverrides()"
-              class="h-9 px-2.5 rounded-lg font-bold text-xs flex items-center justify-center gap-2 transition active:scale-95"
+              class="h-9 px-2.5 rounded-lg font-extrabold text-xs flex items-center justify-center gap-2 transition active:scale-95 shadow-2xs"
               :class="isReadOnly
                 ? 'bg-slate-100 text-slate-400 border-slate-200 dark:bg-slate-900 dark:text-slate-500 dark:border-slate-800 cursor-not-allowed opacity-60'
-                : 'bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 dark:bg-rose-500/15 dark:hover:bg-rose-500/25 dark:text-rose-300 dark:border-rose-500/40'"
+                : 'bg-rose-50 hover:bg-rose-100 text-rose-900 border border-rose-300 dark:bg-rose-500/15 dark:hover:bg-rose-500/25 dark:text-rose-200 dark:border-rose-500/40'"
             >
-              <RotateCcw class="w-3.5 h-3.5 text-rose-600 dark:text-rose-400 shrink-0" />
-              <span class="truncate">Reset Edit Tanggal</span>
+              <RotateCcw class="w-3.5 h-3.5 text-rose-700 dark:text-rose-400 shrink-0" />
+              <span class="text-rose-900 dark:text-rose-200 font-extrabold truncate">Reset Edit Tanggal</span>
             </button>
           </div>
         </div>
@@ -230,21 +230,21 @@
 
 
     <!-- Count Summary Bar -->
-    <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-mono px-1 text-slate-400">
+    <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-mono px-1 text-slate-700 dark:text-slate-300">
       <div class="flex items-center gap-2">
-        <span class="font-bold text-slate-200">Daftar Karyawan</span>
+        <span class="font-black text-slate-900 dark:text-slate-100">Daftar Karyawan</span>
         <button
           :disabled="isReadOnly"
           @click="showSetAllTargetModal = true"
-          class="px-2 py-0.5 rounded-md bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 border border-teal-500/30 text-[10px] font-bold inline-flex items-center gap-1 active:scale-95 disabled:opacity-50 transition"
+          class="px-2.5 py-0.5 rounded-md bg-teal-50 hover:bg-teal-100 dark:bg-teal-500/20 text-teal-900 dark:text-teal-100 border border-teal-400 dark:border-teal-500/40 text-[10px] font-black inline-flex items-center gap-1 active:scale-95 disabled:opacity-50 transition shadow-2xs"
           title="Buka Form Konfigurasi Target Massal Karyawan"
         >
-          <Target class="w-3 h-3 text-teal-400 shrink-0" />
+          <Target class="w-3 h-3 text-teal-700 dark:text-teal-400 shrink-0" />
           <span>Set Target</span>
         </button>
       </div>
-      <span class="text-[11px]">
-        <strong class="text-teal-400 font-bold">{{ filteredWorkerRows.length }}</strong> / {{ workerRows.length }} Karyawan
+      <span class="text-[11px] font-bold">
+        <strong class="text-teal-700 dark:text-teal-300 font-black">{{ filteredWorkerRows.length }}</strong> / {{ workerRows.length }} Karyawan
       </span>
     </div>
 
@@ -469,10 +469,10 @@
             <!-- Stats Button -->
             <button
               @click="openWorkerReport(row)"
-              class="h-7 px-2 rounded-lg bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 border border-teal-500/30 text-xs font-bold font-mono flex items-center gap-1 active:scale-95"
+              class="h-7 px-2 rounded-lg bg-teal-50 hover:bg-teal-100 dark:bg-teal-500/20 text-teal-950 dark:text-teal-100 border border-teal-400 dark:border-teal-500/40 text-xs font-black font-mono flex items-center gap-1 active:scale-95 shadow-2xs"
               title="Lihat Statistik Karyawan"
             >
-              <BarChart3 class="w-3.5 h-3.5 text-teal-400 shrink-0" />
+              <BarChart3 class="w-3.5 h-3.5 text-teal-700 dark:text-teal-300 shrink-0" />
               <span>Stats</span>
             </button>
 
@@ -480,16 +480,16 @@
             <button
               :disabled="isReadOnly"
               @click="toggleAttendance(row)"
-              class="px-2.5 py-1 rounded-lg text-xs font-extrabold flex items-center gap-1 border shrink-0 transition shadow-sm"
+              class="px-2.5 py-1 rounded-lg text-xs font-black flex items-center gap-1 border shrink-0 transition shadow-2xs"
               :class="[
                 isReadOnly ? 'cursor-not-allowed opacity-70' : 'active:scale-95',
                 row.isPresent
-                  ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50 hover:bg-emerald-500/30'
-                  : 'bg-rose-500/20 text-rose-300 border-rose-500/50 hover:bg-rose-500/30'
+                  ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border-emerald-400 dark:bg-emerald-500/20 dark:text-emerald-100 dark:border-emerald-500/50'
+                  : 'bg-rose-50 hover:bg-rose-100 text-rose-950 border-rose-400 dark:bg-rose-500/20 dark:text-rose-100 dark:border-rose-500/50'
               ]"
             >
-              <Check v-if="row.isPresent" class="w-3.5 h-3.5 text-emerald-400 stroke-[2.5]" />
-              <X v-else class="w-3.5 h-3.5 text-rose-400 stroke-[2.5]" />
+              <Check v-if="row.isPresent" class="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-300 stroke-[2.5]" />
+              <X v-else class="w-3.5 h-3.5 text-rose-700 dark:text-rose-300 stroke-[2.5]" />
               <span>{{ row.isPresent ? 'Hadir' : 'Absen' }}</span>
             </button>
           </div>
