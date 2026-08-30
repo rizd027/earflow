@@ -444,6 +444,85 @@ export function initSupabaseRealtime(onCloudChange?: (tableName: string) => void
 }
 
 /**
+ * Force uploads 100% of all local data to Supabase (Overwrite/Upsert).
+ */
+export async function forceUploadAllToCloud(): Promise<{ success: boolean; message: string }> {
+  isSyncInProgress = true
+  syncStatus.value = 'syncing'
+  try {
+    const pushResult = await pushLocalDataToSupabase()
+    const nowStr = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+    lastSyncTime.value = nowStr
+    localStorage.setItem('earflow_last_sync_time', nowStr)
+    syncStatus.value = 'connected'
+    isCloudConnected.value = true
+
+    return {
+      success: true,
+      message: `Berhasil mengunggah ${pushResult.pushedTeams} tim, ${pushResult.pushedLogs} log, dan ${pushResult.pushedOverrides} override ke Supabase!`
+    }
+  } catch (err: any) {
+    syncStatus.value = 'error'
+    const msg = err?.message || 'Gagal mengunggah data ke Supabase'
+    lastSyncError.value = msg
+    return { success: false, message: msg }
+  } finally {
+    isSyncInProgress = false
+  }
+}
+
+/**
+ * Force downloads 100% of all data from Supabase and overwrites local database.
+ */
+export async function forceDownloadAllFromCloud(): Promise<{ success: boolean; message: string }> {
+  isSyncInProgress = true
+  syncStatus.value = 'syncing'
+  try {
+    const db = await getDB()
+    const tx = db.transaction(['teams', 'logs', 'overrides', 'audit_logs'], 'readwrite')
+    await tx.objectStore('teams').clear()
+    await tx.objectStore('logs').clear()
+    await tx.objectStore('overrides').clear()
+    await tx.objectStore('audit_logs').clear()
+    await tx.done
+
+    const pullResult = await pullCloudDataFromSupabase()
+    const nowStr = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+    lastSyncTime.value = nowStr
+    localStorage.setItem('earflow_last_sync_time', nowStr)
+    syncStatus.value = 'connected'
+    isCloudConnected.value = true
+
+    return {
+      success: true,
+      message: `Berhasil mengunduh ${pullResult.teamsCount} tim, ${pullResult.logsCount} log, dan ${pullResult.overridesCount} override dari Supabase!`
+    }
+  } catch (err: any) {
+    syncStatus.value = 'error'
+    const msg = err?.message || 'Gagal mengunduh data dari Supabase'
+    lastSyncError.value = msg
+    return { success: false, message: msg }
+  } finally {
+    isSyncInProgress = false
+  }
+}
+
+/**
+ * Wipes all records from Supabase tables for a clean slate.
+ */
+export async function resetCloudDatabase(): Promise<{ success: boolean; message: string }> {
+  try {
+    await supabase.from('production_logs').delete().neq('id', '___non_existent___')
+    await supabase.from('teams').delete().neq('id', '___non_existent___')
+    await supabase.from('overrides').delete().neq('key', '___non_existent___')
+    await supabase.from('audit_logs').delete().neq('id', '___non_existent___')
+    return { success: true, message: 'Database Cloud Supabase berhasil dikosongkan total.' }
+  } catch (err: any) {
+    return { success: false, message: err?.message || 'Gagal mengosongkan Supabase' }
+  }
+}
+
+/**
  * Auto-initialize background network listeners.
  */
 if (typeof window !== 'undefined') {

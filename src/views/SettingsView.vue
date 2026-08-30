@@ -300,16 +300,16 @@
       </div>
     </div>
 
-    <!-- ── Sinkronisasi Cloud (Supabase) ── -->
+    <!-- ── Manajemen Database & Sinkronisasi Cloud ── -->
     <div class="bg-slate-900/60 border border-slate-800/80 rounded-lg p-4 space-y-3">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <div class="flex items-center gap-2.5">
           <div class="w-8 h-8 rounded-md bg-teal-500/10 border border-teal-500/20 flex items-center justify-center shrink-0">
-            <Cloud class="w-4 h-4 text-teal-400" />
+            <Database class="w-4 h-4 text-teal-400" />
           </div>
           <div>
-            <h3 class="text-xs font-bold text-slate-100 font-mono">Sinkronisasi Cloud (Supabase)</h3>
-            <p class="text-[11px] text-slate-400 leading-tight">Sinkronkan data otomatis antar perangkat (PC, HP & Web)</p>
+            <h3 class="text-xs font-bold text-slate-100 font-mono">Manajemen Database & Sinkronisasi Cloud</h3>
+            <p class="text-[11px] text-slate-400 leading-tight">Kelola database lokal (IndexedDB) dan cloud (Supabase)</p>
           </div>
         </div>
 
@@ -328,20 +328,37 @@
         </div>
       </div>
 
-      <!-- Cloud Sync Status Bar -->
+      <!-- Database Info Bar -->
       <div class="p-3 rounded-md bg-slate-950/70 border border-slate-800 space-y-2">
-        <div class="flex items-center justify-between text-[11px] font-mono text-slate-400">
-          <span>Waktu Sinkron Terakhir:</span>
-          <span class="text-teal-300 font-bold">{{ lastSyncTime || 'Belum tersinkron' }}</span>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] font-mono">
+          <div>
+            <span class="text-slate-500 block text-[10px]">Tim Aktif:</span>
+            <span class="font-bold text-slate-200">{{ teamStore.teams.length }} Tim</span>
+          </div>
+          <div>
+            <span class="text-slate-500 block text-[10px]">Log Produksi:</span>
+            <span class="font-bold text-slate-200">{{ productionStore.logs.length }} Catatan</span>
+          </div>
+          <div>
+            <span class="text-slate-500 block text-[10px]">Waktu Sync:</span>
+            <span class="font-bold text-teal-300">{{ lastSyncTime || 'Belum' }}</span>
+          </div>
+          <div>
+            <span class="text-slate-500 block text-[10px]">Koneksi:</span>
+            <span class="font-bold" :class="isCloudConnected ? 'text-emerald-400' : 'text-slate-400'">
+              {{ isCloudConnected ? 'Aktif' : 'Offline' }}
+            </span>
+          </div>
         </div>
-        <div v-if="lastSyncError" class="text-[10px] font-mono text-rose-400 flex items-start gap-1">
+        <div v-if="lastSyncError" class="text-[10px] font-mono text-rose-400 flex items-start gap-1 pt-1 border-t border-slate-850">
           <AlertCircle class="w-3.5 h-3.5 shrink-0 mt-0.5" />
           <span>{{ lastSyncError }}</span>
         </div>
       </div>
 
-      <!-- Cloud Actions Grid -->
+      <!-- Action Buttons Grid -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+        <!-- Update / Sync Sekarang -->
         <button
           type="button"
           @click="handleManualCloudSync"
@@ -349,9 +366,32 @@
           class="h-9 px-3.5 rounded-md bg-teal-500/20 hover:bg-teal-500/30 text-teal-200 border border-teal-500/40 font-bold text-xs transition flex items-center justify-center gap-2 shadow-sm disabled:opacity-50"
         >
           <RefreshCw class="w-3.5 h-3.5" :class="syncStatus === 'syncing' ? 'animate-spin' : ''" />
-          <span>Sinkronkan Sekarang</span>
+          <span>Update Database (Sync Cepat)</span>
         </button>
 
+        <!-- Upload Database ke Cloud -->
+        <button
+          type="button"
+          @click="handleForceUploadAll"
+          :disabled="syncStatus === 'syncing'"
+          class="h-9 px-3.5 rounded-md bg-sky-500/20 hover:bg-sky-500/30 text-sky-200 border border-sky-500/40 font-bold text-xs transition flex items-center justify-center gap-2 shadow-sm disabled:opacity-50"
+        >
+          <UploadCloud class="w-3.5 h-3.5 text-sky-300" />
+          <span>Upload Database ke Cloud</span>
+        </button>
+
+        <!-- Ganti Database dari Cloud -->
+        <button
+          type="button"
+          @click="handleForceDownloadAll"
+          :disabled="syncStatus === 'syncing'"
+          class="h-9 px-3.5 rounded-md bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-200 border border-indigo-500/40 font-bold text-xs transition flex items-center justify-center gap-2 shadow-sm disabled:opacity-50"
+        >
+          <DownloadCloud class="w-3.5 h-3.5 text-indigo-300" />
+          <span>Ganti Database dari Cloud</span>
+        </button>
+
+        <!-- Tes Koneksi Supabase -->
         <button
           type="button"
           @click="handleTestSupabase"
@@ -362,75 +402,35 @@
           <span>{{ isTestingCloud ? 'Menghubungkan...' : 'Tes Koneksi Cloud' }}</span>
         </button>
       </div>
-    </div>
 
-    <!-- ── Backup & Restore ── -->
-    <div class="bg-slate-900/60 border border-slate-800/80 rounded-lg p-4 space-y-3">
-      <div class="flex items-center gap-2.5 border-b border-slate-800 pb-3">
-        <div class="w-8 h-8 rounded-md bg-teal-500/10 border border-teal-500/20 flex items-center justify-center shrink-0">
-          <Database class="w-4 h-4 text-teal-400" />
-        </div>
-        <div>
-          <h3 class="text-xs font-bold text-slate-100 font-mono">{{ t('settings.backupTitle') }}</h3>
-          <p class="text-[11px] text-slate-400 leading-tight">{{ t('settings.backupSubtitle') }}</p>
-        </div>
-      </div>
-
-      <!-- Backup Action Row -->
-      <div class="flex items-center justify-between gap-3 p-3 rounded-md bg-slate-950/70 border border-slate-800">
-        <div class="min-w-0">
-          <div class="flex items-center gap-1.5 mb-0.5">
-            <Download class="w-3.5 h-3.5 text-teal-400 shrink-0" />
-            <span class="text-xs font-bold text-slate-200 font-mono">{{ t('settings.exportTitle') }}</span>
-          </div>
-          <p class="text-[11px] text-slate-500 leading-snug">{{ t('settings.exportDesc') }}</p>
-        </div>
+      <!-- Secondary Actions: Backup JSON & Reset -->
+      <div class="pt-2 border-t border-slate-800/80 grid grid-cols-1 sm:grid-cols-3 gap-2">
         <button
           type="button"
           @click="handleExportBackup"
-          class="h-9 px-4 rounded-md bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 font-bold text-xs border border-teal-500/30 transition flex items-center gap-1.5 shrink-0"
+          class="h-8 px-3 rounded bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition flex items-center justify-center gap-1.5"
         >
-          <Download class="w-3.5 h-3.5" />
-          <span>{{ t('settings.exportBtn') }}</span>
+          <Download class="w-3 h-3 text-teal-400" />
+          <span>Ekspor JSON Backup</span>
         </button>
-      </div>
 
-      <!-- Share Action Row -->
-      <div class="flex items-center justify-between gap-3 p-3 rounded-md bg-slate-950/70 border border-slate-800">
-        <div class="min-w-0">
-          <div class="flex items-center gap-1.5 mb-0.5">
-            <Share2 class="w-3.5 h-3.5 text-sky-400 shrink-0" />
-            <span class="text-xs font-bold text-slate-200 font-mono">{{ t('settings.shareTitle') }}</span>
-          </div>
-          <p class="text-[11px] text-slate-500 leading-snug">{{ t('settings.shareDesc') }}</p>
-        </div>
-        <button
-          type="button"
-          @click="handleShareBackup"
-          class="h-9 px-4 rounded-md bg-sky-500/10 hover:bg-sky-500/20 text-sky-300 font-bold text-xs border border-sky-500/30 transition flex items-center gap-1.5 shrink-0"
-        >
-          <Share2 class="w-3.5 h-3.5" />
-          <span>{{ t('settings.shareBtn') }}</span>
-        </button>
-      </div>
-
-      <!-- Restore Action Row -->
-      <div class="flex items-center justify-between gap-3 p-3 rounded-md bg-slate-950/70 border border-slate-800">
-        <div class="min-w-0">
-          <div class="flex items-center gap-1.5 mb-0.5">
-            <Upload class="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-            <span class="text-xs font-bold text-slate-200 font-mono">{{ t('settings.importTitle') }}</span>
-          </div>
-          <p class="text-[11px] text-slate-500 leading-snug">{{ t('settings.importDesc') }}</p>
-        </div>
-        <label class="h-9 px-4 rounded-md bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 font-bold text-xs border border-emerald-500/30 transition flex items-center gap-1.5 cursor-pointer shrink-0">
-          <Upload class="w-3.5 h-3.5" />
-          <span>{{ t('settings.importBtn') }}</span>
+        <label class="h-8 px-3 rounded bg-slate-800/80 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition flex items-center justify-center gap-1.5 cursor-pointer">
+          <Upload class="w-3 h-3 text-emerald-400" />
+          <span>Ganti Data (Restore JSON)</span>
           <input type="file" accept=".json" @change="handleImportBackup" class="hidden" />
         </label>
+
+        <button
+          type="button"
+          @click="handleResetAllDatabases"
+          class="h-8 px-3 rounded bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 text-xs font-semibold border border-rose-500/30 transition flex items-center justify-center gap-1.5"
+        >
+          <Trash2 class="w-3 h-3 text-rose-400" />
+          <span>Hapus Semua Database</span>
+        </button>
       </div>
 
-      <!-- Status Notification -->
+      <!-- Status Notification Message -->
       <div
         v-if="statusMessage"
         class="p-2.5 rounded-md text-[11px] font-mono flex items-start gap-2"
@@ -536,7 +536,7 @@ import { useAuthStore } from '@/stores/authStore'
 import { useOverrideStore } from '@/stores/overrideStore'
 import { useAuditStore } from '@/stores/auditStore'
 import { useShiftStore } from '@/stores/shiftStore'
-import { exportBackupData, importBackupData } from '@/services/db'
+import { exportBackupData, importBackupData, clearAllLocalData } from '@/services/db'
 import {
   Smartphone,
   Database,
@@ -558,15 +558,21 @@ import {
   Share2,
   Cloud,
   Activity,
-  RefreshCw
+  RefreshCw,
+  UploadCloud,
+  DownloadCloud
 } from 'lucide-vue-next'
 import {
   syncStatus,
   lastSyncTime,
   lastSyncError,
   pendingSyncCount,
+  isCloudConnected,
   testSupabaseConnection,
-  performFullSync
+  performFullSync,
+  forceUploadAllToCloud,
+  forceDownloadAllFromCloud,
+  resetCloudDatabase
 } from '@/services/supabaseSyncService'
 
 const { t, locale } = useI18n()
@@ -595,9 +601,68 @@ async function handleManualCloudSync() {
     await teamStore.loadTeams(true)
     await productionStore.loadLogs(true)
     await overrideStore.loadFromStorage(true)
+    shiftStore.reloadFromStorage()
+    authStore.reloadFromStorage()
   })
   statusType.value = res.success ? 'success' : 'error'
   statusMessage.value = res.message
+}
+
+async function handleForceUploadAll() {
+  isTestingCloud.value = true
+  statusMessage.value = 'Mengunggah seluruh data lokal ke Supabase...'
+  statusType.value = 'success'
+  try {
+    const res = await forceUploadAllToCloud()
+    statusType.value = res.success ? 'success' : 'error'
+    statusMessage.value = res.message
+  } finally {
+    isTestingCloud.value = false
+  }
+}
+
+async function handleForceDownloadAll() {
+  isTestingCloud.value = true
+  statusMessage.value = 'Mengunduh data dan menimpa database lokal...'
+  statusType.value = 'success'
+  try {
+    const res = await forceDownloadAllFromCloud()
+    if (res.success) {
+      await teamStore.loadTeams(true)
+      await productionStore.loadLogs(true)
+      await overrideStore.loadFromStorage(true)
+      shiftStore.reloadFromStorage()
+      authStore.reloadFromStorage()
+    }
+    statusType.value = res.success ? 'success' : 'error'
+    statusMessage.value = res.message
+  } finally {
+    isTestingCloud.value = false
+  }
+}
+
+async function handleResetAllDatabases() {
+  if (!confirm('Peringatan: Apakah Anda yakin ingin MENGHAPUS SEMUA DATA di perangkat ini dan di Supabase Cloud?')) {
+    return
+  }
+  isTestingCloud.value = true
+  statusMessage.value = 'Menghapus seluruh database...'
+  try {
+    await clearAllLocalData()
+    await resetCloudDatabase()
+    await teamStore.loadTeams(true)
+    await productionStore.loadLogs(true)
+    await overrideStore.loadFromStorage(true)
+    shiftStore.reloadFromStorage()
+    authStore.reloadFromStorage()
+    statusType.value = 'success'
+    statusMessage.value = 'Database lokal dan cloud berhasil dikosongkan total.'
+  } catch (err: any) {
+    statusType.value = 'error'
+    statusMessage.value = err?.message || 'Gagal mereset database'
+  } finally {
+    isTestingCloud.value = false
+  }
 }
 
 const foremanInput = ref(authStore.foremanName)

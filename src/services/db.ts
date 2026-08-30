@@ -249,3 +249,15 @@ export async function importBackupData(payload: BackupPayload): Promise<boolean>
   return true
 }
 
+export async function clearAllLocalData(): Promise<void> {
+  const db = await getDB()
+  const tx = db.transaction(['teams', 'logs', 'users', 'overrides', 'audit_logs'], 'readwrite')
+  await tx.objectStore('teams').clear()
+  await tx.objectStore('logs').clear()
+  await tx.objectStore('users').clear()
+  await tx.objectStore('overrides').clear()
+  await tx.objectStore('audit_logs').clear()
+  await tx.done
+}
+
+
