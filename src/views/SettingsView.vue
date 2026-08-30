@@ -659,13 +659,24 @@ async function handleResetAllDatabases() {
   try {
     await clearAllLocalData()
     await resetCloudDatabase()
-    await teamStore.loadTeams(true)
-    await productionStore.loadLogs(true)
-    await overrideStore.loadFromStorage(true)
-    shiftStore.reloadFromStorage()
-    authStore.reloadFromStorage()
+    teamStore.teams = []
+    teamStore.unassignedMembers = []
+    productionStore.logs = []
+    overrideStore.dailyMap = {}
+    overrideStore.workerMap = {}
+
+    if ('caches' in window) {
+      try {
+        const cacheKeys = await caches.keys()
+        await Promise.all(cacheKeys.map(k => caches.delete(k)))
+      } catch {}
+    }
+
     statusType.value = 'success'
     statusMessage.value = 'Database lokal dan cloud berhasil dikosongkan total.'
+    setTimeout(() => {
+      window.location.reload()
+    }, 600)
   } catch (err: any) {
     statusType.value = 'error'
     statusMessage.value = err?.message || 'Gagal mereset database'

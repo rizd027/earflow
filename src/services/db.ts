@@ -258,6 +258,15 @@ export async function clearAllLocalData(): Promise<void> {
   await tx.objectStore('overrides').clear()
   await tx.objectStore('audit_logs').clear()
   await tx.done
+
+  const keysToRemove: string[] = []
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i)
+    if (key && (key.startsWith('earflow_') || key === 'foreman_name')) {
+      keysToRemove.push(key)
+    }
+  }
+  keysToRemove.forEach(k => localStorage.removeItem(k))
 }
 
 
