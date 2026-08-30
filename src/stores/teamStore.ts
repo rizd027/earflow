@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { getDB, seedInitialLocalData, type LocalTeam } from '@/services/db'
+import { getDB, seedInitialLocalData, addToOutbox, type LocalTeam } from '@/services/db'
 import { getLocalDateStr } from '@/stores/productionStore'
 import { matchWorkerToNikRecord, isTempWorkerNo } from '@/data/noKaryawanData'
 import { useShiftStore } from '@/stores/shiftStore'
@@ -170,51 +170,66 @@ export const useTeamStore = defineStore('team', () => {
 
   async function saveTeamToDB(team: LocalTeam) {
     const db = await getDB()
-    const payload = JSON.parse(JSON.stringify(team))
+    const now = new Date().toISOString()
+    const payload = JSON.parse(JSON.stringify({ ...team, updated_at: team.updated_at || now }))
     await db.put('teams', payload)
+
+    const cloudPayload = {
+      id: team.id,
+      name: team.name,
+      shift: team.shift || '',
+      hourly_target: team.hourly_target || 180,
+      members: team.members || [],
+      updated_at: payload.updated_at
+    }
+
     if (isCloudEnabled.value && navigator.onLine) {
-      supabase.from('teams').upsert({
-        id: team.id,
-        name: team.name,
-        shift: team.shift || 'Shift Pagi (07:00 - 14:00)',
-        hourly_target: team.hourly_target || 180,
-        members: team.members || [],
-        updated_at: new Date().toISOString()
-      }, { onConflict: 'id' }).then()
+      supabase.from('teams').upsert(cloudPayload, { onConflict: 'id' }).then()
+    } else if (isCloudEnabled.value) {
+      // Offline: queue to outbox
+      await addToOutbox('teams', 'upsert', cloudPayload)
     }
   }
 
   async function saveUnassignedToDB() {
     const db = await getDB()
+    const now = new Date().toISOString()
     const unassignedTeamObj: LocalTeam = {
       id: UNASSIGNED_TEAM_ID,
       name: UNASSIGNED_TEAM_NAME,
       shift: '-',
       hourly_target: 0,
+      updated_at: now,
       members: JSON.parse(JSON.stringify(unassignedMembers.value))
     }
     await db.put('teams', JSON.parse(JSON.stringify(unassignedTeamObj)))
+
+    const cloudPayload = {
+      id: UNASSIGNED_TEAM_ID,
+      name: UNASSIGNED_TEAM_NAME,
+      shift: '-',
+      hourly_target: 0,
+      members: unassignedTeamObj.members,
+      updated_at: now
+    }
+
     if (isCloudEnabled.value && navigator.onLine) {
-      supabase.from('teams').upsert({
-        id: UNASSIGNED_TEAM_ID,
-        name: UNASSIGNED_TEAM_NAME,
-        shift: '-',
-        hourly_target: 0,
-        members: unassignedTeamObj.members,
-        updated_at: new Date().toISOString()
-      }, { onConflict: 'id' }).then()
+      supabase.from('teams').upsert(cloudPayload, { onConflict: 'id' }).then()
+    } else if (isCloudEnabled.value) {
+      await addToOutbox('teams', 'upsert', cloudPayload)
     }
   }
 
 
   async function addTeam(name: string, target: number, shift?: string) {
     const shiftStore = useShiftStore()
-    const defaultShift = shift || (shiftStore.shifts[0] ? `${shiftStore.shifts[0].name} (${shiftStore.shifts[0].startTime} - ${shiftStore.shifts[0].endTime})` : '13:00 - 20:00')
+    const defaultShift = shift || (shiftStore.shifts[0] ? `${shiftStore.shifts[0].name} (${shiftStore.shifts[0].startTime} - ${shiftStore.shifts[0].endTime})` : '')
     const newTeam: LocalTeam = {
       id: `team_${Date.now()}`,
       name,
       shift: defaultShift,
       hourly_target: target,
+      updated_at: new Date().toISOString(),
       members: []
     }
     teams.value.push(newTeam)

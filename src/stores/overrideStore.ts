@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { getDB } from '@/services/db'
+import { getDB, addToOutbox } from '@/services/db'
 import { supabase } from '@/supabase/client'
 import { isCloudEnabled } from '@/services/supabaseSyncService'
 
@@ -78,11 +78,12 @@ export const useOverrideStore = defineStore('override', () => {
       const tx = db.transaction('overrides', 'readwrite')
       await tx.objectStore('overrides').clear()
 
+      const now = new Date().toISOString()
       for (const [key, val] of Object.entries(dailyMap.value)) {
-        await tx.objectStore('overrides').put({ key, type: 'daily', data: JSON.parse(JSON.stringify(val)) })
+        await tx.objectStore('overrides').put({ key, type: 'daily', data: JSON.parse(JSON.stringify(val)), updated_at: now })
       }
       for (const [key, val] of Object.entries(workerMap.value)) {
-        await tx.objectStore('overrides').put({ key, type: 'worker', data: JSON.parse(JSON.stringify(val)) })
+        await tx.objectStore('overrides').put({ key, type: 'worker', data: JSON.parse(JSON.stringify(val)), updated_at: now })
       }
       await tx.done
     } catch (e) {
@@ -101,6 +102,7 @@ export const useOverrideStore = defineStore('override', () => {
     try {
       const db = await getDB()
       const tx = db.transaction('overrides', 'readwrite')
+      const now = new Date().toISOString()
       const cloudUpserts: any[] = []
       const cloudDeletes: string[] = []
 
@@ -110,12 +112,13 @@ export const useOverrideStore = defineStore('override', () => {
           cloudDeletes.push(key)
         } else {
           const payload = JSON.parse(JSON.stringify(item.data))
-          await tx.objectStore('overrides').put({ key, type: item.type, data: payload })
+          // Include updated_at for delta sync & conflict resolution
+          await tx.objectStore('overrides').put({ key, type: item.type, data: payload, updated_at: now })
           cloudUpserts.push({
             key,
             type: item.type,
             data: payload,
-            updated_at: new Date().toISOString()
+            updated_at: now
           })
         }
       }
@@ -129,6 +132,11 @@ export const useOverrideStore = defineStore('override', () => {
         }
         if (cloudUpserts.length > 0) {
           supabase.from('overrides').upsert(cloudUpserts, { onConflict: 'key' }).then()
+        }
+      } else if (isCloudEnabled.value && !navigator.onLine) {
+        // Offline: queue upserts to outbox for auto-flush when online
+        for (const upsert of cloudUpserts) {
+          await addToOutbox('overrides', 'upsert', upsert)
         }
       }
     } catch (e) {

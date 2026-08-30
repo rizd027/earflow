@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { getDB, seedInitialLocalData, type LocalProductionLog } from '@/services/db'
+import { getDB, seedInitialLocalData, addToOutbox, type LocalProductionLog } from '@/services/db'
 import { isSupabaseConfigured, supabase } from '@/supabase/client'
 import { isCloudEnabled, performFullSync } from '@/services/supabaseSyncService'
 
@@ -103,6 +103,7 @@ export const useProductionStore = defineStore('production', () => {
 
     const todayStr = currentDateStr.value
     const present_count = payload.present_member_ids.length || 1
+    const now = new Date().toISOString()
 
     const newLog: LocalProductionLog = {
       id: `log_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
@@ -116,7 +117,8 @@ export const useProductionStore = defineStore('production', () => {
       photo_url: payload.photo_url,
       notes: payload.notes,
       synced: false,
-      created_at: new Date().toISOString()
+      created_at: now,
+      updated_at: now   // ← delta sync timestamp
     }
 
     // Save locally to IndexedDB immediately for zero latency & offline resilience
@@ -126,9 +128,25 @@ export const useProductionStore = defineStore('production', () => {
     // Unshift to reactive list
     logs.value.unshift(newLog)
 
-    // Try background sync to Supabase if configured & online
+    // Try immediate push to Supabase if online
     if (isOnline.value && isSupabaseConfigured) {
       await syncSingleLogToSupabase(newLog)
+    } else {
+      // Queue in outbox for auto-flush when online
+      await addToOutbox('logs', 'upsert', {
+        id: newLog.id,
+        team_id: newLog.team_id,
+        team_name: newLog.team_name,
+        date: newLog.date,
+        hour_slot: newLog.hour_slot,
+        total_qty: newLog.total_qty,
+        present_count: newLog.present_count,
+        present_member_ids: newLog.present_member_ids,
+        photo_url: newLog.photo_url || null,
+        notes: newLog.notes || null,
+        created_at: newLog.created_at,
+        updated_at: newLog.updated_at
+      })
     }
   }
 
@@ -166,6 +184,7 @@ export const useProductionStore = defineStore('production', () => {
   async function syncSingleLogToSupabase(log: LocalProductionLog) {
     if (!isCloudEnabled.value || !isOnline.value) return
     try {
+      const now = new Date().toISOString()
       const { error } = await supabase.from('production_logs').upsert({
         id: log.id,
         team_id: log.team_id,
@@ -177,7 +196,8 @@ export const useProductionStore = defineStore('production', () => {
         present_member_ids: log.present_member_ids || [],
         photo_url: log.photo_url || null,
         notes: log.notes || null,
-        created_at: log.created_at
+        created_at: log.created_at,
+        updated_at: log.updated_at || now   // ← include updated_at for delta sync
       }, { onConflict: 'id' })
 
       if (!error) {

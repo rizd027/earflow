@@ -127,3 +127,53 @@ CREATE POLICY "Allow all for app_settings" ON public.app_settings FOR ALL USING 
 
 -- Enable Realtime for all tables in publication
 ALTER PUBLICATION supabase_realtime ADD TABLE public.teams, public.production_logs, public.overrides, public.shifts, public.app_settings;
+
+-- =========================================================================
+-- DELTA SYNC: Indexes on updated_at for efficient incremental queries
+-- Run these once. They make WHERE updated_at > '...' queries very fast.
+-- =========================================================================
+
+CREATE INDEX IF NOT EXISTS idx_prod_logs_updated_at ON public.production_logs(updated_at);
+CREATE INDEX IF NOT EXISTS idx_teams_updated_at ON public.teams(updated_at);
+CREATE INDEX IF NOT EXISTS idx_overrides_updated_at ON public.overrides(updated_at);
+CREATE INDEX IF NOT EXISTS idx_shifts_updated_at ON public.shifts(updated_at);
+CREATE INDEX IF NOT EXISTS idx_app_settings_updated_at ON public.app_settings(updated_at);
+
+-- =========================================================================
+-- AUTO-UPDATE updated_at TRIGGER
+-- Ensures updated_at is always refreshed on every row update automatically.
+-- =========================================================================
+
+CREATE OR REPLACE FUNCTION public.set_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Apply trigger to all synced tables
+DROP TRIGGER IF EXISTS trg_teams_updated_at ON public.teams;
+CREATE TRIGGER trg_teams_updated_at
+  BEFORE UPDATE ON public.teams
+  FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+
+DROP TRIGGER IF EXISTS trg_prod_logs_updated_at ON public.production_logs;
+CREATE TRIGGER trg_prod_logs_updated_at
+  BEFORE UPDATE ON public.production_logs
+  FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+
+DROP TRIGGER IF EXISTS trg_overrides_updated_at ON public.overrides;
+CREATE TRIGGER trg_overrides_updated_at
+  BEFORE UPDATE ON public.overrides
+  FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+
+DROP TRIGGER IF EXISTS trg_shifts_updated_at ON public.shifts;
+CREATE TRIGGER trg_shifts_updated_at
+  BEFORE UPDATE ON public.shifts
+  FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+
+DROP TRIGGER IF EXISTS trg_app_settings_updated_at ON public.app_settings;
+CREATE TRIGGER trg_app_settings_updated_at
+  BEFORE UPDATE ON public.app_settings
+  FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
