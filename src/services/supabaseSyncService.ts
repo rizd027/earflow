@@ -66,9 +66,9 @@ export async function testSupabaseConnection(timeoutMs = 5000): Promise<{ ok: bo
 /**
  * Push all local pending data (logs, teams, overrides, shifts, audit logs) to Supabase.
  */
-export async function pushLocalDataToSupabase(): Promise<{ pushedLogs: number; success: boolean }> {
+export async function pushLocalDataToSupabase(): Promise<{ pushedLogs: number; pushedTeams: number; pushedOverrides: number; success: boolean }> {
   if (!isCloudEnabled.value || !navigator.onLine) {
-    return { pushedLogs: 0, success: false }
+    return { pushedLogs: 0, pushedTeams: 0, pushedOverrides: 0, success: false }
   }
 
   try {
@@ -114,6 +114,7 @@ export async function pushLocalDataToSupabase(): Promise<{ pushedLogs: number; s
 
     // 2. Push Teams
     const allTeams = await db.getAll('teams')
+    let pushedTeamsCount = 0
     if (allTeams.length > 0) {
       const teamsPayload = allTeams.map(t => ({
         id: t.id,
@@ -123,11 +124,17 @@ export async function pushLocalDataToSupabase(): Promise<{ pushedLogs: number; s
         members: t.members || [],
         updated_at: new Date().toISOString()
       }))
-      await supabase.from('teams').upsert(teamsPayload, { onConflict: 'id' })
+      const { error: teamErr } = await supabase.from('teams').upsert(teamsPayload, { onConflict: 'id' })
+      if (teamErr) {
+        console.warn('Failed pushing teams to Supabase:', teamErr.message)
+      } else {
+        pushedTeamsCount = allTeams.length
+      }
     }
 
     // 3. Push Overrides
     const allOverrides = await db.getAll('overrides')
+    let pushedOverridesCount = 0
     if (allOverrides.length > 0) {
       const overridesPayload = allOverrides.map(o => ({
         key: o.key,
@@ -135,7 +142,12 @@ export async function pushLocalDataToSupabase(): Promise<{ pushedLogs: number; s
         data: o.data,
         updated_at: new Date().toISOString()
       }))
-      await supabase.from('overrides').upsert(overridesPayload, { onConflict: 'key' })
+      const { error: ovrErr } = await supabase.from('overrides').upsert(overridesPayload, { onConflict: 'key' })
+      if (ovrErr) {
+        console.warn('Failed pushing overrides to Supabase:', ovrErr.message)
+      } else {
+        pushedOverridesCount = allOverrides.length
+      }
     }
 
     // 4. Push Shifts
@@ -200,23 +212,31 @@ export async function pushLocalDataToSupabase(): Promise<{ pushedLogs: number; s
     // Update pending count
     pendingSyncCount.value = 0
 
-    return { pushedLogs: pushedCount, success: true }
+    return {
+      pushedLogs: pushedCount,
+      pushedTeams: pushedTeamsCount,
+      pushedOverrides: pushedOverridesCount,
+      success: true
+    }
   } catch (err: any) {
     console.warn('Error in pushLocalDataToSupabase:', err)
-    return { pushedLogs: 0, success: false }
+    return { pushedLogs: 0, pushedTeams: 0, pushedOverrides: 0, success: false }
   }
 }
 
 /**
  * Pull latest data from Supabase and update local IndexedDB & LocalStorage safely.
  */
-export async function pullCloudDataFromSupabase(): Promise<boolean> {
+export async function pullCloudDataFromSupabase(): Promise<{ success: boolean; logsCount: number; teamsCount: number; overridesCount: number }> {
   if (!isCloudEnabled.value || !navigator.onLine) {
-    return false
+    return { success: false, logsCount: 0, teamsCount: 0, overridesCount: 0 }
   }
 
   try {
     const db = await getDB()
+    let pulledLogs = 0
+    let pulledTeams = 0
+    let pulledOverrides = 0
 
     // 1. Fetch Production Logs (Up to 5,000 logs)
     const { data: cloudLogs, error: logErr } = await supabase
@@ -226,6 +246,7 @@ export async function pullCloudDataFromSupabase(): Promise<boolean> {
       .limit(5000)
 
     if (!logErr && Array.isArray(cloudLogs) && cloudLogs.length > 0) {
+      pulledLogs = cloudLogs.length
       const tx = db.transaction('logs', 'readwrite')
       for (const cl of cloudLogs) {
         const localLog: LocalProductionLog = {
@@ -250,6 +271,7 @@ export async function pullCloudDataFromSupabase(): Promise<boolean> {
     // 2. Fetch Teams
     const { data: cloudTeams, error: teamErr } = await supabase.from('teams').select('*')
     if (!teamErr && Array.isArray(cloudTeams) && cloudTeams.length > 0) {
+      pulledTeams = cloudTeams.length
       const tx = db.transaction('teams', 'readwrite')
       for (const ct of cloudTeams) {
         const localTeam: LocalTeam = {
@@ -267,6 +289,7 @@ export async function pullCloudDataFromSupabase(): Promise<boolean> {
     // 3. Fetch Overrides
     const { data: cloudOverrides, error: ovrErr } = await supabase.from('overrides').select('*')
     if (!ovrErr && Array.isArray(cloudOverrides) && cloudOverrides.length > 0) {
+      pulledOverrides = cloudOverrides.length
       const tx = db.transaction('overrides', 'readwrite')
       for (const co of cloudOverrides) {
         const localOvr: LocalOverrideRecord = {
@@ -323,10 +346,10 @@ export async function pullCloudDataFromSupabase(): Promise<boolean> {
       window.dispatchEvent(new CustomEvent('supabase-data-updated'))
     }
 
-    return true
+    return { success: true, logsCount: pulledLogs, teamsCount: pulledTeams, overridesCount: pulledOverrides }
   } catch (err: any) {
     console.warn('Error in pullCloudDataFromSupabase:', err)
-    return false
+    return { success: false, logsCount: 0, teamsCount: 0, overridesCount: 0 }
   }
 }
 
@@ -356,8 +379,7 @@ export async function performFullSync(onDataUpdated?: () => void): Promise<{ suc
     const pushResult = await pushLocalDataToSupabase()
 
     // 2. Pull remote changes
-    await pullCloudDataFromSupabase()
-
+    const pullResult = await pullCloudDataFromSupabase()
 
     const nowStr = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
     lastSyncTime.value = nowStr
@@ -373,7 +395,7 @@ export async function performFullSync(onDataUpdated?: () => void): Promise<{ suc
 
     return {
       success: true,
-      message: `Sinkronisasi selesai pada ${nowStr} (${pushResult.pushedLogs} log terupload)`
+      message: `Sinkronisasi selesai pada ${nowStr} (${pushResult.pushedTeams} tim & ${pushResult.pushedLogs} log diunggah | ${pullResult.teamsCount} tim & ${pullResult.logsCount} log diunduh)`
     }
   } catch (err: any) {
     syncStatus.value = 'error'
