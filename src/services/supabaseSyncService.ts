@@ -15,7 +15,7 @@ let isSyncInProgress = false
 let realtimeChannel: any = null
 
 export const isCloudEnabled = computed(() => {
-  return isSupabaseConfigured && Boolean(import.meta.env.VITE_SUPABASE_URL && !import.meta.env.VITE_SUPABASE_URL.includes('mock-earflow'))
+  return isSupabaseConfigured
 })
 
 /**
