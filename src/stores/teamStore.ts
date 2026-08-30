@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { getDB, seedInitialLocalData, type LocalTeam } from '@/services/db'
 import { getLocalDateStr } from '@/stores/productionStore'
-import { NO_KARYAWAN_LIST, matchWorkerToNikRecord, isTempWorkerNo } from '@/data/noKaryawanData'
+import { matchWorkerToNikRecord, isTempWorkerNo } from '@/data/noKaryawanData'
 import { useShiftStore } from '@/stores/shiftStore'
 import { supabase } from '@/supabase/client'
 import { isCloudEnabled } from '@/services/supabaseSyncService'
@@ -157,40 +157,6 @@ export const useTeamStore = defineStore('team', () => {
         unassignedChanged = true
         hasChanges = true
       }
-    }
-
-    // 3. Add missing records from NO_KARYAWAN_LIST if not seeded yet or if DB has 0 workers
-    const totalWorkersInDB = existingNiks.size
-    const isAlreadySeeded = localStorage.getItem('earflow_initial_nik_seeded_v1') === 'true'
-    if (!isAlreadySeeded || totalWorkersInDB === 0) {
-      for (const rec of NO_KARYAWAN_LIST) {
-        if (!existingNiks.has(rec.no_karyawan)) {
-          const cleanRecName = rec.nama.trim().replace(/\\/g, '').toLowerCase()
-          const cleanKey = cleanRecName.replace(/[^a-z0-9]/g, '')
-          const existsByName = unassignedList.some(m => m.full_name.trim().replace(/\\/g, '').toLowerCase() === cleanRecName) ||
-            realTeamsList.some(t => t.members.some(m => m.full_name.trim().replace(/\\/g, '').toLowerCase() === cleanRecName))
-
-          if (!existsByName) {
-            const isExited = EXITED_WORKER_NAMES.has(cleanKey)
-            unassignedList.push({
-              id: `W-${rec.no_karyawan}`,
-              full_name: rec.nama.trim().replace(/\\/g, ''),
-              role: 'Operator Solder',
-              avatar_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(rec.nama)}`,
-              no_karyawan: rec.no_karyawan,
-              joined_date: '2026-07-06',
-              phone_number: '-',
-              shift: 'Shift Pagi (07:00 - 14:00)',
-              status: isExited ? 'Keluar' : 'Aktif',
-              exit_date: isExited ? '2026-07' : undefined
-            })
-            existingNiks.add(rec.no_karyawan)
-            unassignedChanged = true
-            hasChanges = true
-          }
-        }
-      }
-      localStorage.setItem('earflow_initial_nik_seeded_v1', 'true')
     }
 
     if (unassignedChanged) {

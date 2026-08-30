@@ -26,7 +26,7 @@ export const useAuthStore = defineStore('auth', () => {
   const foremanName = ref(
     localStorage.getItem('earflow_foreman_name') ||
     localStorage.getItem('foreman_name') ||
-    'Karen & Lala'
+    ''
   )
 
   const savedProcessTypes = localStorage.getItem('earflow_process_types')
