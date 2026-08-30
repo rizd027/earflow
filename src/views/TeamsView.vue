@@ -30,8 +30,19 @@
           </button>
         </div>
 
-        <!-- Quick Action Buttons: + Karyawan & + Tim (Visible directly on desktop toolbar) -->
+        <!-- Quick Action Buttons: AI Scan, + Karyawan & + Tim (Visible directly on desktop toolbar) -->
         <div v-if="!isSearchFocused && !workerSearchQueryInput" class="hidden sm:flex items-center gap-1.5 shrink-0">
+          <button
+            type="button"
+            @click="showAiScanStatistikModal = true"
+            class="h-9 px-2.5 sm:px-3 rounded-lg bg-teal-500/15 hover:bg-teal-500/25 border border-teal-500/40 text-teal-300 font-bold text-xs transition flex items-center justify-center gap-1.5 shrink-0 shadow-sm"
+            title="AI Scan Lembar Formulir Statistik Fisik"
+          >
+            <ScanText class="w-3.5 h-3.5 text-teal-400 stroke-[2.5]" />
+            <span class="hidden sm:inline">AI Scan</span>
+          </button>
+
+
           <button
             type="button"
             @click="triggerAddMasterWorker()"
@@ -1805,7 +1816,15 @@
       @close="showMonthlyRecapModal = false"
     />
 
+    <!-- AI SCAN STATISTIK MODAL -->
+    <AiScanStatistikModal
+      :show="showAiScanStatistikModal"
+      @close="showAiScanStatistikModal = false"
+    />
+
+
     <!-- FULLSCREEN MODAL 5: CUSTOM ALERT & CONFIRM DIALOG -->
+
     <Teleport to="body">
       <div
         v-if="showDialog"
@@ -1872,10 +1891,12 @@ import CustomBulkSelect, { type BulkSelectOption } from '@/components/CustomBulk
 import WorkerReportModal from '@/components/WorkerReportModal.vue'
 import MandorDailyReportModal from '@/components/MandorDailyReportModal.vue'
 import MonthlyProductionRecapModal from '@/components/MonthlyProductionRecapModal.vue'
+import AiScanStatistikModal from '@/components/AiScanStatistikModal.vue'
 import { isWorkerMatchingShift, isWorkerInLog, getWorkerShareForLog } from '@/utils/reportUtils'
 import { exportToXlsx } from '@/utils/excelExport'
 import { isTempWorkerNo } from '@/data/noKaryawanData'
-import { LayoutGrid, Users, Plus, Pencil, Trash2, Search, X, UserPlus, AlertTriangle, Check, Package, Printer, RotateCcw, UserMinus, ClipboardList, ArrowUpDown, Table, SlidersHorizontal, Filter, FileSpreadsheet, Calendar } from 'lucide-vue-next'
+import { LayoutGrid, Users, Plus, Pencil, Trash2, Search, X, UserPlus, AlertTriangle, Check, Package, Printer, RotateCcw, UserMinus, ClipboardList, ArrowUpDown, Table, SlidersHorizontal, Filter, FileSpreadsheet, Calendar, ScanText } from 'lucide-vue-next'
+
 
 const { t } = useI18n()
 const teamStore = useTeamStore()
@@ -2212,6 +2233,10 @@ const showMandorReportModal = ref(false)
 
 // Monthly Recap Modal
 const showMonthlyRecapModal = ref(false)
+
+// AI Scan Modal
+const showAiScanStatistikModal = ref(false)
+
 
 // Modal Visibility Controls
 const showTeamMemberModal = ref(false)

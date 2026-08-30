@@ -45,22 +45,23 @@ export const useShiftStore = defineStore('shift', () => {
 
   // Returns time range string e.g. "13:00 - 20:00"
   function getTimeRange(shift: ShiftItem): string {
-    return `${shift.startTime} - ${shift.endTime}`
+    if (!shift || !shift.startTime) return '13:00 - 20:00'
+    return `${shift.startTime} - ${shift.endTime || ''}`
   }
 
   // For team shift combobox: { label: "Shift Pagi (13:00 - 20:00)", value: "Shift Pagi (13:00 - 20:00)" }
   const teamShiftOptions = computed(() =>
-    shifts.value.map(s => ({
-      label: `${s.name} (${getTimeRange(s)})`,
-      value: `${s.name} (${getTimeRange(s)})`
+    shifts.value.filter(Boolean).map(s => ({
+      label: s.startTime ? `${s.name} (${getTimeRange(s)})` : s.name,
+      value: s.startTime ? `${s.name} (${getTimeRange(s)})` : s.name
     }))
   )
 
   // For worker shift combobox: { label: "Shift Pagi (13:00 - 20:00)", value: "Shift Pagi (13:00 - 20:00)" }
   const workerShiftOptions = computed(() =>
-    shifts.value.map(s => ({
-      label: `${s.name} (${getTimeRange(s)})`,
-      value: `${s.name} (${getTimeRange(s)})`
+    shifts.value.filter(Boolean).map(s => ({
+      label: s.startTime ? `${s.name} (${getTimeRange(s)})` : s.name,
+      value: s.startTime ? `${s.name} (${getTimeRange(s)})` : s.name
     }))
   )
 

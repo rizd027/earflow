@@ -140,7 +140,9 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/authStore'
-import { isSupabaseConfigured, supabase } from '@/supabase/client'
+import { isCloudEnabled } from '@/services/supabaseSyncService'
+import { supabase } from '@/supabase/client'
+
 import { ShieldCheck, Wrench } from 'lucide-vue-next'
 
 const { t } = useI18n()
@@ -153,45 +155,76 @@ const password = ref('')
 const fullName = ref('')
 const role = ref<'mandor' | 'pekerja'>('mandor')
 const isLoading = ref(false)
+const errorMessage = ref('')
 
 async function handleAuthSubmit() {
   isLoading.value = true
+  errorMessage.value = ''
   try {
-    if (isSupabaseConfigured) {
-      if (isRegister.value) {
-        await supabase.auth.signUp({
-          email: email.value,
-          password: password.value,
-          options: {
-            data: { full_name: fullName.value, role: role.value }
+    let resolvedUserId = `u_${Date.now()}`
+    let resolvedName = fullName.value || (role.value === 'mandor' ? 'Pak Hendra' : 'Budi Santoso')
+    let resolvedRole = role.value
+
+    if (isCloudEnabled.value) {
+      try {
+        if (isRegister.value) {
+          const { data: sData, error: sErr } = await supabase.auth.signUp({
+            email: email.value,
+            password: password.value,
+            options: {
+              data: { full_name: fullName.value, role: role.value }
+            }
+          })
+          if (sErr) throw sErr
+          if (sData.user) {
+            resolvedUserId = sData.user.id
+            await supabase.from('users').upsert({
+              id: sData.user.id,
+              email: email.value,
+              full_name: fullName.value || 'Pengguna EarFlow',
+              role: role.value,
+              updated_at: new Date().toISOString()
+            }, { onConflict: 'id' }).then()
           }
-        })
-      } else {
-        await supabase.auth.signInWithPassword({
-          email: email.value,
-          password: password.value
-        })
+        } else {
+          const { data: lData, error: lErr } = await supabase.auth.signInWithPassword({
+            email: email.value,
+            password: password.value
+          })
+          if (lErr) throw lErr
+          if (lData.user) {
+            resolvedUserId = lData.user.id
+            const meta = lData.user.user_metadata || {}
+            if (meta.full_name) resolvedName = meta.full_name
+            if (meta.role) resolvedRole = meta.role
+          }
+        }
+      } catch (cloudAuthErr: any) {
+        console.warn('Cloud auth notice, continuing with local session:', cloudAuthErr)
       }
     }
+
     authStore.currentUser = {
-      id: `u_${Date.now()}`,
+      id: resolvedUserId,
       email: email.value || 'user@earflow.com',
-      full_name: fullName.value || (role.value === 'mandor' ? 'Pak Hendra' : 'Budi Santoso'),
-      role: role.value
+      full_name: resolvedName,
+      role: resolvedRole
     }
-    authStore.isMandor = role.value === 'mandor'
-    if (role.value === 'mandor' && fullName.value.trim()) {
-      authStore.setForemanName(fullName.value.trim())
+    authStore.isMandor = resolvedRole === 'mandor'
+    if (resolvedRole === 'mandor' && resolvedName.trim()) {
+      authStore.setForemanName(resolvedName.trim())
     }
     router.push('/')
-  } catch (err) {
+  } catch (err: any) {
     console.error('Auth error:', err)
+    errorMessage.value = err.message || 'Gagal login / register'
   } finally {
     isLoading.value = false
   }
 }
 
 function quickMandorLogin() {
+
   authStore.loginAsMandor()
   router.push('/')
 }

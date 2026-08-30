@@ -90,19 +90,23 @@
           </div>
 
           <!-- Main Daily Records Table (31 Rows) -->
-          <div class="overflow-x-auto print:overflow-visible">
-            <table class="w-full border-collapse border border-slate-900 text-[10px] sm:text-[11px] font-mono">
+          <div class="overflow-x-auto print:overflow-visible -mx-2 sm:mx-0 px-2 sm:px-0">
+            <div v-if="isEditing" class="sm:hidden mb-2 px-2.5 py-1.5 bg-amber-500/10 border border-amber-500/30 rounded text-[11px] font-mono text-amber-900 flex items-center gap-1.5 shadow-xs">
+              <span class="text-sm">👉</span>
+              <span>Geser ke kanan untuk melihat & mengisi semua kolom</span>
+            </div>
+            <table class="w-full min-w-[720px] border-collapse border border-slate-900 text-[11px] font-mono">
               <thead>
                 <tr class="bg-slate-100 text-slate-900 text-center uppercase tracking-tight font-bold border-b border-slate-900">
-                  <th class="border border-slate-900 p-1 w-6">{{ t('workerReport.colDay') }}</th>
-                  <th class="border border-slate-900 p-1" :class="isEditing ? 'w-28 sm:w-32' : 'w-14 sm:w-16'">{{ t('workerReport.colWorkHours') }}</th>
-                  <th class="border border-slate-900 p-1 w-12 sm:w-16">{{ t('workerReport.colCumHours') }}</th>
-                  <th class="border border-slate-900 p-1 w-20 sm:w-24">{{ t('workerReport.colProcess') }}</th>
-                  <th class="border border-slate-900 p-1" :class="isEditing ? 'w-20 sm:w-24' : 'w-14 sm:w-16'">{{ t('workerReport.colTargetQty') }}</th>
-                  <th class="border border-slate-900 p-1" :class="isEditing ? 'w-20 sm:w-24' : 'w-14 sm:w-16'">{{ t('workerReport.colProdQty') }}</th>
-                  <th class="border border-slate-900 p-1 w-16 sm:w-20">{{ t('workerReport.colCumProdQty') }}</th>
-                  <th class="border border-slate-900 p-1 w-12">{{ t('workerReport.colSigned') }}</th>
-                  <th class="border border-slate-900 p-1 min-w-[120px]">{{ t('workerReport.colRemark') }}</th>
+                  <th class="sticky left-0 z-10 border border-slate-900 p-1 w-9 sm:w-8 bg-slate-100 shadow-[1px_0_0_0_#0f172a]">{{ t('workerReport.colDay') }}</th>
+                  <th class="border border-slate-900 p-1 w-32 sm:w-28">{{ t('workerReport.colWorkHours') }}</th>
+                  <th class="border border-slate-900 p-1 w-14 sm:w-16">{{ t('workerReport.colCumHours') }}</th>
+                  <th class="border border-slate-900 p-1 w-32 sm:w-28">{{ t('workerReport.colProcess') }}</th>
+                  <th class="border border-slate-900 p-1 w-20 sm:w-22">{{ t('workerReport.colTargetQty') }}</th>
+                  <th class="border border-slate-900 p-1 w-20 sm:w-22">{{ t('workerReport.colProdQty') }}</th>
+                  <th class="border border-slate-900 p-1 w-20 sm:w-22">{{ t('workerReport.colCumProdQty') }}</th>
+                  <th class="border border-slate-900 p-1 w-14 sm:w-12">{{ t('workerReport.colSigned') }}</th>
+                  <th class="border border-slate-900 p-1 min-w-[140px]">{{ t('workerReport.colRemark') }}</th>
                 </tr>
               </thead>
 
@@ -113,7 +117,7 @@
                   class="text-center transition"
                   :class="row.isSunday && !row.isWorking ? 'bg-rose-500/15 text-rose-950 font-bold print:bg-rose-100/50' : 'hover:bg-amber-100/70 hover:text-black'"
                 >
-                  <td class="border border-slate-900 p-1 font-bold" :class="row.isSunday && !row.isWorking ? 'text-rose-700 font-black' : 'text-slate-950'">{{ row.day }}</td>
+                  <td class="sticky left-0 z-10 border border-slate-900 p-1 font-bold shadow-[1px_0_0_0_#0f172a]" :class="row.isSunday && !row.isWorking ? 'text-rose-700 font-black bg-rose-100' : 'text-slate-950 bg-white'">{{ row.day }}</td>
 
                   <!-- Jam Kerja -->
                   <td class="border border-slate-900 p-0.5 whitespace-nowrap">
@@ -123,7 +127,7 @@
                       placeholder="-"
                       @focus="($event.target as HTMLInputElement).select()"
                       @input="saveCellOverride(row.day, 'workHours', ($event.target as HTMLInputElement).value)"
-                      class="w-full h-6 px-1 text-center rounded-xs text-[10.5px] font-mono font-bold text-slate-950 focus:outline-none transition-all shadow-inner"
+                      class="w-full h-8 sm:h-6 px-1.5 text-center rounded-xs text-xs sm:text-[10.5px] font-mono font-bold text-slate-950 focus:outline-none transition-all shadow-inner"
                       :class="isDayFieldEdited(row.day, 'workHours')
                         ? 'bg-amber-300 text-amber-950 font-black border-2 border-amber-600'
                         : 'bg-amber-500/10 border border-amber-500/60 focus:border-amber-600 focus:bg-white'"
@@ -137,16 +141,24 @@
                     {{ (row.isWorking && row.hasWorkActivity && row.cumHours) ? row.cumHours : '' }}
                   </td>
 
-                  <!-- Proses Produksi (CustomCombobox Edit) -->
-                  <td class="border border-slate-900 p-0.5 text-center w-20 sm:w-24" :title="row.process">
-                    <div v-if="isEditing" class="w-full" @click.stop>
-                      <CustomCombobox
-                        :model-value="row.process"
-                        :options="roleComboboxOptions"
-                        placeholder="Proses..."
-                        storage-key="earflow_role_options"
-                        @update:model-value="val => saveCellOverride(row.day, 'process', String(val))"
-                      />
+                  <!-- Proses Produksi (Fast Native Select Edit Synchronized with Settings) -->
+                  <td class="border border-slate-900 p-0.5 text-center" :title="row.process">
+                    <div v-if="isEditing" class="w-full px-0.5">
+                      <select
+                        :value="row.process || workerDefaultProcess"
+                        @change="saveCellOverride(row.day, 'process', ($event.target as HTMLSelectElement).value)"
+                        class="w-full h-8 sm:h-6 px-1 text-center font-bold font-mono text-xs sm:text-[10.5px] rounded-xs bg-amber-500/10 border border-amber-500/60 focus:border-amber-600 focus:bg-white text-slate-950 focus:outline-none"
+                      >
+                        <option
+                          v-if="row.process && !roleComboboxOptions.some(o => o.value === row.process)"
+                          :value="row.process"
+                        >
+                          {{ row.process }}
+                        </option>
+                        <option v-for="opt in roleComboboxOptions" :key="opt.value" :value="opt.value">
+                          {{ opt.label }}
+                        </option>
+                      </select>
                     </div>
                     <span v-else class="px-1 font-bold text-slate-950 text-center block truncate">{{ row.isWorking ? (row.process || '-') : '' }}</span>
                   </td>
@@ -160,7 +172,7 @@
                       placeholder="0"
                       @focus="($event.target as HTMLInputElement).select()"
                       @input="saveCellOverride(row.day, 'targetQty', ($event.target as HTMLInputElement).value)"
-                      class="w-full h-6 px-1 text-right rounded-xs text-[10.5px] font-mono font-bold text-slate-950 focus:outline-none transition-all shadow-inner"
+                      class="w-full h-8 sm:h-6 px-1.5 text-right rounded-xs text-xs sm:text-[10.5px] font-mono font-bold text-slate-950 focus:outline-none transition-all shadow-inner"
                       :class="isDayFieldEdited(row.day, 'targetQty')
                         ? 'bg-amber-300 text-amber-950 font-black border-2 border-amber-600'
                         : 'bg-amber-500/10 border border-amber-500/60 focus:border-amber-600 focus:bg-white'"
@@ -177,7 +189,7 @@
                       placeholder="0"
                       @focus="($event.target as HTMLInputElement).select()"
                       @input="saveCellOverride(row.day, 'prodQty', ($event.target as HTMLInputElement).value)"
-                      class="w-full h-6 px-1 text-right rounded-xs text-[10.5px] font-mono font-extrabold focus:outline-none transition-all shadow-inner"
+                      class="w-full h-8 sm:h-6 px-1.5 text-right rounded-xs text-xs sm:text-[10.5px] font-mono font-extrabold focus:outline-none transition-all shadow-inner"
                       :class="isDayFieldEdited(row.day, 'prodQty')
                         ? 'bg-amber-300 text-amber-950 font-black border-2 border-amber-600'
                         : 'bg-emerald-500/10 border border-emerald-500/80 focus:border-emerald-600 focus:bg-white text-emerald-950'"
@@ -190,31 +202,31 @@
                     {{ (row.isWorking && row.hasWorkActivity && row.cumProdQty) ? row.cumProdQty.toLocaleString('id-ID') : '' }}
                   </td>
 
-                  <td class="border border-slate-900 p-1 text-slate-600 text-[9px] font-bold">
+                  <td class="border border-slate-900 p-1 text-slate-600 text-[10px] sm:text-[9px] font-bold">
                     {{ row.signed ? '✓ Mandor' : '' }}
                   </td>
 
                   <!-- Remark / Catatan -->
-                  <td class="border border-slate-900 p-0.5 text-left px-1.5 text-[9px] text-slate-600 min-w-[120px]" :title="row.remark">
+                  <td class="border border-slate-900 p-0.5 text-left px-1 text-[10px] sm:text-[9px] text-slate-600 min-w-[140px]" :title="row.remark">
                     <input
                       v-if="isEditing"
                       :value="row.remark === '-' ? '' : row.remark"
                       placeholder="-"
                       @focus="($event.target as HTMLInputElement).select()"
                       @input="saveCellOverride(row.day, 'remark', ($event.target as HTMLInputElement).value)"
-                      class="w-full h-6 px-1 text-left rounded-xs text-[9px] font-mono focus:outline-none transition-all shadow-inner"
+                      class="w-full h-8 sm:h-6 px-1.5 text-left rounded-xs text-[11px] sm:text-[9px] font-mono focus:outline-none transition-all shadow-inner"
                       :class="isDayFieldEdited(row.day, 'remark')
                         ? 'bg-amber-300 text-amber-950 font-black border-2 border-amber-600'
                         : 'bg-amber-500/10 border border-amber-500/60 focus:border-amber-600 focus:bg-white'"
                     />
-                    <span v-else class="font-semibold block truncate max-w-[140px]" :class="row.isSunday && !row.isWorking ? 'text-rose-700 italic font-bold' : 'text-slate-800'">{{ row.remark || '' }}</span>
+                    <span v-else class="font-semibold block truncate max-w-[160px]" :class="row.isSunday && !row.isWorking ? 'text-rose-700 italic font-bold' : 'text-slate-800'">{{ row.remark || '' }}</span>
                   </td>
                 </tr>
 
 
                 <!-- Summary Total Footer Row -->
                 <tr class="bg-slate-200 text-slate-950 font-black border-t-2 border-slate-900 text-center">
-                  <td colspan="2" class="border border-slate-900 p-1.5 uppercase text-right pr-2">{{ t('workerReport.total') }}</td>
+                  <td colspan="2" class="sticky left-0 z-10 border border-slate-900 p-1.5 uppercase text-right pr-2 bg-slate-200 shadow-[1px_0_0_0_#0f172a]">{{ t('workerReport.total') }}</td>
                   <td class="border border-slate-900 p-1.5">{{ totalWorkHours }} Jam</td>
                   <td class="border border-slate-900 p-1.5 text-left px-2 text-[10px]">{{ t('workerReport.efficiency') }} {{ overallEfficiency }}%</td>
                   <td class="border border-slate-900 p-1.5 text-right px-1">{{ totalTargetQty.toLocaleString('id-ID') }}</td>
@@ -285,22 +297,32 @@
               <div class="flex items-center gap-2">
                 <button
                   type="button"
+                  @click="showAiScanModal = true"
+                  class="h-9 px-3.5 rounded-md font-bold text-xs transition inline-flex items-center gap-1.5 border shadow-sm bg-teal-500/20 hover:bg-teal-500/30 text-teal-300 border-teal-500/40"
+                  title="Scan Lembar Cetak Statistik dengan AI"
+                >
+                  <ScanText class="w-3.5 h-3.5 text-teal-400" />
+                  <span>AI Scan Formulir</span>
+                </button>
+
+                <button
+                  type="button"
                   @click="isEditing = !isEditing"
-                  class="h-9 px-4 rounded-md font-bold text-xs transition inline-flex items-center gap-1.5 border shadow-sm"
+                  class="h-9 px-3.5 rounded-md font-bold text-xs transition inline-flex items-center gap-1.5 border shadow-sm"
                   :class="isEditing ? 'bg-amber-500 text-slate-950 border-amber-400 hover:bg-amber-400' : 'bg-slate-800 hover:bg-slate-700 border-slate-700 text-teal-300'"
                 >
                   <Pencil class="w-3.5 h-3.5" />
-                  <span>{{ isEditing ? 'Selesai Edit' : 'Edit Cell' }}</span>
+                  <span>{{ isEditing ? 'Selesai' : 'Edit Cell' }}</span>
                 </button>
 
                 <button
                   v-if="hasOverrides"
                   type="button"
                   @click="resetCellOverrides"
-                  class="h-9 px-3.5 rounded-md bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/40 text-rose-300 font-bold text-xs transition flex items-center gap-1.5"
+                  class="h-9 px-3 rounded-md bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/40 text-rose-300 font-bold text-xs transition flex items-center gap-1.5"
                 >
                   <RotateCcw class="w-3.5 h-3.5" />
-                  <span>Reset Editan</span>
+                  <span>Reset</span>
                 </button>
               </div>
             </div>
@@ -348,8 +370,18 @@
           </div>
         </div>
 
-        <!-- Primary Action Buttons (Excel & PDF) -->
+        <!-- Primary Action Buttons (AI Scan, Excel & PDF) -->
         <div class="flex items-center gap-2 shrink-0">
+          <button
+            type="button"
+            @click="showAiScanModal = true"
+            class="h-9 px-3 sm:px-3.5 rounded-md bg-teal-500/20 hover:bg-teal-500/30 text-teal-300 border border-teal-500/50 font-bold text-xs shadow-md transition inline-flex items-center justify-center gap-1.5 whitespace-nowrap active:scale-95 cursor-pointer"
+            title="Scan AI Formulir Fisik Karyawan"
+          >
+            <ScanText class="w-4 h-4 text-teal-400 shrink-0" />
+            <span class="hidden sm:inline">AI Scan</span>
+          </button>
+
           <button
             type="button"
             @click="exportExcel"
@@ -372,24 +404,41 @@
         </div>
       </div>
 
+      <!-- AI Scan Modal -->
+      <AiScanStatistikModal
+        :show="showAiScanModal"
+        :target-worker="worker"
+        :initial-month-str="selectedMonthYear"
+        @close="showAiScanModal = false"
+        @saved="onAiScanSaved"
+      />
 
     </div>
   </Teleport>
 </template>
 
+
 <script setup lang="ts">
 import { ref, computed, watch, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Printer, X, Pencil, RotateCcw, MoreVertical, SlidersHorizontal, ChevronUp, ChevronDown, FileSpreadsheet } from 'lucide-vue-next'
+import { Printer, X, Pencil, RotateCcw, MoreVertical, SlidersHorizontal, ChevronUp, ChevronDown, FileSpreadsheet, ScanText } from 'lucide-vue-next'
 import { useProductionStore, getLocalDateStr } from '@/stores/productionStore'
 import { useTeamStore } from '@/stores/teamStore'
 import { useAuthStore } from '@/stores/authStore'
 import { useOverrideStore, type DailyOverride } from '@/stores/overrideStore'
-import CustomCombobox, { type ComboboxOption } from '@/components/CustomCombobox.vue'
+import { type ComboboxOption } from '@/components/CustomCombobox.vue'
 import CustomSelect from '@/components/CustomSelect.vue'
+import AiScanStatistikModal from '@/components/AiScanStatistikModal.vue'
 import { isWorkerInLog, getWorkerShareForLog, DEFAULT_DAILY_TARGET, isWorkerNewOnDate, getWorkerWorkingDays } from '@/utils/reportUtils'
 import { useShiftStore } from '@/stores/shiftStore'
 import { isTempWorkerNo } from '@/data/noKaryawanData'
+
+const showAiScanModal = ref(false)
+
+function onAiScanSaved() {
+  overrideStore.loadFromStorage(true)
+}
+
 
 const props = defineProps<{
   show: boolean
@@ -432,18 +481,51 @@ const { t } = useI18n()
 // Default selected month: Current month YYYY-MM
 const selectedMonthYear = ref(getLocalDateStr().slice(0, 7))
 
-const roleComboboxOptions = computed<ComboboxOption[]>(() => [
-  { label: 'A1', value: 'A1' },
-  { label: t('teams.jobSolder'), value: 'Operator Solder' },
-  { label: t('teams.jobGlue'), value: 'Operator Lem' },
-  { label: t('teams.jobAssembly'), value: 'Assembly & QC' }
-])
-
 const productionStore = useProductionStore()
 const teamStore = useTeamStore()
 const authStore = useAuthStore()
 const overrideStore = useOverrideStore()
 const shiftStore = useShiftStore()
+
+const roleComboboxOptions = computed<ComboboxOption[]>(() => {
+  const opts: ComboboxOption[] = []
+
+  if (authStore.processGroups && authStore.processGroups.length > 0) {
+    for (const group of authStore.processGroups) {
+      const codeUpper = group.code.toUpperCase().trim()
+      const rolesSummary = group.roles && group.roles.length > 0 ? ` (${group.roles.join(', ')})` : ''
+      opts.push({
+        label: `${codeUpper}${rolesSummary}`,
+        value: codeUpper
+      })
+
+      // Add individual roles inside group
+      if (group.roles) {
+        for (const r of group.roles) {
+          const rTrimmed = r.trim().toUpperCase()
+          if (rTrimmed && rTrimmed !== codeUpper && !opts.some(o => o.value === rTrimmed)) {
+            opts.push({
+              label: `${rTrimmed} (${codeUpper})`,
+              value: rTrimmed
+            })
+          }
+        }
+      }
+    }
+  } else {
+    opts.push(
+      { label: 'A1 (SOLDER, LEM)', value: 'A1' },
+      { label: 'A2 (GULUNG, CANGKANG)', value: 'A2' },
+      { label: 'A3 (PACKING, CHECK)', value: 'A3' }
+    )
+  }
+
+  return opts
+})
+
+const workerDefaultProcess = computed(() => {
+  return props.worker?.role ? (authStore.getProcessCodeForRole(props.worker.role) || 'A1') : 'A1'
+})
 
 // Edit Cell mode state
 const isEditing = ref(false)
@@ -466,7 +548,8 @@ function saveCellOverride(day: number, field: string, value: any) {
     if (workHoursVal !== '-') {
       const existing = overrideStore.getDailyOverride(props.worker.id, dateStr)
       if (!existing?.process) {
-        overrideStore.setDailyOverride(props.worker.id, dateStr, 'process', 'A1')
+        const defaultCode = authStore.getProcessCodeForRole(props.worker.role) || 'A1'
+        overrideStore.setDailyOverride(props.worker.id, dateStr, 'process', defaultCode)
       }
       if (existing?.targetQty === undefined || existing.targetQty === 0) {
         const workerTeam = teamStore.teams.find(t => t.id === props.worker?.team_id || t.name === props.worker?.team_name)
@@ -618,13 +701,14 @@ const dailyReportRows = computed(() => {
 
   const workerShiftStr = props.worker?.shift || workerTeam?.shift || 'Shift Pagi'
   const matchedShift = shiftStore.shifts.find((s: any) => {
-    const cleanS = s.name.toLowerCase()
+    if (!s) return false
+    const cleanS = (s.name || '').toLowerCase()
     const cleanW = workerShiftStr.toLowerCase()
-    return cleanW.includes(cleanS) || cleanS.includes(cleanW) || cleanW.includes(s.startTime)
+    return cleanW.includes(cleanS) || cleanS.includes(cleanW) || (s.startTime && cleanW.includes(s.startTime))
   })
 
   let shiftLabel = '13 - 20 (6h)'
-  if (matchedShift) {
+  if (matchedShift && matchedShift.startTime && matchedShift.endTime) {
     const startH = parseInt(matchedShift.startTime.split(':')[0]) || 13
     const endH = parseInt(matchedShift.endTime.split(':')[0]) || 20
     const totalDuration = endH > startH ? (endH - startH) : 7

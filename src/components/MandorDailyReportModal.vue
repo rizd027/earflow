@@ -103,13 +103,17 @@
           </div>
 
           <!-- Main Production Record Table (High Contrast Pure White Grid) -->
-          <div class="overflow-x-auto print:overflow-visible">
-            <table class="w-full border-collapse border-2 border-black text-[11px] font-mono leading-tight bg-white">
+          <div class="overflow-x-auto print:overflow-visible -mx-2 sm:mx-0 px-2 sm:px-0">
+            <div v-if="isEditing" class="sm:hidden mb-2 px-2.5 py-1.5 bg-amber-500/10 border border-amber-500/30 rounded text-[11px] font-mono text-amber-900 flex items-center gap-1.5 shadow-xs">
+              <span class="text-sm">👉</span>
+              <span>Geser ke kanan untuk melihat & mengisi semua kolom</span>
+            </div>
+            <table class="w-full min-w-[650px] border-collapse border-2 border-black text-[11px] font-mono leading-tight bg-white">
               <thead>
                 <tr class="bg-white text-black text-center uppercase tracking-tight font-black border-b-2 border-black">
-                  <th class="border border-black p-1 w-8 text-center bg-white text-black font-black">{{ t('mandorReport.colNo') }}<br/><span class="text-[8px] font-normal">序号</span></th>
-                  <th class="border border-black p-1 w-24 text-center bg-white text-black font-black">{{ t('mandorReport.colWorkerNo') }}<br/><span class="text-[8px] font-normal">员工编号</span></th>
-                  <th class="border border-black p-1 min-w-[140px] text-left px-2 bg-white text-black font-black">{{ t('mandorReport.colWorkerName') }} / 姓名</th>
+                  <th class="sticky left-0 z-20 border border-black p-1 w-8 text-center bg-white text-black font-black print:static">{{ t('mandorReport.colNo') }}<br/><span class="text-[8px] font-normal">序号</span></th>
+                  <th class="sticky left-[24px] z-20 border border-black p-1 w-24 text-center bg-white text-black font-black print:static">{{ t('mandorReport.colWorkerNo') }}<br/><span class="text-[8px] font-normal">员工编号</span></th>
+                  <th class="sticky left-[100px] z-20 border border-black p-1 min-w-[140px] text-left px-2 bg-white text-black font-black shadow-[2px_0_4px_-1px_rgba(0,0,0,0.15)] print:static print:shadow-none">{{ t('mandorReport.colWorkerName') }} / 姓名</th>
                   <th class="border border-black p-1 w-20 text-right px-1.5 bg-white text-black font-black">{{ t('mandorReport.colTarget') }}<br/><span class="text-[8px] font-normal">计划产量</span></th>
                   <th class="border border-black p-1 w-20 text-right px-1.5 bg-white text-black font-black">{{ t('mandorReport.colProd') }}<br/><span class="text-[8px] font-normal">实际产量</span></th>
                   <th class="border border-black p-1 min-w-[110px] text-left px-2 bg-white text-black font-black">{{ t('mandorReport.colRemark') }} / 备注</th>
@@ -120,18 +124,18 @@
                 <tr
                   v-for="row in reportRows"
                   :key="row.no"
-                  class="text-center h-6 hover:bg-amber-100/70 hover:text-black print:hover:bg-transparent"
+                  class="text-center h-7 sm:h-6 hover:bg-amber-100/70 hover:text-black print:hover:bg-transparent"
                 >
-                  <td class="border border-black p-0.5 font-bold text-black text-center">{{ row.no }}</td>
+                  <td class="sticky left-0 z-10 border border-black p-0.5 font-bold text-black text-center bg-white print:static">{{ row.no }}</td>
 
                   <!-- Worker No -->
-                  <td class="border border-black p-0.5 text-black font-mono text-center font-semibold">
+                  <td class="sticky left-[24px] z-10 border border-black p-0.5 text-black font-mono text-center font-semibold bg-white print:static">
                     <input
                       v-if="isEditing"
                       :value="row.workerNo"
                       @focus="($event.target as HTMLInputElement).select()"
                       @input="saveCellOverrideDebounced(row.no, 'workerNo', ($event.target as HTMLInputElement).value)"
-                      class="w-full h-6 px-1 text-center rounded text-[10px] font-mono focus:outline-none"
+                      class="w-full h-8 sm:h-6 px-1.5 text-center rounded text-xs sm:text-[10px] font-mono focus:outline-none"
                       :class="isRowFieldEdited(row.workerId, 'workerNo')
                         ? 'bg-amber-300 text-amber-950 font-black border-2 border-amber-600 shadow-inner'
                         : 'bg-amber-50 border border-amber-400 focus:border-amber-600 focus:bg-white'"
@@ -140,67 +144,65 @@
                   </td>
 
                   <!-- Worker Name -->
-                  <td class="border border-black p-0.5 text-left px-2 font-bold text-black truncate max-w-[160px]">
+                  <td class="sticky left-[100px] z-10 border border-black p-0.5 text-left px-2 font-black text-black bg-white shadow-[2px_0_4px_-1px_rgba(0,0,0,0.15)] print:static print:shadow-none">
                     <input
                       v-if="isEditing"
                       :value="row.workerName"
                       @focus="($event.target as HTMLInputElement).select()"
                       @input="saveCellOverrideDebounced(row.no, 'workerName', ($event.target as HTMLInputElement).value)"
-                      class="w-full h-6 px-1 text-left rounded text-[10px] font-mono focus:outline-none"
+                      class="w-full h-8 sm:h-6 px-1.5 text-left rounded text-xs sm:text-[10px] font-mono font-bold focus:outline-none"
                       :class="isRowFieldEdited(row.workerId, 'workerName')
                         ? 'bg-amber-300 text-amber-950 font-black border-2 border-amber-600 shadow-inner'
-                        : 'bg-amber-50 border border-amber-400 focus:border-amber-600 focus:bg-white font-bold'"
+                        : 'bg-amber-50 border border-amber-400 focus:border-amber-600 focus:bg-white'"
                     />
-                    <span v-else>{{ row.workerName || '' }}</span>
+                    <span v-else class="uppercase">{{ row.workerName }}</span>
                   </td>
 
                   <!-- Target Qty -->
-                  <td class="border border-black p-0.5 text-right px-1.5 font-bold text-black">
+                  <td class="border border-black p-0.5 text-right px-1.5 font-semibold text-black">
                     <input
                       v-if="isEditing"
                       type="number"
-                      :value="row.targetQty === 0 ? '' : row.targetQty"
-                      placeholder="0"
+                      :value="row.targetQty"
                       @focus="($event.target as HTMLInputElement).select()"
-                      @change="saveCellOverride(row.no, 'targetQty', ($event.target as HTMLInputElement).value)"
-                      class="w-full h-6 px-1 text-right rounded text-[10px] font-mono focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      @input="saveCellOverrideDebounced(row.no, 'targetQty', ($event.target as HTMLInputElement).value)"
+                      class="w-full h-8 sm:h-6 px-1.5 text-right rounded text-xs sm:text-[10px] font-mono font-bold focus:outline-none"
                       :class="isRowFieldEdited(row.workerId, 'targetQty')
                         ? 'bg-amber-300 text-amber-950 font-black border-2 border-amber-600 shadow-inner'
-                        : 'bg-amber-50 border border-amber-400 focus:border-amber-600 focus:bg-white font-bold'"
+                        : 'bg-amber-50 border border-amber-400 focus:border-amber-600 focus:bg-white'"
                     />
                     <span v-else>{{ row.targetQty ? row.targetQty.toLocaleString('id-ID') : '' }}</span>
                   </td>
 
                   <!-- Prod Qty -->
-                  <td class="border border-black p-0.5 text-right px-1.5 font-extrabold text-black">
+                  <td class="border border-black p-0.5 text-right px-1.5 font-black text-black">
                     <input
                       v-if="isEditing"
                       type="number"
-                      :value="row.prodQty === 0 ? '' : row.prodQty"
-                      placeholder="0"
+                      :value="row.prodQty"
                       @focus="($event.target as HTMLInputElement).select()"
-                      @change="saveCellOverride(row.no, 'prodQty', ($event.target as HTMLInputElement).value)"
-                      class="w-full h-6 px-1 text-right rounded text-[10px] font-mono focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      @input="saveCellOverrideDebounced(row.no, 'prodQty', ($event.target as HTMLInputElement).value)"
+                      class="w-full h-8 sm:h-6 px-1.5 text-right rounded text-xs sm:text-[10px] font-mono font-black focus:outline-none"
                       :class="isRowFieldEdited(row.workerId, 'prodQty')
                         ? 'bg-amber-300 text-amber-950 font-black border-2 border-amber-600 shadow-inner'
-                        : 'bg-amber-50 border border-amber-400 focus:border-amber-600 focus:bg-white text-teal-900 font-extrabold'"
+                        : 'bg-emerald-50 border border-emerald-500 focus:border-emerald-600 focus:bg-white text-emerald-950 font-extrabold'"
                     />
-                    <span v-else>{{ row.prodQty ? row.prodQty.toLocaleString('id-ID') : (row.workerName ? '-' : '') }}</span>
+                    <span v-else>{{ row.prodQty ? row.prodQty.toLocaleString('id-ID') : '' }}</span>
                   </td>
 
                   <!-- Remark -->
-                  <td class="border border-black p-0.5 text-left px-2 text-[10px] font-medium text-black truncate max-w-[120px]">
+                  <td class="border border-black p-0.5 text-left px-2 text-black min-w-[110px]" :title="row.remark">
                     <input
                       v-if="isEditing"
                       :value="row.remark"
                       @focus="($event.target as HTMLInputElement).select()"
                       @input="saveCellOverrideDebounced(row.no, 'remark', ($event.target as HTMLInputElement).value)"
-                      class="w-full h-6 px-1 text-left rounded text-[10px] font-mono focus:outline-none"
+                      class="w-full h-8 sm:h-6 px-1.5 text-left rounded text-xs sm:text-[9px] font-mono focus:outline-none"
                       :class="isRowFieldEdited(row.workerId, 'remark')
                         ? 'bg-amber-300 text-amber-950 font-black border-2 border-amber-600 shadow-inner'
                         : 'bg-amber-50 border border-amber-400 focus:border-amber-600 focus:bg-white'"
                     />
-                    <span v-else>{{ row.remark || '' }}</span>
+                    <span v-else class="text-[10px] block truncate max-w-[140px]" :class="row.remark.includes('Cuti') || row.remark.includes('Keluar') ? 'text-rose-600 font-bold italic' : ''">{{ row.remark }}</span>
                   </td>
                 </tr>
               </tbody>

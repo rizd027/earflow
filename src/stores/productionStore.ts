@@ -2,6 +2,8 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { getDB, seedInitialLocalData, type LocalProductionLog } from '@/services/db'
 import { isSupabaseConfigured, supabase } from '@/supabase/client'
+import { isCloudEnabled, performFullSync } from '@/services/supabaseSyncService'
+
 
 export function getLocalDateStr(dateObj: Date = new Date()): string {
   const year = dateObj.getFullYear()
@@ -162,37 +164,43 @@ export const useProductionStore = defineStore('production', () => {
   }
 
   async function syncSingleLogToSupabase(log: LocalProductionLog) {
+    if (!isCloudEnabled.value || !isOnline.value) return
     try {
       const { error } = await supabase.from('production_logs').upsert({
         id: log.id,
         team_id: log.team_id,
+        team_name: log.team_name,
         date: log.date,
         hour_slot: log.hour_slot,
         total_qty: log.total_qty,
         present_count: log.present_count,
-        photo_url: log.photo_url,
-        notes: log.notes
-      })
+        present_member_ids: log.present_member_ids || [],
+        photo_url: log.photo_url || null,
+        notes: log.notes || null,
+        created_at: log.created_at
+      }, { onConflict: 'id' })
+
       if (!error) {
         log.synced = true
         const db = await getDB()
         await db.put('logs', JSON.parse(JSON.stringify(log)))
+      } else {
+        console.warn('Supabase production log sync notice:', error.message)
       }
     } catch (err) {
-      console.warn('Background sync warning:', err)
+      console.warn('Background sync exception:', err)
     }
   }
 
   async function syncPendingLogs() {
-    if (!isOnline.value || !isSupabaseConfigured) return
-    const db = await getDB()
-    const all = await db.getAll('logs')
-    const pending = all.filter(l => !l.synced)
-
-    for (const log of pending) {
-      await syncSingleLogToSupabase(log)
+    if (!isOnline.value || !isCloudEnabled.value) return
+    try {
+      await performFullSync(() => loadLogs(true))
+    } catch (e) {
+      console.warn('Full sync warning in production store:', e)
     }
   }
+
 
   // Analytics Computations for current date (today)
   const todayLogs = computed(() => {

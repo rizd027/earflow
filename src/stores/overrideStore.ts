@@ -1,6 +1,9 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { getDB } from '@/services/db'
+import { supabase } from '@/supabase/client'
+import { isCloudEnabled } from '@/services/supabaseSyncService'
+
 
 export interface DailyOverride {
   workHours?: string
@@ -87,18 +90,58 @@ export const useOverrideStore = defineStore('override', () => {
     }
   }
 
-  async function persistSingleOverride(key: string, type: 'daily' | 'worker', data: any) {
+  const pendingPersistMap = new Map<string, { type: 'daily' | 'worker'; data: any }>()
+  let persistDebounceTimer: any = null
+
+  async function flushPendingOverrides() {
+    if (pendingPersistMap.size === 0) return
+    const queue = Array.from(pendingPersistMap.entries())
+    pendingPersistMap.clear()
+
     try {
       const db = await getDB()
-      if (!data || Object.keys(data).length === 0) {
-        await db.delete('overrides', key)
-      } else {
-        await db.put('overrides', { key, type, data: JSON.parse(JSON.stringify(data)) })
+      const tx = db.transaction('overrides', 'readwrite')
+      const cloudUpserts: any[] = []
+      const cloudDeletes: string[] = []
+
+      for (const [key, item] of queue) {
+        if (!item.data || Object.keys(item.data).length === 0) {
+          await tx.objectStore('overrides').delete(key)
+          cloudDeletes.push(key)
+        } else {
+          const payload = JSON.parse(JSON.stringify(item.data))
+          await tx.objectStore('overrides').put({ key, type: item.type, data: payload })
+          cloudUpserts.push({
+            key,
+            type: item.type,
+            data: payload,
+            updated_at: new Date().toISOString()
+          })
+        }
+      }
+      await tx.done
+
+      if (isCloudEnabled.value && navigator.onLine) {
+        if (cloudDeletes.length > 0) {
+          for (const k of cloudDeletes) {
+            supabase.from('overrides').delete().eq('key', k).then()
+          }
+        }
+        if (cloudUpserts.length > 0) {
+          supabase.from('overrides').upsert(cloudUpserts, { onConflict: 'key' }).then()
+        }
       }
     } catch (e) {
-      console.warn('Failed to persist override to IndexedDB:', e)
+      console.warn('Failed to flush overrides to IndexedDB:', e)
     }
   }
+
+  function persistSingleOverride(key: string, type: 'daily' | 'worker', data: any) {
+    pendingPersistMap.set(key, { type, data })
+    clearTimeout(persistDebounceTimer)
+    persistDebounceTimer = setTimeout(flushPendingOverrides, 400)
+  }
+
 
   // Auto load on store creation
   loadFromStorage()

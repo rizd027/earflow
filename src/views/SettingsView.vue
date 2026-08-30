@@ -35,6 +35,80 @@
       </div>
     </div>
 
+    <!-- ── Status & Sinkronisasi Cloud Supabase ── -->
+    <div class="bg-slate-900/60 border border-slate-800/80 rounded-lg p-4 space-y-3.5">
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="w-8 h-8 rounded-md bg-teal-500/10 border border-teal-500/20 flex items-center justify-center shrink-0">
+            <Cloud class="w-4 h-4 text-teal-400" />
+          </div>
+          <div class="min-w-0">
+            <h3 class="text-xs font-bold text-slate-100 font-mono leading-tight">Database Cloud Supabase</h3>
+            <p class="text-[11px] text-slate-400 leading-tight truncate">Sinkronisasi data otomatis multi-perangkat.</p>
+          </div>
+        </div>
+
+        <span
+          class="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold border shrink-0 flex items-center gap-1.5"
+          :class="[
+            syncStatus === 'connected' ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' :
+            syncStatus === 'syncing' ? 'bg-teal-500/15 text-teal-300 border-teal-500/30 animate-pulse' :
+            syncStatus === 'error' ? 'bg-rose-500/15 text-rose-300 border-rose-500/30' :
+            'bg-amber-500/15 text-amber-300 border-amber-500/30'
+          ]"
+        >
+          <span class="w-1.5 h-1.5 rounded-full" :class="syncStatus === 'connected' ? 'bg-emerald-400' : (syncStatus === 'syncing' ? 'bg-teal-400' : 'bg-amber-400')"></span>
+          <span>{{ syncStatus === 'connected' ? 'Cloud Terhubung' : (syncStatus === 'syncing' ? 'Menyinkronkan...' : (syncStatus === 'error' ? 'Gagal Terhubung' : 'Offline / Standby')) }}</span>
+        </span>
+      </div>
+
+      <!-- Cloud Info Summary Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        <div class="p-2.5 rounded-md bg-slate-950/70 border border-slate-800 text-left">
+          <p class="text-[10px] text-slate-500 font-mono">Status Jaringan</p>
+          <p class="text-xs font-bold text-slate-200 mt-0.5">{{ productionStore.isOnline ? 'Online (Terhubung)' : 'Offline' }}</p>
+        </div>
+        <div class="p-2.5 rounded-md bg-slate-950/70 border border-slate-800 text-left">
+          <p class="text-[10px] text-slate-500 font-mono">Terakhir Sync</p>
+          <p class="text-xs font-bold text-teal-300 mt-0.5 truncate">{{ lastSyncTime || 'Belum pernah' }}</p>
+        </div>
+        <div class="p-2.5 rounded-md bg-slate-950/70 border border-slate-800 text-left col-span-2 sm:col-span-1">
+          <p class="text-[10px] text-slate-500 font-mono">Belum Di-upload</p>
+          <p class="text-xs font-bold text-amber-300 mt-0.5">{{ pendingSyncCount }} log lokal</p>
+        </div>
+      </div>
+
+      <!-- Error / Notice banner if any -->
+      <div v-if="lastSyncError" class="p-2.5 rounded-md bg-rose-500/10 border border-rose-500/30 text-[11px] font-mono text-rose-300 flex items-center gap-2">
+        <AlertCircle class="w-4 h-4 shrink-0 text-rose-400" />
+        <span class="truncate">{{ lastSyncError }}</span>
+      </div>
+
+      <!-- Cloud Sync Action Buttons -->
+      <div class="flex items-center gap-2 pt-1">
+        <button
+          type="button"
+          @click="handleTestSupabase"
+          :disabled="isTestingCloud"
+          class="flex-1 h-9 px-3 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs border border-slate-700 transition flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-50"
+        >
+          <Activity class="w-3.5 h-3.5 text-teal-400" />
+          <span>{{ isTestingCloud ? 'Memeriksa...' : 'Tes Koneksi Cloud' }}</span>
+        </button>
+
+        <button
+          type="button"
+          @click="handleManualCloudSync"
+          :disabled="syncStatus === 'syncing'"
+          class="flex-1 h-9 px-3 rounded-md bg-teal-500/15 hover:bg-teal-500/25 text-teal-300 font-bold text-xs border border-teal-500/40 transition flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-50"
+        >
+          <RefreshCw class="w-3.5 h-3.5 text-teal-400" :class="{ 'animate-spin': syncStatus === 'syncing' }" />
+          <span>{{ syncStatus === 'syncing' ? 'Sedang Sync...' : 'Sinkronkan Sekarang' }}</span>
+        </button>
+      </div>
+    </div>
+
+
     <!-- ── Identitas Mandor / Pengawas ── -->
     <div class="bg-slate-900/60 border border-slate-800/80 rounded-lg p-4 space-y-3">
       <div class="flex items-center gap-2.5 border-b border-slate-800 pb-3">
@@ -417,8 +491,19 @@ import {
   Trash2,
   Pencil,
   Check,
-  Share2
+  Share2,
+  Cloud,
+  Activity,
+  RefreshCw
 } from 'lucide-vue-next'
+import {
+  syncStatus,
+  lastSyncTime,
+  lastSyncError,
+  pendingSyncCount,
+  testSupabaseConnection,
+  performFullSync
+} from '@/services/supabaseSyncService'
 
 const { t, locale } = useI18n()
 const productionStore = useProductionStore()
@@ -428,6 +513,29 @@ const overrideStore = useOverrideStore()
 const auditStore = useAuditStore()
 const shiftStore = useShiftStore()
 
+const isTestingCloud = ref(false)
+
+async function handleTestSupabase() {
+  isTestingCloud.value = true
+  try {
+    const res = await testSupabaseConnection()
+    statusType.value = res.ok ? 'success' : 'error'
+    statusMessage.value = res.message
+  } finally {
+    isTestingCloud.value = false
+  }
+}
+
+async function handleManualCloudSync() {
+  const res = await performFullSync(async () => {
+    await teamStore.loadTeams(true)
+    await productionStore.loadLogs(true)
+    await overrideStore.loadFromStorage(true)
+  })
+  statusType.value = res.success ? 'success' : 'error'
+  statusMessage.value = res.message
+}
+
 const foremanInput = ref(authStore.foremanName)
 const newCodeInput = ref('')
 const newRoleInputs = ref<Record<string, string>>({})
@@ -435,6 +543,7 @@ const editingCodeKey = ref<string | null>(null)
 const editingCodeInput = ref<string>('')
 const statusMessage = ref('')
 const statusType = ref<'success' | 'error'>('success')
+
 
 function startEditCode(code: string) {
   editingCodeKey.value = code

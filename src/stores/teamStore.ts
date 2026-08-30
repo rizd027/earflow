@@ -4,6 +4,9 @@ import { getDB, seedInitialLocalData, type LocalTeam } from '@/services/db'
 import { getLocalDateStr } from '@/stores/productionStore'
 import { NO_KARYAWAN_LIST, matchWorkerToNikRecord, isTempWorkerNo } from '@/data/noKaryawanData'
 import { useShiftStore } from '@/stores/shiftStore'
+import { supabase } from '@/supabase/client'
+import { isCloudEnabled } from '@/services/supabaseSyncService'
+
 
 export interface WorkerItem {
   id: string
@@ -201,7 +204,18 @@ export const useTeamStore = defineStore('team', () => {
 
   async function saveTeamToDB(team: LocalTeam) {
     const db = await getDB()
-    await db.put('teams', JSON.parse(JSON.stringify(team)))
+    const payload = JSON.parse(JSON.stringify(team))
+    await db.put('teams', payload)
+    if (isCloudEnabled.value && navigator.onLine) {
+      supabase.from('teams').upsert({
+        id: team.id,
+        name: team.name,
+        shift: team.shift || 'Shift Pagi (07:00 - 14:00)',
+        hourly_target: team.hourly_target || 180,
+        members: team.members || [],
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'id' }).then()
+    }
   }
 
   async function saveUnassignedToDB() {
@@ -214,7 +228,18 @@ export const useTeamStore = defineStore('team', () => {
       members: JSON.parse(JSON.stringify(unassignedMembers.value))
     }
     await db.put('teams', JSON.parse(JSON.stringify(unassignedTeamObj)))
+    if (isCloudEnabled.value && navigator.onLine) {
+      supabase.from('teams').upsert({
+        id: UNASSIGNED_TEAM_ID,
+        name: UNASSIGNED_TEAM_NAME,
+        shift: '-',
+        hourly_target: 0,
+        members: unassignedTeamObj.members,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'id' }).then()
+    }
   }
+
 
   async function addTeam(name: string, target: number, shift?: string) {
     const shiftStore = useShiftStore()
@@ -249,6 +274,9 @@ export const useTeamStore = defineStore('team', () => {
     teams.value = teams.value.filter(t => t.id !== teamId)
     const db = await getDB()
     await db.delete('teams', teamId)
+    if (isCloudEnabled.value && navigator.onLine) {
+      supabase.from('teams').delete().eq('id', teamId).then()
+    }
   }
 
   async function deleteAllTeams() {
@@ -268,8 +296,12 @@ export const useTeamStore = defineStore('team', () => {
     for (const id of teamIds) {
       await db.delete('teams', id)
     }
+    if (isCloudEnabled.value && navigator.onLine && teamIds.length > 0) {
+      supabase.from('teams').delete().in('id', teamIds).then()
+    }
     teams.value = []
   }
+
 
   // Add new worker directly to Master Directory without assigning to any team yet
   async function addUnassignedWorker(

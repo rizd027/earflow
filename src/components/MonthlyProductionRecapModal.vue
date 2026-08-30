@@ -113,13 +113,17 @@
           </div>
 
           <!-- Main Production Matrix Table (Pure White High-Contrast Grid) -->
-          <div class="overflow-x-auto print:overflow-visible">
-            <table class="recap-table w-full border-collapse border-2 border-black text-[9px] font-mono leading-none bg-white text-black table-fixed">
+          <div class="overflow-x-auto print:overflow-visible -mx-2 sm:mx-0 px-2 sm:px-0">
+            <div v-if="isEditing" class="sm:hidden mb-2 px-2.5 py-1.5 bg-amber-500/10 border border-amber-500/30 rounded text-[11px] font-mono text-amber-900 flex items-center gap-1.5 shadow-xs">
+              <span class="text-sm">👉</span>
+              <span>Geser ke kanan untuk melihat & mengisi semua kolom</span>
+            </div>
+            <table class="recap-table w-full min-w-[1200px] border-collapse border-2 border-black text-[9px] font-mono leading-none bg-white text-black table-fixed">
               <thead>
                 <tr class="bg-slate-100 text-black text-center uppercase tracking-tighter font-black border-b-2 border-black sticky top-0 z-20">
-                  <th class="print-col-no sticky top-0 z-20 border border-black p-0.5 w-[2%] text-center bg-slate-100 text-black font-black">No<br/><span class="text-[7px] font-normal">数</span></th>
-                  <th class="print-col-nik sticky top-0 z-20 border border-black p-0.5 w-[4.5%] text-center bg-slate-100 text-black font-black">No Krywn<br/><span class="text-[7px] font-normal">员工编号</span></th>
-                  <th class="print-col-name sticky top-0 z-20 border border-black p-0.5 w-[10.5%] text-left px-1 bg-slate-100 text-black font-black">Nama Karyawan<br/><span class="text-[7px] font-normal">员工姓名</span></th>
+                  <th class="print-col-no sticky left-0 top-0 z-30 border border-black p-0.5 w-[2%] text-center bg-slate-100 text-black font-black print:static">No<br/><span class="text-[7px] font-normal">数</span></th>
+                  <th class="print-col-nik sticky left-[20px] top-0 z-30 border border-black p-0.5 w-[4.5%] text-center bg-slate-100 text-black font-black print:static">No Krywn<br/><span class="text-[7px] font-normal">员工编号</span></th>
+                  <th class="print-col-name sticky left-[65px] top-0 z-30 border border-black p-0.5 w-[10.5%] text-left px-1 bg-slate-100 text-black font-black shadow-[2px_0_4px_-1px_rgba(0,0,0,0.15)] print:static print:shadow-none">Nama Karyawan<br/><span class="text-[7px] font-normal">员工姓名</span></th>
                   <th class="print-col-process sticky top-0 z-20 border border-black p-0.5 w-[5%] text-center bg-slate-100 text-black font-black">Proses Produksi<br/><span class="text-[7px] font-normal">工序</span></th>
                   <th class="print-col-target sticky top-0 z-20 border border-black p-0.5 w-[3.5%] text-center bg-slate-100 text-black font-black">Target<br/><span class="text-[7px] font-normal">目标</span></th>
                   
@@ -146,10 +150,10 @@
                   class="text-center h-5 bg-white text-black hover:bg-amber-100/70 hover:text-black print:hover:bg-transparent"
                 >
                   <!-- No -->
-                  <td class="print-col-no border border-black p-0.5 font-bold text-black text-center text-[9px] bg-white">{{ row.no }}</td>
+                  <td class="print-col-no sticky left-0 z-10 border border-black p-0.5 font-bold text-black text-center text-[9px] bg-white print:static">{{ row.no }}</td>
                   
                   <!-- Worker No -->
-                  <td class="print-col-nik border border-black p-0.5 text-black font-mono text-center font-semibold text-[8px] bg-white">
+                  <td class="print-col-nik sticky left-[20px] z-10 border border-black p-0.5 text-black font-mono text-center font-semibold text-[8px] bg-white print:static">
                     <input
                       v-if="isEditing"
                       :value="row.workerNo"
@@ -161,7 +165,7 @@
                   </td>
 
                   <!-- Worker Name -->
-                  <td class="print-col-name border border-black p-0.5 text-black font-mono text-left px-1 font-bold text-[9px] truncate max-w-[130px] bg-white">
+                  <td class="print-col-name sticky left-[65px] z-10 border border-black p-0.5 text-black font-mono text-left px-1 font-bold text-[9px] truncate max-w-[130px] bg-white shadow-[2px_0_4px_-1px_rgba(0,0,0,0.15)] print:static print:shadow-none">
                     <input
                       v-if="isEditing"
                       :value="row.workerName"
@@ -243,7 +247,7 @@
 
                 <!-- Summary Row 1: Total produksi hari itu -->
                 <tr class="bg-slate-200 text-black font-black text-center h-6 border-t-2 border-black">
-                  <td colspan="5" class="border border-black px-1 text-left text-[9px] uppercase tracking-tight text-black font-black">
+                  <td colspan="5" class="sticky left-0 z-10 bg-slate-200 border border-black px-1 text-left text-[9px] uppercase tracking-tight text-black font-black shadow-[2px_0_4px_-1px_rgba(0,0,0,0.15)] print:static print:shadow-none">
                     Total produksi hari itu 当天总量汇总
                   </td>
                   <td

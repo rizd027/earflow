@@ -102,19 +102,29 @@
           </div>
 
           <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            <!-- Tool 1: Input Jam-jaman -->
+            <!-- Tool 1: Input Jam-jaman (Primary Action) -->
             <button
               @click="$emit('open-log-modal')"
-              class="h-9 px-2.5 rounded-lg bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 border border-teal-500/30 font-bold text-xs flex items-center justify-center gap-2 transition active:scale-95"
+              class="h-9 px-2.5 rounded-lg bg-gradient-to-r from-teal-500/25 to-emerald-500/20 hover:from-teal-500/35 hover:to-emerald-500/30 text-teal-200 border border-teal-500/50 hover:border-teal-400 font-bold text-xs flex items-center justify-center gap-2 transition active:scale-95 shadow-xs"
             >
-              <Plus class="w-3.5 h-3.5 text-teal-400 shrink-0" />
+              <Plus class="w-4 h-4 text-teal-300 shrink-0" />
               <span class="truncate">Input Jam-jaman</span>
+            </button>
+
+            <!-- Tool: AI Scan Statistik (Smart AI Action) -->
+            <button
+              @click="showAiScanModal = true"
+              class="h-9 px-2.5 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-200 border border-cyan-500/40 hover:border-cyan-400 font-bold text-xs flex items-center justify-center gap-2 transition active:scale-95 shadow-xs"
+              title="Scan Lembar Cetak Statistik dengan AI"
+            >
+              <ScanText class="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+              <span class="truncate">AI Scan Statistik</span>
             </button>
 
             <!-- Tool 2: Laporan Mandor -->
             <button
               @click="showMandorReportModal = true"
-              class="h-9 px-2.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold text-xs flex items-center justify-center gap-2 transition active:scale-95"
+              class="h-9 px-2.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:border-amber-400 font-bold text-xs flex items-center justify-center gap-2 transition active:scale-95"
             >
               <ClipboardList class="w-3.5 h-3.5 text-amber-400 shrink-0" />
               <span class="truncate">Laporan Mandor</span>
@@ -123,33 +133,33 @@
             <!-- Tool 3: Rekap Bulanan -->
             <button
               @click="showMonthlyRecapModal = true"
-              class="h-9 px-2.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold text-xs flex items-center justify-center gap-2 transition active:scale-95"
+              class="h-9 px-2.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 hover:border-emerald-400 font-bold text-xs flex items-center justify-center gap-2 transition active:scale-95"
             >
               <Table class="w-3.5 h-3.5 text-emerald-400 shrink-0" />
               <span class="truncate">Rekap Bulanan</span>
             </button>
 
-            <!-- Tool 4: Set Target Massal -->
+            <!-- Tool 4: Set Target Massal (Secondary Action) -->
             <button
               :disabled="isReadOnly"
               @click="showSetAllTargetModal = true"
-              class="h-9 px-2.5 rounded-lg font-bold text-xs flex items-center justify-center gap-2 transition active:scale-95"
+              class="h-9 px-2.5 rounded-lg font-semibold text-xs flex items-center justify-center gap-2 transition active:scale-95"
               :class="isReadOnly
                 ? 'bg-slate-900 text-slate-500 border border-slate-800 cursor-not-allowed opacity-60'
-                : 'bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 border border-teal-500/30'"
+                : 'bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-slate-100 border border-slate-700'"
             >
-              <Target class="w-3.5 h-3.5 text-teal-400 shrink-0" />
+              <Target class="w-3.5 h-3.5 text-slate-400 shrink-0" />
               <span class="truncate">Set Target Massal</span>
             </button>
 
-            <!-- Tool 5: Tandai Semua Hadir -->
+            <!-- Tool 5: Tandai Semua Hadir (Secondary Action) -->
             <button
               :disabled="isReadOnly"
               @click="markAllPresent()"
-              class="h-9 px-2.5 rounded-lg font-bold text-xs flex items-center justify-center gap-2 transition active:scale-95"
+              class="h-9 px-2.5 rounded-lg font-semibold text-xs flex items-center justify-center gap-2 transition active:scale-95"
               :class="isReadOnly
                 ? 'bg-slate-900 text-slate-500 border border-slate-800 cursor-not-allowed opacity-60'
-                : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700'"
+                : 'bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-slate-100 border border-slate-700'"
             >
               <CheckCircle2 class="w-3.5 h-3.5 text-emerald-400 shrink-0" />
               <span class="truncate">Semua Hadir</span>
@@ -632,6 +642,14 @@
       @apply="handleApplyMassTarget"
     />
 
+    <!-- AI SCAN STATISTIK MODAL -->
+    <AiScanStatistikModal
+      :show="showAiScanModal"
+      :initial-month-str="selectedDate.slice(0, 7)"
+      @close="showAiScanModal = false"
+      @saved="onAiScanSaved"
+    />
+
     <!-- Floating Toast Notification -->
     <transition
       enter-active-class="transition duration-300 ease-out"
@@ -665,6 +683,7 @@ import MandorDailyReportModal from '@/components/MandorDailyReportModal.vue'
 import MonthlyProductionRecapModal from '@/components/MonthlyProductionRecapModal.vue'
 import WorkerReportModal from '@/components/WorkerReportModal.vue'
 import SetAllTargetModal from '@/components/SetAllTargetModal.vue'
+import AiScanStatistikModal from '@/components/AiScanStatistikModal.vue'
 import {
   Target,
   Calendar,
@@ -682,7 +701,8 @@ import {
   Wrench,
   BarChart3,
   Lock,
-  Unlock
+  Unlock,
+  ScanText
 } from 'lucide-vue-next'
 import { DEFAULT_DAILY_TARGET, isWorkerNewOnDate, calculateWorkerProdMap, isWorkerInLog } from '@/utils/reportUtils'
 
@@ -700,6 +720,7 @@ const showMandorReportModal = ref(false)
 const showMonthlyRecapModal = ref(false)
 const showWorkerReportModal = ref(false)
 const showSetAllTargetModal = ref(false)
+const showAiScanModal = ref(false)
 const selectedWorkerForReport = ref<any>(null)
 
 const toastMessage = ref('')
@@ -712,6 +733,12 @@ function showToast(msg: string) {
     toastMessage.value = ''
   }, 3500)
 }
+
+function onAiScanSaved(data: { workerId: string; monthStr: string; updatedCount: number }) {
+  showToast(`Berhasil memperbarui ${data.updatedCount} data statistik via AI Scan`)
+  overrideStore.loadFromStorage(true)
+}
+
 
 // Debounce utility
 function debounce<T extends (...args: any[]) => void>(fn: T, delay: number): T {

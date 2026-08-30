@@ -1,93 +1,129 @@
+-- =========================================================================
 -- EarFlow: Earphone Production Management System
--- Schema Definition for Supabase (PostgreSQL)
+-- Robust Schema Definition for Supabase (PostgreSQL)
+-- Compatible with dynamic string IDs (TEXT PRIMARY KEY) & JSONB structures
+-- =========================================================================
 
--- Enable UUID extension
+-- Enable UUID extension if needed
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- 1. USERS TABLE
+-- 1. USERS & PROFILES TABLE
 CREATE TABLE IF NOT EXISTS public.users (
-  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  email TEXT NOT NULL UNIQUE,
+  id TEXT PRIMARY KEY,
+  email TEXT,
   full_name TEXT NOT NULL,
-  role TEXT NOT NULL CHECK (role IN ('mandor', 'pekerja')),
+  role TEXT NOT NULL DEFAULT 'mandor',
   avatar_url TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 2. TEAMS TABLE
+-- 2. TEAMS TABLE (Includes embedded members JSONB or relational rows)
 CREATE TABLE IF NOT EXISTS public.teams (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
-  shift TEXT DEFAULT '13:00 - 20:00',
-  supervisor_id UUID REFERENCES public.users(id) ON DELETE SET NULL,
+  shift TEXT DEFAULT 'Shift Pagi (07:00 - 14:00)',
   hourly_target INT DEFAULT 180,
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  members JSONB DEFAULT '[]'::jsonb,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 3. TEAM MEMBERS TABLE
-CREATE TABLE IF NOT EXISTS public.team_members (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  team_id UUID NOT NULL REFERENCES public.teams(id) ON DELETE CASCADE,
-  user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
-  joined_at TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE(team_id, user_id)
-);
-
--- 4. PRODUCTION LOGS TABLE (Recorded hourly by Mandor)
+-- 3. PRODUCTION LOGS TABLE (Supports all dynamic shifts & custom slots)
 CREATE TABLE IF NOT EXISTS public.production_logs (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  team_id UUID NOT NULL REFERENCES public.teams(id) ON DELETE CASCADE,
-  date DATE NOT NULL DEFAULT CURRENT_DATE,
-  hour_slot TEXT NOT NULL CHECK (hour_slot IN ('13:00 - 14:00', '14:00 - 15:00', '15:00 - 16:00', '16:00 - 17:00', '17:00 - 18:00', '18:00 - 19:00', '19:00 - 20:00')),
-  total_qty INT NOT NULL CHECK (total_qty >= 0),
-  present_count INT NOT NULL CHECK (present_count > 0),
+  id TEXT PRIMARY KEY,
+  team_id TEXT NOT NULL,
+  team_name TEXT,
+  date TEXT NOT NULL,
+  hour_slot TEXT NOT NULL,
+  total_qty INT NOT NULL DEFAULT 0,
+  present_count INT NOT NULL DEFAULT 1,
+  present_member_ids JSONB DEFAULT '[]'::jsonb,
   photo_url TEXT,
   notes TEXT,
-  created_by UUID REFERENCES public.users(id) ON DELETE SET NULL,
+  created_by TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE(team_id, date, hour_slot)
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 5. INDIVIDUAL RESULTS TABLE (Auto-calculated split per worker)
-CREATE TABLE IF NOT EXISTS public.individual_results (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  log_id UUID NOT NULL REFERENCES public.production_logs(id) ON DELETE CASCADE,
-  team_id UUID NOT NULL REFERENCES public.teams(id) ON DELETE CASCADE,
-  user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
-  date DATE NOT NULL,
-  hour_slot TEXT NOT NULL,
-  individual_qty INT NOT NULL DEFAULT 0,
-  is_present BOOLEAN NOT NULL DEFAULT TRUE,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE(log_id, user_id)
+-- Index for fast date and team queries
+CREATE INDEX IF NOT EXISTS idx_prod_logs_date ON public.production_logs(date);
+CREATE INDEX IF NOT EXISTS idx_prod_logs_team ON public.production_logs(team_id);
+
+-- 4. CELL & WORKER OVERRIDES TABLE (Cell edits from WorkerReport & MonthlyRecap)
+CREATE TABLE IF NOT EXISTS public.overrides (
+  key TEXT PRIMARY KEY,
+  type TEXT NOT NULL DEFAULT 'daily', -- 'daily' or 'worker'
+  data JSONB NOT NULL DEFAULT '{}'::jsonb,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Index for override types
+CREATE INDEX IF NOT EXISTS idx_overrides_type ON public.overrides(type);
+
+-- 5. SHIFTS CONFIG TABLE
+CREATE TABLE IF NOT EXISTS public.shifts (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  start_time TEXT NOT NULL,
+  end_time TEXT NOT NULL,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 6. AUDIT LOGS TABLE
+CREATE TABLE IF NOT EXISTS public.audit_logs (
+  id TEXT PRIMARY KEY,
+  timestamp TEXT NOT NULL,
+  category TEXT NOT NULL DEFAULT 'System',
+  action TEXT NOT NULL,
+  details TEXT,
+  user_name TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_audit_logs_timestamp ON public.audit_logs(timestamp);
+
+-- 7. APP SETTINGS & MASTER CONFIG TABLE (Foreman name, process types & groups)
+CREATE TABLE IF NOT EXISTS public.app_settings (
+  key TEXT PRIMARY KEY,
+  value JSONB NOT NULL DEFAULT '{}'::jsonb,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- =========================================================================
 -- ROW LEVEL SECURITY (RLS) POLICIES
+-- Permissive policies for instant sync with Supabase anon & authenticated key
+-- =========================================================================
+
 ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.teams ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.team_members ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.production_logs ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.individual_results ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.overrides ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.shifts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.app_settings ENABLE ROW LEVEL SECURITY;
 
--- Allow authenticated read access to all users
-CREATE POLICY "Public read users" ON public.users FOR SELECT USING (true);
-CREATE POLICY "Public read teams" ON public.teams FOR SELECT USING (true);
-CREATE POLICY "Public read team_members" ON public.team_members FOR SELECT USING (true);
-CREATE POLICY "Public read production_logs" ON public.production_logs FOR SELECT USING (true);
-CREATE POLICY "Public read individual_results" ON public.individual_results FOR SELECT USING (true);
+-- Allow read/write for all client tables
+DROP POLICY IF EXISTS "Allow all for users" ON public.users;
+CREATE POLICY "Allow all for users" ON public.users FOR ALL USING (true) WITH CHECK (true);
 
--- Allow mandor to insert and update logs
-CREATE POLICY "Mandor write production_logs" ON public.production_logs FOR ALL USING (
-  EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'mandor')
-);
+DROP POLICY IF EXISTS "Allow all for teams" ON public.teams;
+CREATE POLICY "Allow all for teams" ON public.teams FOR ALL USING (true) WITH CHECK (true);
 
-CREATE POLICY "Mandor write individual_results" ON public.individual_results FOR ALL USING (
-  EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'mandor')
-);
+DROP POLICY IF EXISTS "Allow all for production_logs" ON public.production_logs;
+CREATE POLICY "Allow all for production_logs" ON public.production_logs FOR ALL USING (true) WITH CHECK (true);
 
--- DUMMY SEED DATA FOR TESTING / PRODUCTION START
-INSERT INTO public.teams (id, name, hourly_target) VALUES 
-('t1111111-1111-1111-1111-111111111111', 'Tim Alpha (Solder)', 180),
-('t2222222-2222-2222-2222-222222222222', 'Tim Beta (Lem)', 210),
-('t3333333-3333-3333-3333-333333333333', 'Tim Gamma (Assembly)', 195)
-ON CONFLICT DO NOTHING;
+DROP POLICY IF EXISTS "Allow all for overrides" ON public.overrides;
+CREATE POLICY "Allow all for overrides" ON public.overrides FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow all for shifts" ON public.shifts;
+CREATE POLICY "Allow all for shifts" ON public.shifts FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow all for audit_logs" ON public.audit_logs;
+CREATE POLICY "Allow all for audit_logs" ON public.audit_logs FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow all for app_settings" ON public.app_settings;
+CREATE POLICY "Allow all for app_settings" ON public.app_settings FOR ALL USING (true) WITH CHECK (true);
+
+-- Enable Realtime for all tables in publication
+ALTER PUBLICATION supabase_realtime ADD TABLE public.teams, public.production_logs, public.overrides, public.shifts, public.app_settings;
