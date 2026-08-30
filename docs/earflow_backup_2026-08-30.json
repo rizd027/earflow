@@ -1,7 +1,7 @@
 {
   "app": "EarFlow",
   "version": 4,
-  "timestamp": "2026-08-30T15:40:40.718Z",
+  "timestamp": "2026-08-30T15:44:20.202Z",
   "data": {
     "teams": [
       {
@@ -13,7 +13,7 @@
           {
             "id": "W-733179",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Siti Zulfatul",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Siti%20Zulfatul",
@@ -24,7 +24,7 @@
           {
             "id": "W-759423",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Eko Riski W",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Eko%20Riski%20W",
@@ -35,7 +35,7 @@
           {
             "id": "W-830531",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Wiyan Asri",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Wiyan%20Asri",
@@ -46,7 +46,7 @@
           {
             "id": "W-850461",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Siti Rohmawati",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Siti%20Rohmawati",
@@ -57,7 +57,7 @@
           {
             "id": "W-932523",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Desi Handayani",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Desi%20Handayani",
@@ -68,7 +68,7 @@
           {
             "id": "W-905912",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Syaifira Ila",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Syaifira%20Ila",
@@ -79,7 +79,7 @@
           {
             "id": "W-927503",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Hidayatus Sholikhah",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Hidayatus%20Sholikhah",
@@ -90,7 +90,7 @@
           {
             "id": "W-945260",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Erika Nur Manda",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Erika%20Nur%20Manda",
@@ -101,7 +101,7 @@
           {
             "id": "W-959878",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Nazar Putra A.",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Nazzar%20Putra%20A.",
@@ -112,7 +112,7 @@
           {
             "id": "W-987587",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "exit_date": "2026-07",
             "full_name": "Fatima Aprillia",
@@ -124,7 +124,7 @@
           {
             "id": "W-009880",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Erika Cahya",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Erika%20Cahya",
@@ -135,7 +135,7 @@
           {
             "id": "W-025708",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "full_name": "Heri Setyawan",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Heri%20Setyawan",
             "joined_date": "2026-07-24",
@@ -145,7 +145,7 @@
           {
             "id": "W-037491",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Aisyatul Khasanah",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Aisyatul%20Khasanah",
@@ -156,7 +156,7 @@
           {
             "id": "W-047279",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Lola Afridatu Dina",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Loli%20Afridah%20Dina",
@@ -167,7 +167,7 @@
           {
             "id": "W-067216",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "full_name": "Nur Fani O.",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Nor%20Fani%20O.",
@@ -178,7 +178,7 @@
           {
             "id": "W-101120",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Purwati",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Purwati",
@@ -189,7 +189,7 @@
           {
             "id": "W-117040",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Rini Ristanti",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Rini%20Rifianti",
@@ -200,7 +200,7 @@
           {
             "id": "W-127471",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Zunia Putri P.",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Zunia%20Putri%20P.",
@@ -211,7 +211,7 @@
           {
             "id": "W-137948",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Siti Aisah",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Siti%20Aisah",
@@ -222,7 +222,7 @@
           {
             "id": "W-157768",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Zaskia Ayundhira",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Saskia",
@@ -233,7 +233,7 @@
           {
             "id": "W-168184",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "exit_date": "2026-07",
             "full_name": "Icha Nanda Lifola",
@@ -245,7 +245,7 @@
           {
             "id": "W-177812",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Elvia Tri C.",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Elvia%20Tri%20C.",
@@ -256,7 +256,7 @@
           {
             "id": "W-187336",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Wiwik Ermawati",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Wiwik%20Ermawati",
@@ -267,7 +267,7 @@
           {
             "id": "W-196607",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "exit_date": "2026-07",
             "full_name": "Anesa Putri",
@@ -279,7 +279,7 @@
           {
             "id": "W-207704",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "full_name": "Ana Choirohun Nisa",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Ana%20Choirohun%20Nisa",
@@ -290,7 +290,7 @@
           {
             "id": "W-217984",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Nandita Aurelia",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Nadhira",
@@ -301,7 +301,7 @@
           {
             "id": "W-228523",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "exit_date": "2026-07",
             "full_name": "Nabila Dwi",
@@ -313,7 +313,7 @@
           {
             "id": "W-489700",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "exit_date": "2026-07",
             "full_name": "Nurul Afidatun",
@@ -325,7 +325,7 @@
           {
             "id": "W-351697",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Anisa Bil Hikmah",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Anisa%20Bil%20Hikmah",
@@ -336,7 +336,7 @@
           {
             "id": "W-523871",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Arbecha Trivany M.A",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Arbecha%20Trivany%20M.A",
@@ -347,7 +347,7 @@
           {
             "id": "W-651190",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "full_name": "Fitri Permatasari",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Fitri%20Permatasari",
             "joined_date": "2026-07-23",
@@ -357,7 +357,7 @@
           {
             "id": "W-024642",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Dewi Masfufah",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Dewi%20Masfufah",
@@ -368,7 +368,7 @@
           {
             "id": "W-455582",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Kovivah",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Kovivah",
@@ -379,7 +379,7 @@
           {
             "id": "W-536199",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Nadin Candra Winata",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Nadin%20Candra%20Winata",
@@ -390,7 +390,7 @@
           {
             "id": "W-584636",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Nur Hidayah",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Nur%20Hidayah",
@@ -401,7 +401,7 @@
           {
             "id": "W-853089",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "exit_date": "2026-07",
             "full_name": "Anggun Lestari",
@@ -413,7 +413,7 @@
           {
             "id": "W-967775",
             "role": "Solder",
-            "shift": "Shift Pagi (06:00 - 13:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "exit_date": "2026-07",
             "full_name": "Natama",
@@ -425,7 +425,7 @@
           {
             "id": "W-030834",
             "role": "Operator Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "exit_date": "2026-07",
             "full_name": "Sevvi",
@@ -437,7 +437,7 @@
           {
             "id": "W-227367",
             "role": "Solder",
-            "shift": "Shift Pagi (06:00 - 13:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "exit_date": "2026-07",
             "full_name": "Nadhira",
@@ -449,7 +449,7 @@
           {
             "id": "W-292992",
             "role": "Solder",
-            "shift": "Shift Pagi (06:00 - 13:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "exit_date": "2026-07",
             "full_name": "Fikri Arifin I",
@@ -461,7 +461,7 @@
           {
             "id": "W-046462",
             "role": "Solder",
-            "shift": "Shift Pagi (06:00 - 13:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Wulan Khusnul K",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Wulan%20Khusnul%20K",
@@ -472,7 +472,7 @@
           {
             "id": "W-188604",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Pitanti Wahyu",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Sindy%20Setya",
@@ -483,7 +483,7 @@
           {
             "id": "W-421802",
             "role": "Operator Solder",
-            "shift": "Shift Pagi (06:00 - 13:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "exit_date": "2026-07",
             "full_name": "Dheni Akbar K",
@@ -495,7 +495,7 @@
           {
             "id": "W-442562",
             "role": "Solder",
-            "shift": "Shift Pagi (06:00 - 13:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Ayu Maulida",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Ayu%20Maulida",
@@ -506,7 +506,7 @@
           {
             "id": "W-464822",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Ayu Afrani",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Ayu%20A.",
@@ -517,7 +517,7 @@
           {
             "id": "W-501728",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Secma Agustina",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Selma%20Agustina",
@@ -528,7 +528,7 @@
           {
             "id": "W-090091",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Sylvana Damayanti",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Sylvana%20Damayanti",
@@ -539,7 +539,7 @@
           {
             "id": "W-150635",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Lutfi Juniar Mafikhasani",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Lutfi%20Juniar%20Mafikhasani",
@@ -550,7 +550,7 @@
           {
             "id": "W-219796",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "full_name": "Martha Soraya",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Martha%20Soraya",
@@ -561,7 +561,7 @@
           {
             "id": "W-458035",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Feni Eka A",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Feni%20Eka%20A",
@@ -572,7 +572,7 @@
           {
             "id": "W-714463",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "full_name": "Nunik Wigiastutik",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Wiwik%20Wigiastutik",
@@ -583,7 +583,7 @@
           {
             "id": "W-489291",
             "role": "Solder",
-            "shift": "Shift Pagi (06:00 - 13:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Elfareta Dwi Agustina",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Elfareta%20Dwi%20Agustina",
@@ -594,7 +594,7 @@
           {
             "id": "W-090120",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Sarah Wulandari",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah%20Wulandari",
@@ -605,7 +605,7 @@
           {
             "id": "W-613645",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Uma Parwati",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Uma%20Parwan",
@@ -616,7 +616,7 @@
           {
             "id": "W-494484",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Aktif",
             "full_name": "Aulia april liana",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Aulia%20april%20liana",
@@ -627,7 +627,7 @@
           {
             "id": "W-593411",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Aktif",
             "full_name": "Ardina vivi Amelia",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Ardina%20vivi%20Amelia",
@@ -638,7 +638,7 @@
           {
             "id": "W-154829",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Vanida Herawati",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Vanida%20Herawati",
@@ -649,7 +649,7 @@
           {
             "id": "W-248744",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "exit_date": "2026-07",
             "full_name": "Putri Anjar Sari Sulasmi",
@@ -661,7 +661,7 @@
           {
             "id": "W-420358",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Yanti Oktavia",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Yanti%20octavia",
@@ -672,7 +672,7 @@
           {
             "id": "W-470806",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Lintang M",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Lintang%20M",
@@ -683,7 +683,7 @@
           {
             "id": "W-599482",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "full_name": "Lintang Saputri",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Lintang%20Saputri",
@@ -694,7 +694,7 @@
           {
             "id": "W-141028",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "full_name": "Faiq Ardha Sava",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Faiq%20Ardha%20Sava",
@@ -705,7 +705,7 @@
           {
             "id": "W-518846",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Arum Dwi Cahyani",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Arum%20Dwi%20Cahyani",
@@ -716,7 +716,7 @@
           {
             "id": "W-540105",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Oktavia Tri Ramadhani",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Oktavia%20Tri%20Ramadhani",
@@ -727,7 +727,7 @@
           {
             "id": "W-627527",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Oktavia Nur R",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Octavia%20Nur%20R",
@@ -738,7 +738,7 @@
           {
             "id": "W-638843",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Putrinika",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Putrinika",
@@ -749,7 +749,7 @@
           {
             "id": "W-875083",
             "role": "Solder",
-            "shift": "13:00 - 20:00",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Aktif",
             "full_name": "Dina Fitriani",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Dina%20Fitnani",
@@ -760,7 +760,7 @@
           {
             "id": "W-655433",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Aurelia Shinta P",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Aurelia%20Shinta%20P",
@@ -771,7 +771,7 @@
           {
             "id": "W-669466",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Aktif",
             "full_name": "Aprillia Putri Cahyani",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Aprillia%20Putri%20Cahyani",
@@ -782,7 +782,7 @@
           {
             "id": "W-264509",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Mafdukha Khoiriyah S",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Mafdukha%20Khoiriyah%20S",
@@ -793,7 +793,7 @@
           {
             "id": "W-364522",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Sabita Alya",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Sabita%20Alya",
@@ -804,7 +804,7 @@
           {
             "id": "W-332522",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Aktif",
             "full_name": "Nur Aini",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Nur%20Aini",
@@ -815,7 +815,7 @@
           {
             "id": "W-341074",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Fania Dwi W",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Fania%20Dwi%20W",
@@ -826,7 +826,7 @@
           {
             "id": "W-175626",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Henny Wulandari",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Henny%20Wulandari",
@@ -837,7 +837,7 @@
           {
             "id": "W-754131",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Dinda Amelia Putri",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Dinda%20Amelia%20Putri",
@@ -848,7 +848,7 @@
           {
             "id": "W-315236",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Esti Armilatus",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Esti%20Armilatus",
@@ -859,7 +859,7 @@
           {
             "id": "W-782729",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Keren Triesya Despita",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Keren",
@@ -870,7 +870,7 @@
           {
             "id": "W-458370",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Natasya Dwi F",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Natasya%20Dwi%20F",
@@ -881,7 +881,7 @@
           {
             "id": "W-130867",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "full_name": "Athala Rania",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Athalania",
@@ -892,7 +892,7 @@
           {
             "id": "W-933240",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "M. Alfarizd",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=M.%20Alfarizd",
@@ -903,7 +903,7 @@
           {
             "id": "W-183557",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "exit_date": "2026-07",
             "full_name": "Ananda Putri Eronika",
@@ -915,7 +915,7 @@
           {
             "id": "W-573188",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "exit_date": "2026-07",
             "full_name": "Dwi Sintya Indah",
@@ -927,7 +927,7 @@
           {
             "id": "W-961017",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Dian Herlina Putri",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Dian%20Herlina%20Putri",
@@ -938,7 +938,7 @@
           {
             "id": "W-057445",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Roudlotul Jannah",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Roudlotul%20Jannah",
@@ -949,7 +949,7 @@
           {
             "id": "W-987445",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Linda Kurnia R",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Linda%20Kurnia%20R",
@@ -960,7 +960,7 @@
           {
             "id": "W-039254",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Rindi Oktaviani",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Rindi%20Oktaviani",
@@ -971,7 +971,7 @@
           {
             "id": "W-110028",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Dini Triarinda",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Dini%20Triarinda",
@@ -982,7 +982,7 @@
           {
             "id": "W-478024",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Alisya Hadi Putri",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Alisya%20Hadi%20Putri",
@@ -993,7 +993,7 @@
           {
             "id": "W-381197",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Sinta Rahayu",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Sinta%20Rahayu",
@@ -1004,7 +1004,7 @@
           {
             "id": "W-946787",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "full_name": "Tiara Putri",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Tiara",
@@ -1015,7 +1015,7 @@
           {
             "id": "W-234885",
             "role": "Operator Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Tasya Alicya",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Tasya%20Alicya",
@@ -1026,7 +1026,7 @@
           {
             "id": "W-295456",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Rizky Nindi Bunga H",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Rizky%20Nindi%20Bunga%20H",
@@ -1037,7 +1037,7 @@
           {
             "id": "W-80165",
             "role": "Solder",
-            "shift": "Shift Pagi",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "exit_date": "2026-07",
             "full_name": "Saskia",
@@ -1049,7 +1049,7 @@
           {
             "id": "0000",
             "role": "Solder",
-            "shift": "Shift Pagi (06:00 - 13:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "full_name": "Yuni Fitriani",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Yuni%20Fitriani",
@@ -1060,7 +1060,7 @@
           {
             "id": "00001",
             "role": "Solder",
-            "shift": "Shift Pagi (06:00 - 13:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "full_name": "Suci Intan",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Suci%20Intan",
@@ -1071,7 +1071,7 @@
           {
             "id": "00002",
             "role": "Solder",
-            "shift": "Shift Pagi (06:00 - 13:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "full_name": "Dewi Qunrotun",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Dewi%20Qunrotun",
@@ -1082,7 +1082,7 @@
           {
             "id": "0005",
             "role": "Solder",
-            "shift": "Shift Pagi (06:00 - 13:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "full_name": "Sulkhiya Suci L",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Sulkhiya%20Suci%20L",
@@ -1093,7 +1093,7 @@
           {
             "id": "0006",
             "role": "Solder",
-            "shift": "Shift Pagi (06:00 - 13:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "full_name": "Agustina Wahyu",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Agustina%20Wahyu",
@@ -1104,7 +1104,7 @@
           {
             "id": "0007",
             "role": "Solder",
-            "shift": "Shift Pagi (06:00 - 13:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "full_name": "Avivatur Rosyidah",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Avivatur%20Rosyidah",
@@ -1115,7 +1115,7 @@
           {
             "id": "0008",
             "role": "Solder",
-            "shift": "Shift Pagi (06:00 - 13:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "full_name": "Ani Irawati",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Ani%20Irawati",
@@ -1126,7 +1126,7 @@
           {
             "id": "0009",
             "role": "Solder",
-            "shift": "Shift Pagi (06:00 - 13:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "full_name": "Winda Rosnia",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Winda%20Rosnia",
@@ -1137,7 +1137,7 @@
           {
             "id": "00010",
             "role": "Solder",
-            "shift": "Shift Pagi (06:00 - 13:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "full_name": "Yolanda Neisya",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Yolanda%20Neisya",
@@ -1148,7 +1148,7 @@
           {
             "id": "00011",
             "role": "Solder",
-            "shift": "Shift Pagi (06:00 - 13:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "full_name": "Sheila Putri",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Sheila%20Putri",
@@ -1159,7 +1159,7 @@
           {
             "id": "00012",
             "role": "Solder",
-            "shift": "Shift Pagi (06:00 - 13:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "full_name": "Silsiliyah S",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Silsiliyah%20S",
@@ -1170,7 +1170,7 @@
           {
             "id": "00014",
             "role": "Solder",
-            "shift": "Shift Pagi (06:00 - 13:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "full_name": "Aisyah Ismi",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Aisyah%20Ismi",
@@ -1181,7 +1181,7 @@
           {
             "id": "00015",
             "role": "Solder",
-            "shift": "Shift Pagi (06:00 - 13:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Keluar",
             "full_name": "Shalsa Putri",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Shalsa%20Putri",
@@ -1192,7 +1192,7 @@
           {
             "id": "000001",
             "role": "Solder",
-            "shift": "Shift Pagi (06:00 - 13:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Dinda Khoirunnisak",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Dinda%20Khoirunnisak",
@@ -1203,7 +1203,7 @@
           {
             "id": "000002",
             "role": "Solder",
-            "shift": "Shift Pagi (06:00 - 13:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Nafiela Rizky R",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Nafiela%20Rizky%20R",
@@ -1214,7 +1214,7 @@
           {
             "id": "000004",
             "role": "Solder",
-            "shift": "Shift Pagi (06:00 - 13:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Cinta Murni Hidayati",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Cinta%20Murni%20Hidayati",
@@ -1225,7 +1225,7 @@
           {
             "id": "-1",
             "role": "Solder",
-            "shift": "Shift Pagi (06:00 - 13:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Iva Nur Faidah",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Iva%20Nur%20Faidah",
@@ -1236,7 +1236,7 @@
           {
             "id": "-2",
             "role": "Solder",
-            "shift": "Shift Pagi (06:00 - 13:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Titik Susanti",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Titik%20Susanti",
@@ -1247,7 +1247,7 @@
           {
             "id": "-4",
             "role": "Solder",
-            "shift": "Shift Pagi (06:00 - 13:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Dela Oktavia Rohma D",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Dela%20Oktavia%20Rohma%20D",
@@ -1258,7 +1258,7 @@
           {
             "id": "-6",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Rohma Ayu Lestari",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Rohma%20Ayu%20Lestari",
@@ -1269,7 +1269,7 @@
           {
             "id": "-7",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Silvia Widyanti",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Silvia%20Widyanti",
@@ -1280,7 +1280,7 @@
           {
             "id": "-8",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Febriana Nova C",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Febriana%20Nova%20C",
@@ -1291,7 +1291,7 @@
           {
             "id": "-0003",
             "role": "Solder",
-            "shift": "Shift Pagi (06:00 - 13:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Elsa Esiana",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Elsa%20Esiana",
@@ -1302,7 +1302,7 @@
           {
             "id": "-00009",
             "role": "Solder",
-            "shift": "Shift Siang (13:00 - 20:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Desi Lestari",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Desi%20Lestari",
@@ -1313,7 +1313,7 @@
           {
             "id": "w_1786323474670_bl97",
             "role": "Solder",
-            "shift": "Shift Pagi (06:00 - 13:00)",
+            "shift": "Shift A (07:00 - 15:00)",
             "status": "Baru",
             "full_name": "Ika Sriwahyuni",
             "avatar_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Ika%20Sriwahyuni",
@@ -19371,7 +19371,7 @@
       "earflow_last_sync_time": "22.36.06",
       "earflow_last_sync_at": "2026-08-30T15:36:13.721Z",
       "earflow_wreport_edit_W-458035_2026-07": "{\"8\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":41},\"9\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":60},\"10\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":120},\"11\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":101},\"13\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":144},\"14\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":150},\"15\":{\"workHours\":\"-\",\"process\":\"A1\",\"targetQty\":600,\"remark\":\"Sakit\"},\"16\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"remark\":\"\",\"prodQty\":130},\"17\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":190},\"18\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":116},\"20\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":140},\"21\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":150},\"22\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":160}}",
-      "earflow_shifts": "[{\"id\":\"shift_7_14\",\"name\":\"Shift Pagi (07:00 - 14:00)\",\"startTime\":\"07:00\",\"endTime\":\"14:00\"},{\"id\":\"shift_pagi\",\"name\":\"Shift Pagi\",\"startTime\":\"06:00\",\"endTime\":\"13:00\"},{\"id\":\"shift_siang\",\"name\":\"Shift Siang\",\"startTime\":\"13:00\",\"endTime\":\"20:00\"}]",
+      "earflow_shifts": "[{\"id\":\"shift_a\",\"name\":\"Shift A\",\"startTime\":\"07:00\",\"endTime\":\"15:00\"}]",
       "earflow_wreport_edit_-_2026-07": "{\"17\":{\"workHours\":\"13 - 20 (7h)\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":200},\"18\":{\"workHours\":\"-\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":0,\"remark\":\"sakit\"},\"19\":{\"workHours\":\"13 - 20 (7h)\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":0},\"20\":{\"workHours\":\"13 - 20 (7h)\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":0},\"21\":{\"workHours\":\"13 - 20 (7h)\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":0}}",
       "earflow_wreport_edit_W-364522_2026-07": "{\"8\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":14},\"9\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":60},\"10\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":140},\"11\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":180},\"12\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600},\"13\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":183},\"14\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":165},\"15\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":138},\"16\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":150},\"17\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":200},\"18\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":145},\"19\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600},\"20\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":130},\"21\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":117},\"22\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":140}}",
       "earflow_wreport_edit_W-332522_2026-07": "{\"8\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":16},\"9\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":59},\"10\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":111},\"11\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":136},\"13\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":180},\"14\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":164},\"15\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":131},\"16\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":134},\"17\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":180},\"18\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":144},\"20\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":130},\"21\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":117},\"22\":{\"workHours\":\"13-20\",\"process\":\"A1\",\"targetQty\":600,\"prodQty\":140}}",
