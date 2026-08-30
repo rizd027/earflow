@@ -41,7 +41,7 @@ export const isCloudEnabled = computed(() => isSupabaseConfigured)
 function isNewer(a?: string, b?: string): boolean {
   if (!a) return false
   if (!b) return true
-  return new Date(a) > new Date(b)
+  return new Date(a).getTime() >= new Date(b).getTime()
 }
 
 // ─── Connection Test ────────────────────────────────────────────────────────
@@ -666,12 +666,15 @@ export function initSupabaseRealtime(onCloudChange?: (tableName: string) => void
         const tableName = payload.table
         clearTimeout(realtimeDebounceTimer)
         realtimeDebounceTimer = setTimeout(async () => {
+          // If we are currently pushing/uploading or syncing, ignore echoes
+          if (isSyncInProgress) return
+
           // Delta pull — only fetch what changed since last sync
           const sinceIso = getLastSyncAt()
           await pullCloudDataFromSupabase(sinceIso)
           setLastSyncAt(new Date().toISOString())
           if (onCloudChange) onCloudChange(tableName)
-        }, 800)
+        }, 1200)
       })
       .subscribe((status) => {
         if (status === 'SUBSCRIBED') {
