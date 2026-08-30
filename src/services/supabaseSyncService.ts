@@ -515,6 +515,8 @@ export async function resetCloudDatabase(): Promise<{ success: boolean; message:
     await supabase.from('production_logs').delete().neq('id', '___non_existent___')
     await supabase.from('teams').delete().neq('id', '___non_existent___')
     await supabase.from('overrides').delete().neq('key', '___non_existent___')
+    await supabase.from('shifts').delete().neq('id', '___non_existent___')
+    await supabase.from('app_settings').delete().neq('key', '___non_existent___')
     await supabase.from('audit_logs').delete().neq('id', '___non_existent___')
     return { success: true, message: 'Database Cloud Supabase berhasil dikosongkan total.' }
   } catch (err: any) {

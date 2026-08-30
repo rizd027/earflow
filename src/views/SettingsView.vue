@@ -435,7 +435,7 @@
           class="h-9 px-2.5 rounded bg-rose-100 hover:bg-rose-200 text-rose-700 dark:bg-rose-500/15 dark:hover:bg-rose-500/25 dark:text-rose-200 text-xs font-semibold border border-rose-300 dark:border-rose-500/40 transition flex items-center justify-center gap-1.5"
         >
           <Trash2 class="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
-          <span>Hapus Database</span>
+          <span>Reset Total (Hapus Semua)</span>
         </button>
       </div>
 
@@ -651,7 +651,7 @@ async function handleForceDownloadAll() {
 }
 
 async function handleResetAllDatabases() {
-  if (!confirm('Peringatan: Apakah Anda yakin ingin MENGHAPUS SEMUA DATA di perangkat ini dan di Supabase Cloud?')) {
+  if (!confirm('Peringatan: Apakah Anda yakin ingin RESET TOTAL SEMUA DATA? Seluruh Tim, Karyawan, Log Produksi, dan data Cloud akan dihapus bersih (0 data).')) {
     return
   }
   isTestingCloud.value = true
@@ -659,11 +659,20 @@ async function handleResetAllDatabases() {
   try {
     await clearAllLocalData()
     await resetCloudDatabase()
+    
     teamStore.teams = []
     teamStore.unassignedMembers = []
     productionStore.logs = []
     overrideStore.dailyMap = {}
     overrideStore.workerMap = {}
+    auditStore.auditLogs = []
+
+    if ('serviceWorker' in navigator) {
+      const registrations = await navigator.serviceWorker.getRegistrations()
+      for (const reg of registrations) {
+        await reg.unregister()
+      }
+    }
 
     if ('caches' in window) {
       try {
@@ -672,10 +681,13 @@ async function handleResetAllDatabases() {
       } catch {}
     }
 
+    localStorage.clear()
+    sessionStorage.clear()
+
     statusType.value = 'success'
     statusMessage.value = 'Database lokal dan cloud berhasil dikosongkan total.'
     setTimeout(() => {
-      window.location.reload()
+      window.location.href = '/'
     }, 600)
   } catch (err: any) {
     statusType.value = 'error'
