@@ -324,6 +324,7 @@ export const useOverrideStore = defineStore('override', () => {
     getDailyOverride,
     setDailyOverride,
     getWorkerOverride,
+    setWorkerOverride,
     flushPendingOverrides,
     saveAllToIndexedDB,
     resetDailyOverridesForDate,
