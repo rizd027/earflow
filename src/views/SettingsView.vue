@@ -300,6 +300,70 @@
       </div>
     </div>
 
+    <!-- ── Sinkronisasi Cloud (Supabase) ── -->
+    <div class="bg-slate-900/60 border border-slate-800/80 rounded-lg p-4 space-y-3">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-md bg-teal-500/10 border border-teal-500/20 flex items-center justify-center shrink-0">
+            <Cloud class="w-4 h-4 text-teal-400" />
+          </div>
+          <div>
+            <h3 class="text-xs font-bold text-slate-100 font-mono">Sinkronisasi Cloud (Supabase)</h3>
+            <p class="text-[11px] text-slate-400 leading-tight">Sinkronkan data otomatis antar perangkat (PC, HP & Web)</p>
+          </div>
+        </div>
+
+        <!-- Connection Status Badge -->
+        <div class="flex items-center gap-1.5 font-mono text-[10px] font-bold px-2.5 py-1 rounded-full border shadow-xs"
+          :class="syncStatus === 'connected'
+            ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+            : syncStatus === 'syncing'
+              ? 'bg-amber-500/15 text-amber-300 border-amber-500/30 animate-pulse'
+              : 'bg-slate-800 text-slate-400 border-slate-700'"
+        >
+          <span class="w-2 h-2 rounded-full"
+            :class="syncStatus === 'connected' ? 'bg-emerald-400' : syncStatus === 'syncing' ? 'bg-amber-400 animate-ping' : 'bg-slate-500'"
+          ></span>
+          <span>{{ syncStatus === 'connected' ? 'TERHUBUNG' : syncStatus === 'syncing' ? 'MENYINKRONKAN' : 'OFFLINE' }}</span>
+        </div>
+      </div>
+
+      <!-- Cloud Sync Status Bar -->
+      <div class="p-3 rounded-md bg-slate-950/70 border border-slate-800 space-y-2">
+        <div class="flex items-center justify-between text-[11px] font-mono text-slate-400">
+          <span>Waktu Sinkron Terakhir:</span>
+          <span class="text-teal-300 font-bold">{{ lastSyncTime || 'Belum tersinkron' }}</span>
+        </div>
+        <div v-if="lastSyncError" class="text-[10px] font-mono text-rose-400 flex items-start gap-1">
+          <AlertCircle class="w-3.5 h-3.5 shrink-0 mt-0.5" />
+          <span>{{ lastSyncError }}</span>
+        </div>
+      </div>
+
+      <!-- Cloud Actions Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+        <button
+          type="button"
+          @click="handleManualCloudSync"
+          :disabled="syncStatus === 'syncing'"
+          class="h-9 px-3.5 rounded-md bg-teal-500/20 hover:bg-teal-500/30 text-teal-200 border border-teal-500/40 font-bold text-xs transition flex items-center justify-center gap-2 shadow-sm disabled:opacity-50"
+        >
+          <RefreshCw class="w-3.5 h-3.5" :class="syncStatus === 'syncing' ? 'animate-spin' : ''" />
+          <span>Sinkronkan Sekarang</span>
+        </button>
+
+        <button
+          type="button"
+          @click="handleTestSupabase"
+          :disabled="isTestingCloud"
+          class="h-9 px-3.5 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-semibold text-xs transition flex items-center justify-center gap-2 disabled:opacity-50"
+        >
+          <Activity class="w-3.5 h-3.5 text-teal-400" />
+          <span>{{ isTestingCloud ? 'Menghubungkan...' : 'Tes Koneksi Cloud' }}</span>
+        </button>
+      </div>
+    </div>
+
     <!-- ── Backup & Restore ── -->
     <div class="bg-slate-900/60 border border-slate-800/80 rounded-lg p-4 space-y-3">
       <div class="flex items-center gap-2.5 border-b border-slate-800 pb-3">
