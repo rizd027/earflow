@@ -232,7 +232,9 @@ export const useOverrideStore = defineStore('override', () => {
     }
 
     const result: DailyOverride = {}
-    const items = [shiftMatch, allShiftsMatch, ...shiftSpecificMatches, baseMatch].filter(Boolean) as DailyOverride[]
+    const items = (shiftKey && shiftKey !== 'default')
+      ? [shiftMatch, allShiftsMatch, ...shiftSpecificMatches, baseMatch].filter(Boolean) as DailyOverride[]
+      : [baseMatch, shiftMatch, allShiftsMatch, ...shiftSpecificMatches].filter(Boolean) as DailyOverride[]
 
     for (const item of items) {
       if (result.prodQty === undefined && item.prodQty !== undefined) result.prodQty = item.prodQty
@@ -247,22 +249,45 @@ export const useOverrideStore = defineStore('override', () => {
 
   function setDailyOverride(workerId: string, dateStr: string, field: keyof DailyOverride, value: any, shiftKey: string = 'default') {
     if (!workerId || !dateStr) return
-    const key = (shiftKey && shiftKey !== 'default')
-      ? `${workerId}_${dateStr}_${shiftKey}`
-      : `${workerId}_${dateStr}`
+    const altKeys = getIdVariants(workerId)
+    const val = (field === 'targetQty' || field === 'prodQty')
+      ? (value === '' || value === null || value === undefined ? 0 : (isNaN(Number(value)) ? 0 : Number(value)))
+      : value
+
+    const keysToUpdate: string[] = []
     
-    const existing = dailyMap.value[key] ? { ...dailyMap.value[key] } : {}
-    if (field === 'targetQty' || field === 'prodQty') {
-      existing[field] = value === '' || value === null || value === undefined ? 0 : (isNaN(Number(value)) ? 0 : Number(value))
+    if (shiftKey && shiftKey !== 'default') {
+      keysToUpdate.push(`${workerId}_${dateStr}_${shiftKey}`)
+      // Also update base key so overall worker stats reflect the shift edit
+      keysToUpdate.push(`${workerId}_${dateStr}`)
     } else {
-      existing[field] = value
+      // Find all existing keys for this worker & date (including shift-specific or all_shifts or base keys)
+      const idx = prefixIndex.value
+      for (const wId of altKeys) {
+        const prefix = `${wId}_${dateStr}`
+        const existingKeys = idx.get(prefix)
+        if (existingKeys && existingKeys.length > 0) {
+          for (const k of existingKeys) {
+            if (!keysToUpdate.includes(k)) keysToUpdate.push(k)
+          }
+        }
+      }
+      // Ensure base key is always included
+      const baseKey = `${workerId}_${dateStr}`
+      if (!keysToUpdate.includes(baseKey)) {
+        keysToUpdate.push(baseKey)
+      }
     }
-    
-    // Update dailyMap reactively
-    dailyMap.value = { ...dailyMap.value, [key]: existing }
-    
-    // Save asynchronously to IndexedDB
-    persistSingleOverride(key, 'daily', existing)
+
+    const newDailyMap = { ...dailyMap.value }
+    for (const key of keysToUpdate) {
+      const existing = newDailyMap[key] ? { ...newDailyMap[key] } : {}
+      existing[field] = val
+      newDailyMap[key] = existing
+      persistSingleOverride(key, 'daily', existing)
+    }
+
+    dailyMap.value = newDailyMap
   }
 
   function getWorkerOverride(workerId: string): WorkerOverride | undefined {
