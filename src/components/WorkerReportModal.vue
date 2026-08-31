@@ -123,10 +123,12 @@
                   <td class="border border-slate-900 p-0.5 whitespace-nowrap">
                     <input
                       v-if="isEditing"
-                      :value="row.workHours === '-' ? '' : row.workHours"
+                      :value="row.workHours === '-' ? '' : (row.workHours || '')"
                       placeholder="-"
                       @focus="($event.target as HTMLInputElement).select()"
-                      @input="saveCellOverride(row.day, 'workHours', ($event.target as HTMLInputElement).value)"
+                      @change="saveCellOverride(row.day, 'workHours', ($event.target as HTMLInputElement).value)"
+                      @blur="saveCellOverride(row.day, 'workHours', ($event.target as HTMLInputElement).value)"
+                      @keydown.enter="($event.target as HTMLInputElement).blur()"
                       class="w-full h-8 sm:h-6 px-1.5 text-center rounded-xs text-xs sm:text-[10.5px] font-mono font-bold text-slate-950 focus:outline-none transition-all shadow-inner"
                       :class="isDayFieldEdited(row.day, 'workHours')
                         ? 'bg-amber-300 text-amber-950 font-black border-2 border-amber-600'
@@ -168,11 +170,13 @@
                     <input
                       v-if="isEditing"
                       type="number"
-                      :value="row.targetQty !== undefined && row.targetQty !== null && (row.targetQty !== 0 || isDayFieldEdited(row.day, 'targetQty')) ? row.targetQty : ''"
+                      :value="row.targetQty !== undefined && row.targetQty !== null && row.targetQty > 0 ? row.targetQty : (isDayFieldEdited(row.day, 'targetQty') ? (row.targetQty || 0) : '')"
                       placeholder="0"
                       @focus="($event.target as HTMLInputElement).select()"
-                      @input="saveCellOverride(row.day, 'targetQty', ($event.target as HTMLInputElement).value)"
-                      class="w-full h-8 sm:h-6 px-1.5 text-right rounded-xs text-xs sm:text-[10.5px] font-mono font-bold text-slate-950 focus:outline-none transition-all shadow-inner"
+                      @change="saveCellOverride(row.day, 'targetQty', ($event.target as HTMLInputElement).value)"
+                      @blur="saveCellOverride(row.day, 'targetQty', ($event.target as HTMLInputElement).value)"
+                      @keydown.enter="($event.target as HTMLInputElement).blur()"
+                      class="w-full h-8 sm:h-6 px-1.5 text-right rounded-xs text-xs sm:text-[10.5px] font-mono font-bold text-slate-950 focus:outline-none transition-all shadow-inner [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       :class="isDayFieldEdited(row.day, 'targetQty')
                         ? 'bg-amber-300 text-amber-950 font-black border-2 border-amber-600'
                         : 'bg-amber-500/10 border border-amber-500/60 focus:border-amber-600 focus:bg-white'"
@@ -185,11 +189,13 @@
                     <input
                       v-if="isEditing"
                       type="number"
-                      :value="row.prodQty !== undefined && row.prodQty !== null && (row.prodQty !== 0 || isDayFieldEdited(row.day, 'prodQty')) ? row.prodQty : ''"
+                      :value="row.prodQty !== undefined && row.prodQty !== null && row.prodQty > 0 ? row.prodQty : (isDayFieldEdited(row.day, 'prodQty') ? (row.prodQty || 0) : '')"
                       placeholder="0"
                       @focus="($event.target as HTMLInputElement).select()"
-                      @input="saveCellOverride(row.day, 'prodQty', ($event.target as HTMLInputElement).value)"
-                      class="w-full h-8 sm:h-6 px-1.5 text-right rounded-xs text-xs sm:text-[10.5px] font-mono font-extrabold focus:outline-none transition-all shadow-inner"
+                      @change="saveCellOverride(row.day, 'prodQty', ($event.target as HTMLInputElement).value)"
+                      @blur="saveCellOverride(row.day, 'prodQty', ($event.target as HTMLInputElement).value)"
+                      @keydown.enter="($event.target as HTMLInputElement).blur()"
+                      class="w-full h-8 sm:h-6 px-1.5 text-right rounded-xs text-xs sm:text-[10.5px] font-mono font-extrabold focus:outline-none transition-all shadow-inner [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       :class="isDayFieldEdited(row.day, 'prodQty')
                         ? 'bg-amber-300 text-amber-950 font-black border-2 border-amber-600'
                         : 'bg-emerald-500/10 border border-emerald-500/80 focus:border-emerald-600 focus:bg-white text-emerald-950'"
@@ -210,10 +216,12 @@
                   <td class="border border-slate-900 p-0.5 text-left px-1 text-[10px] sm:text-[9px] text-slate-600 min-w-[140px]" :title="row.remark">
                     <input
                       v-if="isEditing"
-                      :value="row.remark === '-' ? '' : row.remark"
+                      :value="row.remark === '-' ? '' : (row.remark || '')"
                       placeholder="-"
                       @focus="($event.target as HTMLInputElement).select()"
-                      @input="saveCellOverride(row.day, 'remark', ($event.target as HTMLInputElement).value)"
+                      @change="saveCellOverride(row.day, 'remark', ($event.target as HTMLInputElement).value)"
+                      @blur="saveCellOverride(row.day, 'remark', ($event.target as HTMLInputElement).value)"
+                      @keydown.enter="($event.target as HTMLInputElement).blur()"
                       class="w-full h-8 sm:h-6 px-1.5 text-left rounded-xs text-[11px] sm:text-[9px] font-mono focus:outline-none transition-all shadow-inner"
                       :class="isDayFieldEdited(row.day, 'remark')
                         ? 'bg-amber-300 text-amber-950 font-black border-2 border-amber-600'
@@ -541,7 +549,7 @@ function saveCellOverride(day: number, field: string, value: any) {
   const dateStr = getDateStrForDay(day)
   
   if (field === 'workHours') {
-    const trimmed = String(value).trim()
+    const trimmed = String(value || '').trim()
     const workHoursVal = (trimmed === '' || trimmed === '-') ? '-' : trimmed
     overrideStore.setDailyOverride(props.worker.id, dateStr, 'workHours', workHoursVal)
 
@@ -557,6 +565,10 @@ function saveCellOverride(day: number, field: string, value: any) {
         overrideStore.setDailyOverride(props.worker.id, dateStr, 'targetQty', target)
       }
     }
+  } else if (field === 'prodQty' || field === 'targetQty') {
+    const trimmed = String(value ?? '').trim()
+    const num = Number(trimmed)
+    overrideStore.setDailyOverride(props.worker.id, dateStr, field as keyof DailyOverride, (trimmed === '' || isNaN(num)) ? 0 : num)
   } else {
     overrideStore.setDailyOverride(props.worker.id, dateStr, field as keyof DailyOverride, value)
   }
