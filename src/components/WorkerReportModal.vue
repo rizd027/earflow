@@ -687,7 +687,7 @@ const dailyReportRows = computed(() => {
   const todayStr = getLocalDateStr()
 
   let runningCumHours = 0
-  let runningCumProd = 0
+  const cumProdByProcess: Record<string, number> = {}
 
   const rows = []
 
@@ -728,7 +728,7 @@ const dailyReportRows = computed(() => {
     const dateFormatted = `${yearStr}-${monthStr}-${dayStr}`
     const isPastOrToday = dateFormatted <= todayStr
 
-    const override = overrideStore.getDailyOverride(props.worker.id, dateFormatted) || {}
+    const override: DailyOverride = overrideStore.getDailyOverride(props.worker.id, dateFormatted) || {}
 
     // Production logs for this day
     const dateLogs = productionStore.logs.filter(l => l.date === dateFormatted && isWorkerInLog(l, props.worker!))
@@ -805,8 +805,8 @@ const dailyReportRows = computed(() => {
     const workHoursStr = String(workHours).trim()
 
     // Only show process and target when there is actual work activity or explicit override
-    const processName = override.process !== undefined
-      ? authStore.getProcessCodeForRole(override.process)
+    const processName: string = override.process !== undefined
+      ? (authStore.getProcessCodeForRole(override.process) || '')
       : (hasWorkActivity ? defaultProcess : '')
 
     const targetQty = override.targetQty !== undefined
@@ -816,13 +816,24 @@ const dailyReportRows = computed(() => {
     const remark = override.remark !== undefined ? override.remark : baseRemark
     const hasActualData = dateLogs.length > 0 || Object.keys(override).length > 0
 
+    let rowCumProd = 0
     if (isWorking) {
       // Only accumulate hours if there is actual production data or explicit work hours override
       if (hasWorkActivity && workHoursStr !== '-' && workHoursStr !== '') {
         const parsedHours = parseShiftDuration(workHoursStr)
         runningCumHours += parsedHours
       }
-      runningCumProd += prodQty
+
+      // Accumulate production separately per distinct process code
+      if (hasWorkActivity && processName) {
+        const processKey = processName.trim().toUpperCase()
+        if (prodQty > 0) {
+          cumProdByProcess[processKey] = (cumProdByProcess[processKey] || 0) + prodQty
+          rowCumProd = cumProdByProcess[processKey]
+        } else if (cumProdByProcess[processKey]) {
+          rowCumProd = cumProdByProcess[processKey]
+        }
+      }
     }
 
     rows.push({
@@ -837,7 +848,7 @@ const dailyReportRows = computed(() => {
       process: processName,
       targetQty,
       prodQty,
-      cumProdQty: runningCumProd,
+      cumProdQty: rowCumProd,
       signed: prodQty > 0 || dateLogs.length > 0 || isExplicitPresent,
       remark,
       hasActualData
@@ -861,9 +872,10 @@ const totalTargetQty = computed(() => {
 })
 
 const totalProdQty = computed(() => {
-  // Use final cumulative production from last active row
-  const activeRows = dailyReportRows.value.filter(r => r.hasWorkActivity)
-  return activeRows.length > 0 ? Number(activeRows[activeRows.length - 1].cumProdQty) : 0
+  // Sum of all produced quantities for active working rows in the month
+  return dailyReportRows.value.reduce((acc, r) => {
+    return acc + (r.hasWorkActivity ? (r.prodQty || 0) : 0)
+  }, 0)
 })
 
 const overallEfficiency = computed(() => {
