@@ -537,7 +537,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useProductionStore, getLocalDateStr } from '@/stores/productionStore'
 import { useTeamStore } from '@/stores/teamStore'
@@ -705,6 +705,9 @@ const editingCodeInput = ref<string>('')
 const statusMessage = ref('')
 const statusType = ref<'success' | 'error'>('success')
 
+watch(() => authStore.foremanName, (newVal) => {
+  if (newVal) foremanInput.value = newVal
+})
 
 function startEditCode(code: string) {
   editingCodeKey.value = code
@@ -742,7 +745,7 @@ function handleAddRoleToGroup(code: string) {
 function handleSaveForeman() {
   authStore.setForemanName(foremanInput.value)
   statusType.value = 'success'
-  statusMessage.value = 'Nama Mandor/Pengawas berhasil diperbarui'
+  statusMessage.value = 'Nama Mandor berhasil disimpan & disinkronkan ke Supabase'
 }
 
 function setLocale(lang: 'id' | 'en' | 'zh') {

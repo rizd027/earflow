@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { getDB, type LocalAuditLog } from '@/services/db'
+import { supabase } from '@/supabase/client'
+import { isCloudEnabled } from '@/services/supabaseSyncService'
 
 export const useAuditStore = defineStore('audit', () => {
   const auditLogs = ref<LocalAuditLog[]>([])
@@ -40,6 +42,18 @@ export const useAuditStore = defineStore('audit', () => {
     try {
       const db = await getDB()
       await db.put('audit_logs', JSON.parse(JSON.stringify(newEntry)))
+
+      if (isCloudEnabled.value && navigator.onLine) {
+        supabase.from('audit_logs').upsert({
+          id: newEntry.id,
+          timestamp: newEntry.timestamp,
+          category: newEntry.category,
+          action: newEntry.action,
+          details: newEntry.details || null,
+          user_name: newEntry.user || null,
+          created_at: newEntry.timestamp
+        }, { onConflict: 'id' }).then()
+      }
     } catch (e) {
       console.warn('Failed to save audit log:', e)
     }
@@ -50,6 +64,9 @@ export const useAuditStore = defineStore('audit', () => {
     try {
       const db = await getDB()
       await db.clear('audit_logs')
+      if (isCloudEnabled.value && navigator.onLine) {
+        supabase.from('audit_logs').delete().neq('id', '___none___').then()
+      }
     } catch (e) {
       console.warn('Failed to clear audit logs:', e)
     }

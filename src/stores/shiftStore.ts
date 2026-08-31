@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { supabase } from '@/supabase/client'
+import { isCloudEnabled } from '@/services/supabaseSyncService'
 
 export interface ShiftItem {
   id: string
@@ -88,8 +90,19 @@ export const useShiftStore = defineStore('shift', () => {
 
   function addShift(name: string, startTime: string, endTime: string) {
     const id = `shift_${Date.now()}`
-    shifts.value.push({ id, name: name.trim(), startTime: startTime.trim(), endTime: endTime.trim() })
+    const newShift = { id, name: name.trim(), startTime: startTime.trim(), endTime: endTime.trim() }
+    shifts.value.push(newShift)
     saveToStorage(shifts.value)
+
+    if (isCloudEnabled.value && navigator.onLine) {
+      supabase.from('shifts').upsert({
+        id,
+        name: newShift.name,
+        start_time: newShift.startTime,
+        end_time: newShift.endTime,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'id' }).then()
+    }
     return id
   }
 
@@ -100,12 +113,26 @@ export const useShiftStore = defineStore('shift', () => {
     item.startTime = startTime.trim()
     item.endTime = endTime.trim()
     saveToStorage(shifts.value)
+
+    if (isCloudEnabled.value && navigator.onLine) {
+      supabase.from('shifts').upsert({
+        id,
+        name: item.name,
+        start_time: item.startTime,
+        end_time: item.endTime,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'id' }).then()
+    }
   }
 
   function deleteShift(id: string) {
     if (shifts.value.length <= 1) return // keep at least one
     shifts.value = shifts.value.filter(s => s.id !== id)
     saveToStorage(shifts.value)
+
+    if (isCloudEnabled.value && navigator.onLine) {
+      supabase.from('shifts').delete().eq('id', id).then()
+    }
   }
 
   function getShiftById(id: string): ShiftItem | undefined {

@@ -329,6 +329,27 @@ export async function flushOutbox(): Promise<{ flushed: number; failed: number }
             .upsert(record.payload, { onConflict: 'key' })
           if (error) throw error
         }
+      } else if (record.operation === 'delete') {
+        const idToDelete = record.payload?.id || record.payload?.key || record.payload
+        if (record.table === 'logs') {
+          const { error } = await supabase
+            .from('production_logs')
+            .delete()
+            .eq('id', idToDelete)
+          if (error) throw error
+        } else if (record.table === 'teams') {
+          const { error } = await supabase
+            .from('teams')
+            .delete()
+            .eq('id', idToDelete)
+          if (error) throw error
+        } else if (record.table === 'overrides') {
+          const { error } = await supabase
+            .from('overrides')
+            .delete()
+            .eq('key', idToDelete)
+          if (error) throw error
+        }
       }
       await removeFromOutbox(record.id)
       flushed++
@@ -342,10 +363,123 @@ export async function flushOutbox(): Promise<{ flushed: number; failed: number }
   return { flushed, failed }
 }
 
+// ─── SHIFTS CLOUD SYNC ──────────────────────────────────────────────────────
+
+/**
+ * Push all shifts stored in localStorage to Supabase shifts table.
+ */
+export async function pushAllShiftsToCloud(): Promise<boolean> {
+  if (!isCloudEnabled.value || !navigator.onLine) {
+    return false
+  }
+  try {
+    const now = new Date().toISOString()
+    const localShiftsRaw = localStorage.getItem('earflow_shifts')
+    if (localShiftsRaw) {
+      const shiftsArr = JSON.parse(localShiftsRaw)
+      if (Array.isArray(shiftsArr) && shiftsArr.length > 0) {
+        const payload = shiftsArr.map(s => ({
+          id: s.id,
+          name: s.name,
+          start_time: s.startTime,
+          end_time: s.endTime,
+          updated_at: now
+        }))
+        const { error } = await supabase.from('shifts').upsert(payload, { onConflict: 'id' })
+        if (error) {
+          console.warn('[Sync] Failed to push shifts:', error.message)
+          return false
+        }
+      }
+    }
+    return true
+  } catch (err) {
+    console.warn('[Sync] Error pushing shifts:', err)
+    return false
+  }
+}
+
+// ─── APP SETTINGS CLOUD SYNC ────────────────────────────────────────────────
+
+export const APP_SETTING_KEYS = [
+  'earflow_foreman_name',
+  'foreman_name',
+  'earflow_process_groups',
+  'earflow_process_types',
+  'earflow_worker_status_options',
+  'earflow_role_options'
+]
+
+/**
+ * Synchronize a single application setting directly to Supabase app_settings table.
+ */
+export async function syncAppSettingToCloud(key: string, value: any): Promise<boolean> {
+  if (!isCloudEnabled.value || !navigator.onLine) {
+    return false
+  }
+  try {
+    const now = new Date().toISOString()
+    let parsedVal = value
+    if (typeof value === 'string') {
+      try {
+        parsedVal = JSON.parse(value)
+      } catch {
+        parsedVal = value
+      }
+    }
+    const { error } = await supabase.from('app_settings').upsert({
+      key,
+      value: parsedVal,
+      updated_at: now
+    }, { onConflict: 'key' })
+
+    if (error) {
+      console.warn(`[Sync] Failed to sync setting ${key} to Supabase:`, error.message)
+      return false
+    }
+    return true
+  } catch (err: any) {
+    console.warn(`[Sync] Error syncing setting ${key}:`, err)
+    return false
+  }
+}
+
+/**
+ * Push all application settings stored in localStorage to Supabase app_settings table.
+ */
+export async function pushAllAppSettingsToCloud(): Promise<boolean> {
+  if (!isCloudEnabled.value || !navigator.onLine) {
+    return false
+  }
+  try {
+    const now = new Date().toISOString()
+    const settingsPayload: Array<{ key: string; value: any; updated_at: string }> = []
+    for (const key of APP_SETTING_KEYS) {
+      const val = localStorage.getItem(key)
+      if (val !== null && val !== undefined) {
+        let parsedVal: any = val
+        try { parsedVal = JSON.parse(val) } catch {}
+        settingsPayload.push({ key, value: parsedVal, updated_at: now })
+      }
+    }
+    if (settingsPayload.length > 0) {
+      const { error } = await supabase.from('app_settings').upsert(settingsPayload, { onConflict: 'key' })
+      if (error) {
+        console.warn('[Sync] Failed to upsert app settings:', error.message)
+        return false
+      }
+    }
+    return true
+  } catch (err) {
+    console.warn('[Sync] Error pushing all app settings:', err)
+    return false
+  }
+}
+
 // ─── DELTA SYNC (startup / periodic) ───────────────────────────────────────
 
 /**
- * Efficient delta sync: flush outbox + pull only rows changed since last sync.
+ * Efficient delta sync: flush outbox + push settings & shifts + pull only rows changed since last sync.
  * Does NOT do a full table dump — only fetches changed rows.
  */
 export async function performFullSync(onDataUpdated?: () => void): Promise<{
@@ -370,6 +504,10 @@ export async function performFullSync(onDataUpdated?: () => void): Promise<{
   try {
     // 1. Flush pending offline writes first
     const { flushed } = await flushOutbox()
+
+    // 1.5. Push local settings and shifts to cloud so local changes aren't lost
+    await pushAllAppSettingsToCloud()
+    await pushAllShiftsToCloud()
 
     // 2. Delta pull — only rows updated since last successful sync
     const sinceIso = getLastSyncAt()

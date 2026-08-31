@@ -162,6 +162,15 @@ export const useProductionStore = defineStore('production', () => {
         await tx.objectStore('logs').delete(log.id)
       }
       await tx.done
+
+      const logIds = toRemove.map(l => l.id)
+      if (isCloudEnabled.value && navigator.onLine) {
+        supabase.from('production_logs').delete().in('id', logIds).then()
+      } else if (isCloudEnabled.value) {
+        for (const id of logIds) {
+          await addToOutbox('logs', 'delete', { id })
+        }
+      }
     }
 
     logs.value = logs.value.filter(l => !(l.team_id === teamId && l.date === today))

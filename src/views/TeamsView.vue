@@ -1895,6 +1895,7 @@ import AiScanStatistikModal from '@/components/AiScanStatistikModal.vue'
 import { isWorkerMatchingShift, isWorkerInLog, getWorkerShareForLog } from '@/utils/reportUtils'
 import { exportToXlsx } from '@/utils/excelExport'
 import { isTempWorkerNo } from '@/data/noKaryawanData'
+import { syncAppSettingToCloud } from '@/services/supabaseSyncService'
 import { LayoutGrid, Users, Plus, Pencil, Trash2, Search, X, UserPlus, AlertTriangle, Check, Package, Printer, RotateCcw, UserMinus, ClipboardList, ArrowUpDown, Table, SlidersHorizontal, Filter, FileSpreadsheet, Calendar, ScanText } from 'lucide-vue-next'
 
 
@@ -2311,6 +2312,7 @@ function handleStatusOptionsUpdate(newOptions: ComboboxOption[]) {
   customStatuses.value = newOptions
   try {
     localStorage.setItem('earflow_worker_status_options', JSON.stringify(newOptions))
+    syncAppSettingToCloud('earflow_worker_status_options', newOptions).catch(() => {})
   } catch {}
 }
 
@@ -2420,6 +2422,7 @@ function handleRoleOptionsUpdate(newOptions: ComboboxOption[]) {
   customRoles.value = newOptions
   try {
     localStorage.setItem('earflow_role_options', JSON.stringify(newOptions))
+    syncAppSettingToCloud('earflow_role_options', newOptions).catch(() => {})
   } catch {}
 }
 

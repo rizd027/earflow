@@ -257,6 +257,8 @@ export const useTeamStore = defineStore('team', () => {
     await db.delete('teams', teamId)
     if (isCloudEnabled.value && navigator.onLine) {
       supabase.from('teams').delete().eq('id', teamId).then()
+    } else if (isCloudEnabled.value) {
+      await addToOutbox('teams', 'delete', { id: teamId })
     }
   }
 
@@ -279,6 +281,10 @@ export const useTeamStore = defineStore('team', () => {
     }
     if (isCloudEnabled.value && navigator.onLine && teamIds.length > 0) {
       supabase.from('teams').delete().in('id', teamIds).then()
+    } else if (isCloudEnabled.value) {
+      for (const id of teamIds) {
+        await addToOutbox('teams', 'delete', { id })
+      }
     }
     teams.value = []
   }

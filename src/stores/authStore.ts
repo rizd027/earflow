@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { syncAppSettingToCloud } from '@/services/supabaseSyncService'
 
 export interface UserProfile {
   id: string
@@ -44,8 +45,11 @@ export const useAuthStore = defineStore('auth', () => {
   try {
     if (savedProcessGroups) {
       const parsed = JSON.parse(savedProcessGroups)
-      if (Array.isArray(parsed) && parsed.length > 0 && parsed.some(g => g.roles && g.roles.length > 0)) {
-        initialProcessGroups = parsed
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        initialProcessGroups = parsed.map((g: any) => ({
+          code: String(g.code || '').trim().toUpperCase(),
+          roles: Array.isArray(g.roles) ? g.roles.map((r: any) => String(r).trim().toUpperCase()).filter(Boolean) : []
+        })).filter((g: any) => g.code)
       }
     }
   } catch {}
@@ -53,6 +57,12 @@ export const useAuthStore = defineStore('auth', () => {
 
   function saveProcessGroups() {
     localStorage.setItem('earflow_process_groups', JSON.stringify(processGroups.value))
+    syncAppSettingToCloud('earflow_process_groups', processGroups.value).catch(() => {})
+  }
+
+  function saveProcessTypes() {
+    localStorage.setItem('earflow_process_types', JSON.stringify(processTypes.value))
+    syncAppSettingToCloud('earflow_process_types', processTypes.value).catch(() => {})
   }
 
   function getProcessCodeForRole(roleName?: string): string {
@@ -124,7 +134,7 @@ export const useAuthStore = defineStore('auth', () => {
     processGroups.value = JSON.parse(JSON.stringify(DEFAULT_PROCESS_GROUPS))
     saveProcessGroups()
     processTypes.value = [...DEFAULT_PROCESS_TYPES]
-    localStorage.setItem('earflow_process_types', JSON.stringify(processTypes.value))
+    saveProcessTypes()
   }
 
   const currentUser = ref<UserProfile>({
@@ -145,24 +155,26 @@ export const useAuthStore = defineStore('auth', () => {
     if (currentUser.value && isMandor.value) {
       currentUser.value.full_name = trimmed
     }
+    syncAppSettingToCloud('earflow_foreman_name', trimmed).catch(() => {})
+    syncAppSettingToCloud('foreman_name', trimmed).catch(() => {})
   }
 
   function addProcessType(type: string) {
     const trimmed = type.trim()
     if (trimmed && !processTypes.value.includes(trimmed)) {
       processTypes.value.push(trimmed)
-      localStorage.setItem('earflow_process_types', JSON.stringify(processTypes.value))
+      saveProcessTypes()
     }
   }
 
   function removeProcessType(type: string) {
     processTypes.value = processTypes.value.filter(t => t !== type)
-    localStorage.setItem('earflow_process_types', JSON.stringify(processTypes.value))
+    saveProcessTypes()
   }
 
   function resetProcessTypes() {
     processTypes.value = [...DEFAULT_PROCESS_TYPES]
-    localStorage.setItem('earflow_process_types', JSON.stringify(processTypes.value))
+    saveProcessTypes()
   }
 
   function loginAsMandor() {
@@ -216,8 +228,11 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       if (savedGroups) parsedGroups = JSON.parse(savedGroups)
     } catch {}
-    if (parsedGroups && Array.isArray(parsedGroups) && parsedGroups.length > 0 && parsedGroups.some(g => g.roles && g.roles.length > 0)) {
-      processGroups.value = parsedGroups
+    if (parsedGroups && Array.isArray(parsedGroups) && parsedGroups.length > 0) {
+      processGroups.value = parsedGroups.map((g: any) => ({
+        code: String(g.code || '').trim().toUpperCase(),
+        roles: Array.isArray(g.roles) ? g.roles.map((r: any) => String(r).trim().toUpperCase()).filter(Boolean) : []
+      })).filter((g: any) => g.code)
     } else {
       // Don't write defaults back to localStorage — cloud pull will populate it
       processGroups.value = JSON.parse(JSON.stringify(DEFAULT_PROCESS_GROUPS))

@@ -193,11 +193,16 @@ function loadLocalOptions() {
   localOptions.value = props.options ? [...props.options] : []
 }
 
+import { syncAppSettingToCloud, APP_SETTING_KEYS } from '@/services/supabaseSyncService'
+
 function saveLocalOptionsToStorage() {
   const key = effectiveStorageKey.value
   if (key) {
     try {
       localStorage.setItem(key, JSON.stringify(localOptions.value))
+      if (APP_SETTING_KEYS.includes(key)) {
+        syncAppSettingToCloud(key, localOptions.value).catch(() => {})
+      }
     } catch (e) {
       console.error('Failed to save combobox options to localStorage:', e)
     }
