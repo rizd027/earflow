@@ -168,7 +168,7 @@
                     <input
                       v-if="isEditing"
                       type="number"
-                      :value="row.targetQty === 0 ? '' : row.targetQty"
+                      :value="row.targetQty !== undefined && row.targetQty !== null && (row.targetQty !== 0 || isDayFieldEdited(row.day, 'targetQty')) ? row.targetQty : ''"
                       placeholder="0"
                       @focus="($event.target as HTMLInputElement).select()"
                       @input="saveCellOverride(row.day, 'targetQty', ($event.target as HTMLInputElement).value)"
@@ -185,7 +185,7 @@
                     <input
                       v-if="isEditing"
                       type="number"
-                      :value="row.prodQty === 0 ? '' : row.prodQty"
+                      :value="row.prodQty !== undefined && row.prodQty !== null && (row.prodQty !== 0 || isDayFieldEdited(row.day, 'prodQty')) ? row.prodQty : ''"
                       placeholder="0"
                       @focus="($event.target as HTMLInputElement).select()"
                       @input="saveCellOverride(row.day, 'prodQty', ($event.target as HTMLInputElement).value)"

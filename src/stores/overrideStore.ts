@@ -50,6 +50,12 @@ export const useOverrideStore = defineStore('override', () => {
           else if (rec.type === 'worker') wMap[rec.key] = rec.data
         }
 
+        // Preserve any active in-memory edits currently in pending queue
+        for (const [k, v] of pendingPersistMap.entries()) {
+          if (v.type === 'daily' && v.data) dMap[k] = v.data
+          else if (v.type === 'worker' && v.data) wMap[k] = v.data
+        }
+
         dailyMap.value = dMap
         workerMap.value = wMap
       } else {
@@ -244,18 +250,19 @@ export const useOverrideStore = defineStore('override', () => {
     const key = (shiftKey && shiftKey !== 'default')
       ? `${workerId}_${dateStr}_${shiftKey}`
       : `${workerId}_${dateStr}`
-    if (!dailyMap.value[key]) {
-      dailyMap.value[key] = {}
-    }
-    const target = dailyMap.value[key]
+    
+    const existing = dailyMap.value[key] ? { ...dailyMap.value[key] } : {}
     if (field === 'targetQty' || field === 'prodQty') {
-      target[field] = value === '' || value === null || value === undefined ? undefined : Number(value)
+      existing[field] = value === '' || value === null || value === undefined ? 0 : (isNaN(Number(value)) ? 0 : Number(value))
     } else {
-      target[field] = value
+      existing[field] = value
     }
     
+    // Update dailyMap reactively
+    dailyMap.value = { ...dailyMap.value, [key]: existing }
+    
     // Save asynchronously to IndexedDB
-    persistSingleOverride(key, 'daily', target)
+    persistSingleOverride(key, 'daily', existing)
   }
 
   function getWorkerOverride(workerId: string): WorkerOverride | undefined {
@@ -265,11 +272,10 @@ export const useOverrideStore = defineStore('override', () => {
 
   function setWorkerOverride(workerId: string, field: keyof WorkerOverride, value: any) {
     if (!workerId) return
-    if (!workerMap.value[workerId]) {
-      workerMap.value[workerId] = {}
-    }
-    workerMap.value[workerId][field] = value
-    persistSingleOverride(workerId, 'worker', workerMap.value[workerId])
+    const current = workerMap.value[workerId] ? { ...workerMap.value[workerId] } : {}
+    current[field] = value
+    workerMap.value = { ...workerMap.value, [workerId]: current }
+    persistSingleOverride(workerId, 'worker', current)
   }
 
   async function updateTargetQtyForAllOverrides(dateStr?: string, newTarget?: number, workerIds?: string[]) {
