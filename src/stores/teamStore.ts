@@ -106,12 +106,14 @@ export const useTeamStore = defineStore('team', () => {
         if (member.no_karyawan && !isTempWorkerNo(member.no_karyawan)) {
           existingNiks.add(member.no_karyawan.trim())
         }
-        const matched = matchWorkerToNikRecord(member.full_name)
-        if (matched && member.no_karyawan !== matched.no_karyawan) {
-          member.no_karyawan = matched.no_karyawan
-          existingNiks.add(matched.no_karyawan)
-          teamChanged = true
-          hasChanges = true
+        if (!member.no_karyawan || isTempWorkerNo(member.no_karyawan) || member.no_karyawan === '-') {
+          const matched = matchWorkerToNikRecord(member.full_name)
+          if (matched) {
+            member.no_karyawan = matched.no_karyawan
+            existingNiks.add(matched.no_karyawan)
+            teamChanged = true
+            hasChanges = true
+          }
         }
 
         const cleanName = member.full_name.toLowerCase().replace(/\\/g, '').replace(/[^a-z0-9]/g, '')
@@ -138,12 +140,14 @@ export const useTeamStore = defineStore('team', () => {
       if (member.no_karyawan && !isTempWorkerNo(member.no_karyawan)) {
         existingNiks.add(member.no_karyawan.trim())
       }
-      const matched = matchWorkerToNikRecord(member.full_name)
-      if (matched && member.no_karyawan !== matched.no_karyawan) {
-        member.no_karyawan = matched.no_karyawan
-        existingNiks.add(matched.no_karyawan)
-        unassignedChanged = true
-        hasChanges = true
+      if (!member.no_karyawan || isTempWorkerNo(member.no_karyawan) || member.no_karyawan === '-') {
+        const matched = matchWorkerToNikRecord(member.full_name)
+        if (matched) {
+          member.no_karyawan = matched.no_karyawan
+          existingNiks.add(matched.no_karyawan)
+          unassignedChanged = true
+          hasChanges = true
+        }
       }
 
       const cleanName = member.full_name.toLowerCase().replace(/\\/g, '').replace(/[^a-z0-9]/g, '')

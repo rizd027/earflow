@@ -323,7 +323,9 @@
                 type="text"
                 :disabled="isReadOnly"
                 :readonly="isReadOnly"
-                :value="row.workHours"
+                :value="localWorkHoursMap[row.workerId] ?? row.workHours"
+                @focus="activeInputKey = `hours_${row.workerId}`"
+                @blur="activeInputKey = null"
                 @input="updateWorkHours(row.workerId, ($event.target as HTMLInputElement).value)"
                 placeholder="06 - 13 (6h)"
                 class="w-28 h-8 px-2 text-center rounded bg-slate-950 border text-amber-300 text-xs font-mono font-bold focus:outline-none placeholder:text-slate-600 truncate"
@@ -337,9 +339,10 @@
                 type="number"
                 :disabled="isReadOnly"
                 :readonly="isReadOnly"
-                :value="row.targetQty"
-                @focus="($event.target as HTMLInputElement).select()"
-                @input="updateTarget(row.workerId, Number(($event.target as HTMLInputElement).value))"
+                :value="localTargetMap[row.workerId] ?? row.targetQty"
+                @focus="activeInputKey = `target_${row.workerId}`; ($event.target as HTMLInputElement).select()"
+                @blur="activeInputKey = null"
+                @input="updateTarget(row.workerId, ($event.target as HTMLInputElement).value)"
                 min="0"
                 class="w-24 h-8 px-2 text-right rounded bg-slate-950 border text-teal-300 text-xs font-mono font-bold focus:outline-none"
                 :class="isReadOnly ? 'border-slate-800 text-slate-400 cursor-not-allowed bg-slate-900/50' : 'border-slate-700 focus:border-teal-400'"
@@ -352,9 +355,10 @@
                 type="number"
                 :disabled="isReadOnly"
                 :readonly="isReadOnly"
-                :value="row.prodQty"
-                @focus="($event.target as HTMLInputElement).select()"
-                @input="updateProd(row.workerId, Number(($event.target as HTMLInputElement).value))"
+                :value="localProdMap[row.workerId] ?? row.prodQty"
+                @focus="activeInputKey = `prod_${row.workerId}`; ($event.target as HTMLInputElement).select()"
+                @blur="activeInputKey = null"
+                @input="updateProd(row.workerId, ($event.target as HTMLInputElement).value)"
                 min="0"
                 class="w-24 h-8 px-2 text-right rounded bg-slate-950 border text-cyan-300 text-xs font-mono font-bold focus:outline-none"
                 :class="isReadOnly ? 'border-slate-800 text-slate-400 cursor-not-allowed bg-slate-900/50' : 'border-slate-700 focus:border-cyan-400'"
@@ -396,7 +400,9 @@
                 type="text"
                 :disabled="isReadOnly"
                 :readonly="isReadOnly"
-                :value="row.remark"
+                :value="localRemarkMap[row.workerId] ?? row.remark"
+                @focus="activeInputKey = `remark_${row.workerId}`"
+                @blur="activeInputKey = null"
                 @input="updateRemark(row.workerId, ($event.target as HTMLInputElement).value)"
                 placeholder="Catatan..."
                 class="w-full h-8 px-2 rounded bg-slate-950 border text-slate-300 text-[11px] font-mono focus:outline-none truncate"
@@ -506,7 +512,9 @@
               type="text"
               :disabled="isReadOnly"
               :readonly="isReadOnly"
-              :value="row.workHours"
+              :value="localWorkHoursMap[row.workerId] ?? row.workHours"
+              @focus="activeInputKey = `hours_${row.workerId}`"
+              @blur="activeInputKey = null"
               @input="updateWorkHours(row.workerId, ($event.target as HTMLInputElement).value)"
               placeholder="06 - 13 (6h)"
               class="w-full h-8 px-1 sm:px-2 text-center rounded-lg bg-slate-900 border text-amber-300 text-[11px] font-black focus:outline-none placeholder:text-slate-600 truncate"
@@ -524,9 +532,10 @@
               type="number"
               :disabled="isReadOnly"
               :readonly="isReadOnly"
-              :value="row.targetQty"
-              @focus="($event.target as HTMLInputElement).select()"
-              @input="updateTarget(row.workerId, Number(($event.target as HTMLInputElement).value))"
+              :value="localTargetMap[row.workerId] ?? row.targetQty"
+              @focus="activeInputKey = `target_${row.workerId}`; ($event.target as HTMLInputElement).select()"
+              @blur="activeInputKey = null"
+              @input="updateTarget(row.workerId, ($event.target as HTMLInputElement).value)"
               class="w-full h-8 px-1 sm:px-2 text-center rounded-lg bg-slate-900 border text-teal-300 text-xs font-black focus:outline-none"
               :class="isReadOnly ? 'border-slate-800 text-slate-500 cursor-not-allowed' : 'border-teal-500/40 focus:border-teal-400'"
             />
@@ -542,9 +551,10 @@
               type="number"
               :disabled="isReadOnly"
               :readonly="isReadOnly"
-              :value="row.prodQty"
-              @focus="($event.target as HTMLInputElement).select()"
-              @input="updateProd(row.workerId, Number(($event.target as HTMLInputElement).value))"
+              :value="localProdMap[row.workerId] ?? row.prodQty"
+              @focus="activeInputKey = `prod_${row.workerId}`; ($event.target as HTMLInputElement).select()"
+              @blur="activeInputKey = null"
+              @input="updateProd(row.workerId, ($event.target as HTMLInputElement).value)"
               class="w-full h-8 px-1 sm:px-2 text-center rounded-lg bg-slate-900 border text-cyan-300 text-xs font-black focus:outline-none"
               :class="isReadOnly ? 'border-slate-800 text-slate-500 cursor-not-allowed' : 'border-cyan-500/40 focus:border-cyan-400'"
             />
@@ -588,7 +598,9 @@
             type="text"
             :disabled="isReadOnly"
             :readonly="isReadOnly"
-            :value="row.remark"
+            :value="localRemarkMap[row.workerId] ?? row.remark"
+            @focus="activeInputKey = `remark_${row.workerId}`"
+            @blur="activeInputKey = null"
             @input="updateRemark(row.workerId, ($event.target as HTMLInputElement).value)"
             placeholder="Catatan..."
             class="w-full h-7 px-2.5 rounded-lg bg-slate-950 border text-slate-300 text-[11px] font-mono focus:outline-none placeholder:text-slate-600"
@@ -736,7 +748,8 @@ function showToast(msg: string) {
 
 function onAiScanSaved(data: { workerId: string; monthStr: string; updatedCount: number }) {
   showToast(`Berhasil memperbarui ${data.updatedCount} data statistik via AI Scan`)
-  overrideStore.loadFromStorage(true)
+  // Flush pending in-memory edits first, then reload from DB to avoid losing user changes
+  overrideStore.flushAndReload()
 }
 
 
@@ -833,6 +846,7 @@ function changeDate(offsetDays: number) {
     selectedDate.value = productionStore.currentDateStr || getLocalDateStr()
   }
 }
+
 
 const monthKeys = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
 const formattedSelectedDate = computed(() => {
@@ -972,6 +986,41 @@ const workerRows = computed<WorkerRow[]>(() => {
       remark
     }
   })
+})
+
+// ─── Local Input State ─────────────────────────────────────────────────────────
+// Setiap field editable punya Map lokal. Input membaca dari sini, bukan dari
+// computed workerRows langsung. Ini mencegah bounce saat store di-update.
+// Map di-sync dari store hanya jika field itu tidak sedang di-focus.
+const localTargetMap = ref<Record<string, number>>({})
+const localProdMap = ref<Record<string, number>>({})
+const localWorkHoursMap = ref<Record<string, string>>({})
+const localRemarkMap = ref<Record<string, string>>({})
+// Tracks which input cell is currently focused: e.g. "target_w123", "prod_w123"
+const activeInputKey = ref<string | null>(null)
+
+// Sync store → local state, tapi SKIP field yang sedang aktif di-edit
+watch(workerRows, (rows) => {
+  for (const row of rows) {
+    const k = row.workerId
+    if (activeInputKey.value !== `target_${k}`)
+      localTargetMap.value[k] = row.targetQty
+    if (activeInputKey.value !== `prod_${k}`)
+      localProdMap.value[k] = row.prodQty
+    if (activeInputKey.value !== `hours_${k}`)
+      localWorkHoursMap.value[k] = row.workHours
+    if (activeInputKey.value !== `remark_${k}`)
+      localRemarkMap.value[k] = row.remark
+  }
+}, { immediate: true })
+
+// Reset semua local state saat tanggal ganti — hanya local maps, bukan isEditUnlocked
+watch(selectedDate, () => {
+  localTargetMap.value = {}
+  localProdMap.value = {}
+  localWorkHoursMap.value = {}
+  localRemarkMap.value = {}
+  activeInputKey.value = null
 })
 
 function getPrevDateStr(dateStr: string): string {
@@ -1150,50 +1199,58 @@ function toggleAttendance(row: WorkerRow) {
   auditStore.logAction('Absensi', `Toggle Absensi (${row.workerName})`, `Status diubah ke ${newRemark} (${selectedDate.value})`)
 }
 
-// Debounced writers — prevents per-keystroke localStorage writes
+// Debounced writers ke store — hanya dipanggil setelah user berhenti mengetik
 const _writeTarget = debounce((workerId: string, dateStr: string, val: number) => {
   overrideStore.setDailyOverride(workerId, dateStr, 'targetQty', val, 'all_shifts')
   const w = teamStore.allWorkers.find(item => item.id === workerId)
   auditStore.logAction('Target', `Edit Target (${w ? w.full_name : workerId})`, `Target harian set ke ${val} Pcs (${dateStr})`)
-}, 400)
+}, 600)
 
 const _writeProd = debounce((workerId: string, dateStr: string, val: number) => {
   overrideStore.setDailyOverride(workerId, dateStr, 'prodQty', val, 'all_shifts')
   const w = teamStore.allWorkers.find(item => item.id === workerId)
   auditStore.logAction('Target', `Edit Realisasi (${w ? w.full_name : workerId})`, `Hasil produksi set ke ${val} Pcs (${dateStr})`)
-}, 400)
+}, 600)
 
 const _writeRemark = debounce((workerId: string, dateStr: string, val: string) => {
   overrideStore.setDailyOverride(workerId, dateStr, 'remark', val, 'all_shifts')
   const w = teamStore.allWorkers.find(item => item.id === workerId)
   auditStore.logAction('Absensi', `Edit Catatan (${w ? w.full_name : workerId})`, `Catatan set ke "${val}" (${dateStr})`)
-}, 400)
-
-function updateTarget(workerId: string, val: number) {
-  if (isReadOnly.value) return
-  if (isNaN(val) || val < 0) return
-  _writeTarget(workerId, selectedDate.value, val)
-}
-
-function updateProd(workerId: string, val: number) {
-  if (isReadOnly.value) return
-  if (isNaN(val) || val < 0) return
-  _writeProd(workerId, selectedDate.value, val)
-}
+}, 600)
 
 const _writeWorkHours = debounce((workerId: string, dateStr: string, val: string) => {
   overrideStore.setDailyOverride(workerId, dateStr, 'workHours', val, 'all_shifts')
   const w = teamStore.allWorkers.find(item => item.id === workerId)
   auditStore.logAction('Absensi', `Edit Jam Kerja (${w ? w.full_name : workerId})`, `Jam kerja set ke "${val}" (${dateStr})`)
-}, 400)
+}, 600)
+
+function updateTarget(workerId: string, rawVal: string) {
+  if (isReadOnly.value) return
+  const val = Number(rawVal)
+  if (isNaN(val) || val < 0) return
+  // Update local state immediately untuk UX responsif
+  localTargetMap.value[workerId] = val
+  // Debounce write ke store
+  _writeTarget(workerId, selectedDate.value, val)
+}
+
+function updateProd(workerId: string, rawVal: string) {
+  if (isReadOnly.value) return
+  const val = Number(rawVal)
+  if (isNaN(val) || val < 0) return
+  localProdMap.value[workerId] = val
+  _writeProd(workerId, selectedDate.value, val)
+}
 
 function updateWorkHours(workerId: string, val: string) {
   if (isReadOnly.value) return
+  localWorkHoursMap.value[workerId] = val
   _writeWorkHours(workerId, selectedDate.value, val)
 }
 
 function updateRemark(workerId: string, val: string) {
   if (isReadOnly.value) return
+  localRemarkMap.value[workerId] = val
   _writeRemark(workerId, selectedDate.value, val)
 }
 

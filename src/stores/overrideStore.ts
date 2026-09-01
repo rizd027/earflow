@@ -153,7 +153,7 @@ export const useOverrideStore = defineStore('override', () => {
   function persistSingleOverride(key: string, type: 'daily' | 'worker', data: any) {
     pendingPersistMap.set(key, { type, data })
     clearTimeout(persistDebounceTimer)
-    persistDebounceTimer = setTimeout(flushPendingOverrides, 400)
+    persistDebounceTimer = setTimeout(flushPendingOverrides, 600)
   }
 
 
@@ -279,15 +279,15 @@ export const useOverrideStore = defineStore('override', () => {
       }
     }
 
-    const newDailyMap = { ...dailyMap.value }
+    // Targeted in-place mutation per key — avoids full object replace which would
+    // re-trigger all computed watchers (including workerRows) and reset focused inputs.
     for (const key of keysToUpdate) {
-      const existing = newDailyMap[key] ? { ...newDailyMap[key] } : {}
+      const existing = dailyMap.value[key] ? { ...dailyMap.value[key] } : {}
       existing[field] = val
-      newDailyMap[key] = existing
+      // Direct property assignment triggers Vue's reactive proxy for that key only
+      dailyMap.value[key] = existing
       persistSingleOverride(key, 'daily', existing)
     }
-
-    dailyMap.value = newDailyMap
   }
 
   function getWorkerOverride(workerId: string): WorkerOverride | undefined {
@@ -299,7 +299,8 @@ export const useOverrideStore = defineStore('override', () => {
     if (!workerId) return
     const current = workerMap.value[workerId] ? { ...workerMap.value[workerId] } : {}
     current[field] = value
-    workerMap.value = { ...workerMap.value, [workerId]: current }
+    // Targeted in-place mutation — avoids full workerMap replace
+    workerMap.value[workerId] = current
     persistSingleOverride(workerId, 'worker', current)
   }
 
@@ -350,6 +351,16 @@ export const useOverrideStore = defineStore('override', () => {
     }
   }
 
+  /**
+   * Flush any pending in-memory writes THEN reload from IndexedDB.
+   * Use this instead of loadFromStorage(true) after external writes (e.g. AI Scan)
+   * to avoid losing in-flight user edits.
+   */
+  async function flushAndReload() {
+    await flushPendingOverrides()
+    await loadFromStorage(true)
+  }
+
   const hasAnyOverrides = computed(() => {
     return Object.keys(dailyMap.value).length > 0 || Object.keys(workerMap.value).length > 0
   })
@@ -365,6 +376,7 @@ export const useOverrideStore = defineStore('override', () => {
     getWorkerOverride,
     setWorkerOverride,
     flushPendingOverrides,
+    flushAndReload,
     saveAllToIndexedDB,
     resetDailyOverridesForDate,
     resetWorkerOverrides,
