@@ -859,6 +859,7 @@ const reportRows = computed(() => {
       const isOnLeave = workerStatus.includes('cuti')
       const isNewInInterval = isWorkerNewOnDate(worker.joined_date, selectedDate.value, 7)
       const isBeforeJoined = !!worker.joined_date && selectedDate.value < worker.joined_date
+      const isQc = (worker.role || '').toUpperCase().includes('QC') || (worker.role || '').toUpperCase().includes('CHECK')
 
       let defaultRemark = ''
       if (isBeforeJoined && !isPresent) {
@@ -868,7 +869,7 @@ const reportRows = computed(() => {
       } else if (isOnLeave && !isPresent) {
         defaultRemark = 'Cuti'
       } else if (isPresent) {
-        const basePresentText = remarks || t('mandorReport.remarkPresent')
+        const basePresentText = isQc ? 'Check' : (remarks || t('mandorReport.remarkPresent'))
         defaultRemark = isNewInInterval ? `${basePresentText} (${t('mandorReport.remarkNew')})` : basePresentText
       } else {
         defaultRemark = t('mandorReport.remarkAbsent')

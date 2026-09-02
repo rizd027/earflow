@@ -73,19 +73,39 @@ export const useAuthStore = defineStore('auth', () => {
     const matchCodeDirect = processGroups.value.find(g => g.code.toUpperCase() === clean)
     if (matchCodeDirect) return matchCodeDirect.code
 
-    // 2. Check if input matches any role inside a group (e.g. "SOLDER" -> "A1")
+    // 2. Check if input exactly matches any role inside a group (e.g. "QC A1" -> "A1")
     for (const group of processGroups.value) {
-      if (group.roles.some(r => r.toUpperCase() === clean || clean.includes(r.toUpperCase()))) {
+      if (group.roles.some(r => r.trim().toUpperCase() === clean)) {
         return group.code
       }
     }
 
-    // 3. Fallback for "SOLDER" or "LEM" to "A1"
+    // 3. Check if clean contains role or role contains clean
+    for (const group of processGroups.value) {
+      if (group.roles.some(r => clean.includes(r.trim().toUpperCase()) || r.trim().toUpperCase().includes(clean))) {
+        return group.code
+      }
+    }
+
+    // 4. Check if role ends with or contains code (e.g. "QC A1" contains "A1", "SPK A2" contains "A2")
+    for (const group of processGroups.value) {
+      const gCode = group.code.toUpperCase()
+      if (clean === gCode || clean.endsWith(gCode) || clean.includes(` ${gCode}`) || clean.includes(`${gCode} `)) {
+        return group.code
+      }
+    }
+
+    // 5. Fallbacks for standard process types
     if (clean.includes('SOLDER') || clean.includes('LEM')) return 'A1'
     if (clean.includes('GULUNG') || clean.includes('CANGKANG')) return 'A2'
-    if (clean.includes('PACKING') || clean.includes('CHECK')) return 'A3'
+    if (clean.includes('PACKING')) return 'A3'
+    if (clean.includes('QC') || clean.includes('CHECK')) {
+      // Find first group with QC or default to first group / A1
+      const qcGroup = processGroups.value.find(g => g.roles.some(r => r.toUpperCase().includes('QC') || r.toUpperCase().includes('CHECK')))
+      return qcGroup ? qcGroup.code : (processGroups.value[0]?.code || 'A1')
+    }
 
-    return roleName
+    return processGroups.value[0]?.code || 'A1'
   }
 
   function addProcessCodeGroup(code: string) {

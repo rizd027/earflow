@@ -102,67 +102,67 @@
           </div>
 
           <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            <!-- Tool 1: Input Jam-jaman (Primary Action) -->
+            <!-- Tool 1: Input Jam-jaman (Primary Brand Action) -->
             <button
               @click="$emit('open-log-modal')"
-              class="h-9 px-2.5 rounded-lg bg-teal-50 hover:bg-teal-100 dark:bg-teal-500/20 dark:hover:bg-teal-500/30 text-teal-950 dark:text-teal-100 border border-teal-400 dark:border-teal-500/50 font-extrabold text-xs flex items-center justify-center gap-2 transition active:scale-95 shadow-xs"
+              class="h-9 px-2.5 rounded-lg bg-teal-500 hover:bg-teal-400 active:scale-95 text-slate-950 font-extrabold text-xs flex items-center justify-center gap-1.5 transition shadow-sm border border-teal-400"
             >
-              <Plus class="w-4 h-4 text-teal-700 dark:text-teal-300 shrink-0" />
-              <span class="text-teal-950 dark:text-teal-100 font-extrabold truncate">Input Jam-jaman</span>
+              <Plus class="w-4 h-4 text-slate-950 stroke-[3] shrink-0" />
+              <span class="text-slate-950 font-black truncate">Input Jam-jaman</span>
             </button>
 
             <!-- Tool: AI Scan Statistik (Smart AI Action) -->
             <button
               @click="showAiScanModal = true"
-              class="h-9 px-2.5 rounded-lg bg-cyan-50 hover:bg-cyan-100 dark:bg-cyan-500/20 dark:hover:bg-cyan-500/30 text-cyan-950 dark:text-cyan-100 border border-cyan-400 dark:border-cyan-500/50 font-extrabold text-xs flex items-center justify-center gap-2 transition active:scale-95 shadow-xs"
+              class="h-9 px-2.5 rounded-lg bg-slate-900/90 hover:bg-slate-800 text-cyan-300 border border-cyan-500/40 font-bold text-xs flex items-center justify-center gap-1.5 transition active:scale-95 shadow-xs hover:border-cyan-400"
               title="Scan Lembar Cetak Statistik dengan AI"
             >
-              <ScanText class="w-3.5 h-3.5 text-cyan-700 dark:text-cyan-300 shrink-0" />
-              <span class="text-cyan-950 dark:text-cyan-100 font-extrabold truncate">AI Scan Statistik</span>
+              <ScanText class="w-3.5 h-3.5 text-cyan-400 stroke-[2.5] shrink-0" />
+              <span class="truncate">AI Scan Statistik</span>
             </button>
 
             <!-- Tool 2: Laporan Mandor -->
             <button
               @click="showMandorReportModal = true"
-              class="h-9 px-2.5 rounded-lg bg-amber-50 hover:bg-amber-100 dark:bg-amber-500/20 dark:hover:bg-amber-500/30 text-amber-950 dark:text-amber-100 border border-amber-400 dark:border-amber-500/50 font-extrabold text-xs flex items-center justify-center gap-2 transition active:scale-95 shadow-xs"
+              class="h-9 px-2.5 rounded-lg bg-slate-900/90 hover:bg-slate-800 text-amber-300 border border-amber-500/40 font-bold text-xs flex items-center justify-center gap-1.5 transition active:scale-95 shadow-xs hover:border-amber-400"
             >
-              <ClipboardList class="w-3.5 h-3.5 text-amber-700 dark:text-amber-400 shrink-0" />
-              <span class="text-amber-950 dark:text-amber-100 font-extrabold truncate">Laporan Mandor</span>
+              <ClipboardList class="w-3.5 h-3.5 text-amber-400 stroke-[2.5] shrink-0" />
+              <span class="truncate">Laporan Mandor</span>
             </button>
 
             <!-- Tool 3: Rekap Bulanan -->
             <button
               @click="showMonthlyRecapModal = true"
-              class="h-9 px-2.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-500/20 dark:hover:bg-emerald-500/30 text-emerald-950 dark:text-emerald-100 border border-emerald-400 dark:border-emerald-500/50 font-extrabold text-xs flex items-center justify-center gap-2 transition active:scale-95 shadow-xs"
+              class="h-9 px-2.5 rounded-lg bg-slate-900/90 hover:bg-slate-800 text-emerald-300 border border-emerald-500/40 font-bold text-xs flex items-center justify-center gap-1.5 transition active:scale-95 shadow-xs hover:border-emerald-400"
             >
-              <Table class="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400 shrink-0" />
-              <span class="text-emerald-950 dark:text-emerald-100 font-extrabold truncate">Rekap Bulanan</span>
+              <Table class="w-3.5 h-3.5 text-emerald-400 stroke-[2.5] shrink-0" />
+              <span class="truncate">Rekap Bulanan</span>
             </button>
 
             <!-- Tool 4: Set Target Massal (Secondary Action) -->
             <button
               :disabled="isReadOnly"
               @click="showSetAllTargetModal = true"
-              class="h-9 px-2.5 rounded-lg font-extrabold text-xs flex items-center justify-center gap-2 transition active:scale-95 border shadow-2xs"
+              class="h-9 px-2.5 rounded-lg font-bold text-xs flex items-center justify-center gap-1.5 transition active:scale-95 shadow-xs border"
               :class="isReadOnly
-                ? 'bg-slate-100 text-slate-400 border-slate-200 dark:bg-slate-900 dark:text-slate-500 dark:border-slate-800 cursor-not-allowed opacity-60'
-                : 'bg-slate-100 hover:bg-slate-200 text-slate-900 border-slate-300 dark:bg-slate-800/80 dark:hover:bg-slate-800 dark:text-slate-100 dark:border-slate-700'"
+                ? 'bg-slate-900/40 text-slate-500 border-slate-800 cursor-not-allowed opacity-50'
+                : 'bg-slate-900/90 hover:bg-slate-800 text-slate-200 border-slate-700 hover:border-slate-500'"
             >
-              <Target class="w-3.5 h-3.5 text-slate-700 dark:text-slate-300 shrink-0" />
-              <span class="text-slate-900 dark:text-slate-100 font-extrabold truncate">Set Target Massal</span>
+              <Target class="w-3.5 h-3.5 text-slate-400 stroke-[2.5] shrink-0" />
+              <span class="truncate">Set Target Massal</span>
             </button>
 
             <!-- Tool 5: Tandai Semua Hadir (Secondary Action) -->
             <button
               :disabled="isReadOnly"
               @click="markAllPresent()"
-              class="h-9 px-2.5 rounded-lg font-extrabold text-xs flex items-center justify-center gap-2 transition active:scale-95 border shadow-2xs"
+              class="h-9 px-2.5 rounded-lg font-bold text-xs flex items-center justify-center gap-1.5 transition active:scale-95 shadow-xs border"
               :class="isReadOnly
-                ? 'bg-slate-100 text-slate-400 border-slate-200 dark:bg-slate-900 dark:text-slate-500 dark:border-slate-800 cursor-not-allowed opacity-60'
-                : 'bg-slate-100 hover:bg-slate-200 text-slate-900 border-slate-300 dark:bg-slate-800/80 dark:hover:bg-slate-800 dark:text-slate-100 dark:border-slate-700'"
+                ? 'bg-slate-900/40 text-slate-500 border-slate-800 cursor-not-allowed opacity-50'
+                : 'bg-slate-900/90 hover:bg-slate-800 text-emerald-300 border-emerald-500/40 hover:border-emerald-400'"
             >
-              <CheckCircle2 class="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400 shrink-0" />
-              <span class="text-slate-900 dark:text-slate-100 font-extrabold truncate">Semua Hadir</span>
+              <CheckCircle2 class="w-3.5 h-3.5 text-emerald-400 stroke-[2.5] shrink-0" />
+              <span class="truncate">Semua Hadir</span>
             </button>
 
             <!-- Tool 6: Reset Edit Tanggal Ini -->
@@ -170,13 +170,13 @@
               v-if="hasOverridesForDate"
               :disabled="isReadOnly"
               @click="resetDateOverrides()"
-              class="h-9 px-2.5 rounded-lg font-extrabold text-xs flex items-center justify-center gap-2 transition active:scale-95 shadow-2xs"
+              class="h-9 px-2.5 rounded-lg font-bold text-xs flex items-center justify-center gap-1.5 transition active:scale-95 border"
               :class="isReadOnly
-                ? 'bg-slate-100 text-slate-400 border-slate-200 dark:bg-slate-900 dark:text-slate-500 dark:border-slate-800 cursor-not-allowed opacity-60'
-                : 'bg-rose-50 hover:bg-rose-100 text-rose-900 border border-rose-300 dark:bg-rose-500/15 dark:hover:bg-rose-500/25 dark:text-rose-200 dark:border-rose-500/40'"
+                ? 'bg-slate-900/40 text-slate-500 border-slate-800 cursor-not-allowed opacity-50'
+                : 'bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border-rose-500/40 hover:border-rose-400'"
             >
-              <RotateCcw class="w-3.5 h-3.5 text-rose-700 dark:text-rose-400 shrink-0" />
-              <span class="text-rose-900 dark:text-rose-200 font-extrabold truncate">Reset Edit Tanggal</span>
+              <RotateCcw class="w-3.5 h-3.5 text-rose-400 stroke-[2.5] shrink-0" />
+              <span class="truncate">Reset Edit Tanggal</span>
             </button>
           </div>
         </div>
@@ -289,10 +289,33 @@
                 </div>
                 <div class="min-w-0">
                   <div class="font-bold text-slate-100 truncate text-xs">{{ row.workerName }}</div>
-                  <div class="text-[10px] text-slate-400 flex items-center gap-1.5">
+                  <div class="text-[10px] text-slate-400 flex items-center gap-1.5 flex-wrap">
                     <span class="text-teal-400 font-mono">{{ row.workerNo }}</span>
                     <span>•</span>
                     <span class="truncate">{{ row.teamName }}</span>
+                  </div>
+                  <!-- Role Specialization Badge -->
+                  <div class="mt-1 flex items-center gap-1">
+                    <span
+                      v-if="row.isSpk"
+                      class="px-1.5 py-0.2 rounded text-[9px] font-extrabold font-mono bg-amber-500/20 text-amber-300 border border-amber-500/40"
+                      title="1 Lembar = 120 Biji Speaker Headset"
+                    >
+                      SPK • 1 Lbr = 120 Biji
+                    </span>
+                    <span
+                      v-else-if="row.isQc"
+                      class="px-1.5 py-0.2 rounded text-[9px] font-extrabold font-mono bg-cyan-500/20 text-cyan-300 border border-cyan-500/40"
+                      title="Quality Control (Check)"
+                    >
+                      QC • Check
+                    </span>
+                    <span
+                      v-else-if="row.role"
+                      class="px-1.5 py-0.2 rounded text-[9px] font-semibold font-mono bg-teal-500/15 text-teal-300 border border-teal-500/30 truncate max-w-[120px]"
+                    >
+                      {{ row.role }}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -300,7 +323,30 @@
 
             <!-- Absensi Toggle Button -->
             <td class="py-3 px-3 text-center">
+              <!-- QC Specific Absensi / Check Button -->
               <button
+                v-if="row.isQc"
+                :disabled="isReadOnly"
+                @click="toggleQcCheck(row)"
+                class="px-2.5 py-1 rounded-md text-[11px] font-bold flex items-center justify-center gap-1.5 w-full border shadow-xs transition"
+                :class="[
+                  isReadOnly ? 'cursor-not-allowed opacity-70' : 'active:scale-95',
+                  row.isPresent && row.prodQty >= row.targetQty && row.prodQty > 0
+                    ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40 hover:bg-cyan-500/30 font-black'
+                    : (row.isPresent
+                        ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/25'
+                        : 'bg-rose-500/15 text-rose-300 border-rose-500/40 hover:bg-rose-500/25')
+                ]"
+                :title="row.isPresent && row.prodQty >= row.targetQty && row.prodQty > 0 ? 'Sudah Check Semua Produk' : 'Klik untuk menandai sudah masuk & check semua produk'"
+              >
+                <Check v-if="row.isPresent" class="w-3.5 h-3.5 text-cyan-400 stroke-[3]" />
+                <X v-else class="w-3.5 h-3.5 text-rose-400" />
+                <span>{{ row.isPresent && row.prodQty >= row.targetQty && row.prodQty > 0 ? 'Checked ✓' : (row.isPresent ? 'Check' : 'Absen') }}</span>
+              </button>
+
+              <!-- Standard Worker Absensi Toggle -->
+              <button
+                v-else
                 :disabled="isReadOnly"
                 @click="toggleAttendance(row)"
                 class="px-2.5 py-1 rounded-md text-[11px] font-bold flex items-center justify-center gap-1.5 w-full border shadow-xs transition"
@@ -333,41 +379,159 @@
               />
             </td>
 
-            <!-- Target Harian (Pcs) -->
+            <!-- Target Harian -->
             <td class="py-3 px-3 text-right">
-              <input
-                type="number"
-                :disabled="isReadOnly"
-                :readonly="isReadOnly"
-                :value="localTargetMap[row.workerId] ?? row.targetQty"
-                @focus="activeInputKey = `target_${row.workerId}`; ($event.target as HTMLInputElement).select()"
-                @blur="activeInputKey = null"
-                @input="updateTarget(row.workerId, ($event.target as HTMLInputElement).value)"
-                min="0"
-                class="w-24 h-8 px-2 text-right rounded bg-slate-950 border text-teal-300 text-xs font-mono font-bold focus:outline-none"
-                :class="isReadOnly ? 'border-slate-800 text-slate-400 cursor-not-allowed bg-slate-900/50' : 'border-slate-700 focus:border-teal-400'"
-              />
+              <!-- SPK Target Input (in Lembar, auto-converted to 120 Biji) -->
+              <div v-if="row.isSpk" class="flex flex-col items-end">
+                <div class="relative flex items-center">
+                  <input
+                    type="number"
+                    :disabled="isReadOnly"
+                    :readonly="isReadOnly"
+                    :value="formatSpkLembar(localTargetMap[row.workerId] ?? row.targetQty)"
+                    @focus="activeInputKey = `target_${row.workerId}`; ($event.target as HTMLInputElement).select()"
+                    @blur="activeInputKey = null"
+                    @input="updateSpkTargetLembar(row.workerId, ($event.target as HTMLInputElement).value)"
+                    min="0"
+                    step="0.5"
+                    class="w-24 h-8 px-2 pr-7 text-right rounded bg-slate-950 border text-amber-300 text-xs font-mono font-bold focus:outline-none"
+                    :class="isReadOnly ? 'border-slate-800 text-slate-400 cursor-not-allowed bg-slate-900/50' : 'border-amber-500/40 focus:border-amber-400'"
+                  />
+                  <span class="absolute right-1.5 text-[9px] text-amber-400 font-bold pointer-events-none">Lbr</span>
+                </div>
+                <span class="text-[9px] text-slate-400 font-mono mt-0.5">{{ formatNumber(localTargetMap[row.workerId] ?? row.targetQty) }} Biji</span>
+              </div>
+
+              <!-- QC Target Input -->
+              <div v-else-if="row.isQc" class="flex flex-col items-end">
+                <input
+                  type="number"
+                  :disabled="isReadOnly"
+                  :readonly="isReadOnly"
+                  :value="localTargetMap[row.workerId] ?? row.targetQty"
+                  @focus="activeInputKey = `target_${row.workerId}`; ($event.target as HTMLInputElement).select()"
+                  @blur="activeInputKey = null"
+                  @input="updateTarget(row.workerId, ($event.target as HTMLInputElement).value)"
+                  min="0"
+                  placeholder="Target..."
+                  class="w-24 h-8 px-2 text-right rounded bg-slate-950 border text-cyan-300 text-xs font-mono font-bold focus:outline-none"
+                  :class="isReadOnly ? 'border-slate-800 text-slate-400 cursor-not-allowed bg-slate-900/50' : 'border-cyan-500/40 focus:border-cyan-400'"
+                />
+                <span class="text-[9px] text-cyan-400 font-mono mt-0.5">Check (Pcs)</span>
+              </div>
+
+              <!-- Standard Production Target Input -->
+              <div v-else class="flex flex-col items-end">
+                <input
+                  type="number"
+                  :disabled="isReadOnly"
+                  :readonly="isReadOnly"
+                  :value="localTargetMap[row.workerId] ?? row.targetQty"
+                  @focus="activeInputKey = `target_${row.workerId}`; ($event.target as HTMLInputElement).select()"
+                  @blur="activeInputKey = null"
+                  @input="updateTarget(row.workerId, ($event.target as HTMLInputElement).value)"
+                  min="0"
+                  class="w-24 h-8 px-2 text-right rounded bg-slate-950 border text-teal-300 text-xs font-mono font-bold focus:outline-none"
+                  :class="isReadOnly ? 'border-slate-800 text-slate-400 cursor-not-allowed bg-slate-900/50' : 'border-slate-700 focus:border-teal-400'"
+                />
+                <span class="text-[9px] text-slate-500 font-mono mt-0.5">Pcs</span>
+              </div>
             </td>
 
-            <!-- Hasil Realisasi (Pcs) -->
+            <!-- Hasil Realisasi -->
             <td class="py-3 px-3 text-right">
-              <input
-                type="number"
-                :disabled="isReadOnly"
-                :readonly="isReadOnly"
-                :value="localProdMap[row.workerId] ?? row.prodQty"
-                @focus="activeInputKey = `prod_${row.workerId}`; ($event.target as HTMLInputElement).select()"
-                @blur="activeInputKey = null"
-                @input="updateProd(row.workerId, ($event.target as HTMLInputElement).value)"
-                min="0"
-                class="w-24 h-8 px-2 text-right rounded bg-slate-950 border text-cyan-300 text-xs font-mono font-bold focus:outline-none"
-                :class="isReadOnly ? 'border-slate-800 text-slate-400 cursor-not-allowed bg-slate-900/50' : 'border-slate-700 focus:border-cyan-400'"
-              />
+              <!-- SPK Realisasi Input (in Lembar, auto-converted to 120 Biji) -->
+              <div v-if="row.isSpk" class="flex flex-col items-end">
+                <div class="relative flex items-center">
+                  <input
+                    type="number"
+                    :disabled="isReadOnly"
+                    :readonly="isReadOnly"
+                    :value="formatSpkLembar(localProdMap[row.workerId] ?? row.prodQty)"
+                    @focus="activeInputKey = `prod_${row.workerId}`; ($event.target as HTMLInputElement).select()"
+                    @blur="activeInputKey = null"
+                    @input="updateSpkProdLembar(row.workerId, ($event.target as HTMLInputElement).value)"
+                    min="0"
+                    step="0.5"
+                    class="w-24 h-8 px-2 pr-7 text-right rounded bg-slate-950 border text-amber-300 text-xs font-mono font-bold focus:outline-none"
+                    :class="isReadOnly ? 'border-slate-800 text-slate-400 cursor-not-allowed bg-slate-900/50' : 'border-amber-500/40 focus:border-amber-400'"
+                  />
+                  <span class="absolute right-1.5 text-[9px] text-amber-400 font-bold pointer-events-none">Lbr</span>
+                </div>
+                <span class="text-[9px] text-amber-400 font-mono font-bold mt-0.5">{{ formatNumber(localProdMap[row.workerId] ?? row.prodQty) }} Biji</span>
+              </div>
+
+              <!-- QC Realisasi Input & 1-Click Check Button -->
+              <div v-else-if="row.isQc" class="flex flex-col items-end gap-1">
+                <div class="flex items-center gap-1.5">
+                  <input
+                    type="number"
+                    :disabled="isReadOnly"
+                    :readonly="isReadOnly"
+                    :value="localProdMap[row.workerId] ?? row.prodQty"
+                    @focus="activeInputKey = `prod_${row.workerId}`; ($event.target as HTMLInputElement).select()"
+                    @blur="activeInputKey = null"
+                    @input="updateProd(row.workerId, ($event.target as HTMLInputElement).value)"
+                    min="0"
+                    placeholder="0"
+                    class="w-20 h-8 px-2 text-right rounded bg-slate-950 border text-cyan-300 text-xs font-mono font-bold focus:outline-none"
+                    :class="isReadOnly ? 'border-slate-800 text-slate-400 cursor-not-allowed bg-slate-900/50' : 'border-cyan-500/40 focus:border-cyan-400'"
+                  />
+                  <!-- QC Quick Check Button -->
+                  <button
+                    type="button"
+                    :disabled="isReadOnly"
+                    @click="toggleQcCheck(row)"
+                    class="h-8 px-2 rounded font-bold text-[10px] font-mono transition flex items-center justify-center gap-1 border shadow-xs"
+                    :class="row.isPresent && row.prodQty >= row.targetQty && row.prodQty > 0
+                      ? 'bg-cyan-500 text-slate-950 border-cyan-400 font-black hover:bg-cyan-400 active:scale-95'
+                      : 'bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 border-cyan-500/40 active:scale-95'"
+                    title="Klik untuk menandai QC sudah check semua produk"
+                  >
+                    <Check class="w-3.5 h-3.5 stroke-[2.5]" />
+                    <span>{{ row.isPresent && row.prodQty >= row.targetQty && row.prodQty > 0 ? 'Checked' : 'Check All' }}</span>
+                  </button>
+                </div>
+                <span class="text-[9px] text-cyan-400 font-mono">Check (Pcs)</span>
+              </div>
+
+              <!-- Standard Production Realisasi Input -->
+              <div v-else class="flex flex-col items-end">
+                <input
+                  type="number"
+                  :disabled="isReadOnly"
+                  :readonly="isReadOnly"
+                  :value="localProdMap[row.workerId] ?? row.prodQty"
+                  @focus="activeInputKey = `prod_${row.workerId}`; ($event.target as HTMLInputElement).select()"
+                  @blur="activeInputKey = null"
+                  @input="updateProd(row.workerId, ($event.target as HTMLInputElement).value)"
+                  min="0"
+                  class="w-24 h-8 px-2 text-right rounded bg-slate-950 border text-teal-300 text-xs font-mono font-bold focus:outline-none"
+                  :class="isReadOnly ? 'border-slate-800 text-slate-400 cursor-not-allowed bg-slate-900/50' : 'border-slate-700 focus:border-teal-400'"
+                />
+                <span class="text-[9px] text-slate-500 font-mono mt-0.5">Pcs</span>
+              </div>
             </td>
 
             <!-- Selisih (+/- Pcs) -->
-            <td class="py-3 px-3 text-right font-extrabold" :class="row.gap >= 0 ? 'text-emerald-400' : 'text-rose-400'">
-              {{ row.gap >= 0 ? `+${formatNumber(row.gap)}` : formatNumber(row.gap) }}
+            <td class="py-3 px-3 text-right font-mono">
+              <div v-if="row.isSpk" class="flex flex-col items-end">
+                <span class="font-extrabold text-xs" :class="row.gap >= 0 ? 'text-emerald-400' : 'text-rose-400'">
+                  {{ row.gap >= 0 ? `+${formatNumber(row.gap)}` : formatNumber(row.gap) }} Biji
+                </span>
+                <span class="text-[9px] text-slate-400 font-semibold">
+                  ({{ row.gap >= 0 ? '+' : '' }}{{ formatSpkLembar(row.gap) }} Lbr)
+                </span>
+              </div>
+              <div v-else-if="row.isQc" class="flex flex-col items-end">
+                <span class="font-extrabold text-xs" :class="row.gap >= 0 ? 'text-emerald-400' : 'text-rose-400'">
+                  {{ row.gap >= 0 ? `+${formatNumber(row.gap)}` : formatNumber(row.gap) }}
+                </span>
+                <span class="text-[9px] text-cyan-400 font-semibold">Check</span>
+              </div>
+              <div v-else class="font-extrabold" :class="row.gap >= 0 ? 'text-emerald-400' : 'text-rose-400'">
+                {{ row.gap >= 0 ? `+${formatNumber(row.gap)}` : formatNumber(row.gap) }}
+              </div>
             </td>
 
             <!-- Status Target -->
@@ -383,14 +547,14 @@
                 class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center gap-1"
               >
                 <Check class="w-3 h-3 text-emerald-400" />
-                <span>Tercapai</span>
+                <span>{{ row.isQc ? 'Check OK' : 'Tercapai' }}</span>
               </span>
               <span
                 v-else
                 class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center gap-1"
               >
                 <Clock class="w-3 h-3 text-amber-400" />
-                <span>Belum Target</span>
+                <span>{{ row.isQc ? 'Belum Selesai' : 'Belum Target' }}</span>
               </span>
             </td>
 
@@ -404,7 +568,7 @@
                 @focus="activeInputKey = `remark_${row.workerId}`"
                 @blur="activeInputKey = null"
                 @input="updateRemark(row.workerId, ($event.target as HTMLInputElement).value)"
-                placeholder="Catatan..."
+                :placeholder="row.isQc ? 'Check...' : (row.isSpk ? 'Catatan SPK...' : 'Catatan...')"
                 class="w-full h-8 px-2 rounded bg-slate-950 border text-slate-300 text-[11px] font-mono focus:outline-none truncate"
                 :class="isReadOnly ? 'border-slate-800 text-slate-500 cursor-not-allowed bg-slate-900/50' : 'border-slate-800 focus:border-slate-600'"
               />
@@ -440,7 +604,7 @@
         class="bg-slate-900/80 border border-slate-800/90 rounded-lg p-3 sm:p-3.5 space-y-3 shadow-md transition"
         :class="!row.isPresent ? 'border-rose-900/30 bg-rose-950/20' : ''"
       >
-        <!-- Top Row: Avatar, Name, No Krywn, Team, Increase Badge, Stats & Absensi Button -->
+        <!-- Top Row: Avatar, Name, No Krywn, Team, Role Badge, Stats & Absensi Button -->
         <div class="flex items-center justify-between gap-2 pb-2.5 border-b border-slate-800/70">
           <div class="flex items-center gap-2 min-w-0">
             <img
@@ -463,10 +627,22 @@
                   📈 +{{ workerIncreaseMap[row.workerId].pctIncrease.toFixed(1) }}%
                 </span>
               </div>
-              <div class="text-[10px] text-slate-400 font-mono flex items-center gap-1 mt-0.5 truncate">
+              <div class="text-[10px] text-slate-400 font-mono flex items-center gap-1 mt-0.5 truncate flex-wrap">
                 <span class="text-teal-400 font-bold">{{ row.workerNo }}</span>
                 <span>•</span>
                 <span class="px-1.5 py-0.2 rounded-full bg-slate-800 text-slate-300 truncate">{{ row.teamName }}</span>
+                <span
+                  v-if="row.isSpk"
+                  class="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold text-[9px]"
+                >
+                  SPK (120/lbr)
+                </span>
+                <span
+                  v-else-if="row.isQc"
+                  class="px-1.5 py-0.2 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold text-[9px]"
+                >
+                  QC Check
+                </span>
               </div>
             </div>
           </div>
@@ -482,8 +658,30 @@
               <span>Stats</span>
             </button>
 
-            <!-- Absensi Button -->
+            <!-- Absensi Button (QC Specific) -->
             <button
+              v-if="row.isQc"
+              :disabled="isReadOnly"
+              @click="toggleQcCheck(row)"
+              class="px-2.5 py-1 rounded-lg text-xs font-black flex items-center gap-1 border shrink-0 transition shadow-2xs"
+              :class="[
+                isReadOnly ? 'cursor-not-allowed opacity-70' : 'active:scale-95',
+                row.isPresent && row.prodQty >= row.targetQty && row.prodQty > 0
+                  ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50 dark:bg-cyan-500/25 font-black'
+                  : (row.isPresent
+                      ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border-emerald-400 dark:bg-emerald-500/20 dark:text-emerald-100 dark:border-emerald-500/50'
+                      : 'bg-rose-50 hover:bg-rose-100 text-rose-950 border-rose-400 dark:bg-rose-500/20 dark:text-rose-100 dark:border-rose-500/50')
+              ]"
+              :title="row.isPresent && row.prodQty >= row.targetQty && row.prodQty > 0 ? 'Sudah Check Semua Produk' : 'Klik untuk menandai QC sudah check semua produk'"
+            >
+              <Check v-if="row.isPresent" class="w-3.5 h-3.5 text-cyan-400 stroke-[3]" />
+              <X v-else class="w-3.5 h-3.5 text-rose-400 stroke-[2.5]" />
+              <span>{{ row.isPresent && row.prodQty >= row.targetQty && row.prodQty > 0 ? 'Checked ✓' : (row.isPresent ? 'Check' : 'Absen') }}</span>
+            </button>
+
+            <!-- Absensi Button (Standard) -->
+            <button
+              v-else
               :disabled="isReadOnly"
               @click="toggleAttendance(row)"
               class="px-2.5 py-1 rounded-lg text-xs font-black flex items-center gap-1 border shrink-0 transition shadow-2xs"
@@ -526,9 +724,23 @@
           <div>
             <label class="block text-[9px] sm:text-[10px] text-slate-400 font-bold mb-1 flex items-center justify-between">
               <span>TARGET</span>
-              <span class="text-teal-400 text-[9px]">Pcs</span>
+              <span class="text-teal-400 text-[9px]">{{ row.isSpk ? 'Lbr' : (row.isQc ? 'Check' : 'Pcs') }}</span>
             </label>
             <input
+              v-if="row.isSpk"
+              type="number"
+              :disabled="isReadOnly"
+              :readonly="isReadOnly"
+              :value="formatSpkLembar(localTargetMap[row.workerId] ?? row.targetQty)"
+              @focus="activeInputKey = `target_${row.workerId}`; ($event.target as HTMLInputElement).select()"
+              @blur="activeInputKey = null"
+              @input="updateSpkTargetLembar(row.workerId, ($event.target as HTMLInputElement).value)"
+              step="0.5"
+              class="w-full h-8 px-1 sm:px-2 text-center rounded-lg bg-slate-900 border text-amber-300 text-xs font-black focus:outline-none"
+              :class="isReadOnly ? 'border-slate-800 text-slate-500 cursor-not-allowed' : 'border-amber-500/40 focus:border-amber-400'"
+            />
+            <input
+              v-else
               type="number"
               :disabled="isReadOnly"
               :readonly="isReadOnly"
@@ -539,15 +751,57 @@
               class="w-full h-8 px-1 sm:px-2 text-center rounded-lg bg-slate-900 border text-teal-300 text-xs font-black focus:outline-none"
               :class="isReadOnly ? 'border-slate-800 text-slate-500 cursor-not-allowed' : 'border-teal-500/40 focus:border-teal-400'"
             />
+            <span v-if="row.isSpk" class="block text-center text-[8px] text-slate-400 font-mono mt-0.5">
+              {{ formatNumber(localTargetMap[row.workerId] ?? row.targetQty) }} Biji
+            </span>
           </div>
 
           <!-- Realisasi -->
           <div>
             <label class="block text-[9px] sm:text-[10px] text-slate-400 font-bold mb-1 flex items-center justify-between">
-              <span>REALISASI</span>
-              <span class="text-cyan-400 text-[9px]">Pcs</span>
+              <span>HASIL</span>
+              <span class="text-cyan-400 text-[9px]">{{ row.isSpk ? 'Lbr' : (row.isQc ? 'Check' : 'Pcs') }}</span>
             </label>
             <input
+              v-if="row.isSpk"
+              type="number"
+              :disabled="isReadOnly"
+              :readonly="isReadOnly"
+              :value="formatSpkLembar(localProdMap[row.workerId] ?? row.prodQty)"
+              @focus="activeInputKey = `prod_${row.workerId}`; ($event.target as HTMLInputElement).select()"
+              @blur="activeInputKey = null"
+              @input="updateSpkProdLembar(row.workerId, ($event.target as HTMLInputElement).value)"
+              step="0.5"
+              class="w-full h-8 px-1 sm:px-2 text-center rounded-lg bg-slate-900 border text-amber-300 text-xs font-black focus:outline-none"
+              :class="isReadOnly ? 'border-slate-800 text-slate-500 cursor-not-allowed' : 'border-amber-500/40 focus:border-amber-400'"
+            />
+            <div v-else-if="row.isQc" class="space-y-1">
+              <input
+                type="number"
+                :disabled="isReadOnly"
+                :readonly="isReadOnly"
+                :value="localProdMap[row.workerId] ?? row.prodQty"
+                @focus="activeInputKey = `prod_${row.workerId}`; ($event.target as HTMLInputElement).select()"
+                @blur="activeInputKey = null"
+                @input="updateProd(row.workerId, ($event.target as HTMLInputElement).value)"
+                class="w-full h-7 px-1 text-center rounded bg-slate-900 border text-cyan-300 text-xs font-black focus:outline-none"
+                :class="isReadOnly ? 'border-slate-800 text-slate-500 cursor-not-allowed' : 'border-cyan-500/40 focus:border-cyan-400'"
+              />
+              <button
+                type="button"
+                :disabled="isReadOnly"
+                @click="toggleQcCheck(row)"
+                class="w-full py-0.5 rounded text-[8px] font-bold font-mono border flex items-center justify-center gap-0.5 transition"
+                :class="row.isPresent && row.prodQty >= row.targetQty && row.prodQty > 0
+                  ? 'bg-cyan-500 text-slate-950 border-cyan-400 font-black'
+                  : 'bg-cyan-500/15 text-cyan-300 border-cyan-500/40'"
+              >
+                <Check class="w-2.5 h-2.5 stroke-[3]" />
+                <span>{{ row.isPresent && row.prodQty >= row.targetQty && row.prodQty > 0 ? 'Checked' : 'Check All' }}</span>
+              </button>
+            </div>
+            <input
+              v-else
               type="number"
               :disabled="isReadOnly"
               :readonly="isReadOnly"
@@ -558,6 +812,9 @@
               class="w-full h-8 px-1 sm:px-2 text-center rounded-lg bg-slate-900 border text-cyan-300 text-xs font-black focus:outline-none"
               :class="isReadOnly ? 'border-slate-800 text-slate-500 cursor-not-allowed' : 'border-cyan-500/40 focus:border-cyan-400'"
             />
+            <span v-if="row.isSpk" class="block text-center text-[8px] text-amber-400 font-mono font-bold mt-0.5">
+              {{ formatNumber(localProdMap[row.workerId] ?? row.prodQty) }} Biji
+            </span>
           </div>
         </div>
 
@@ -565,7 +822,13 @@
         <div class="flex items-center justify-between gap-2 text-xs font-mono">
           <div class="flex items-center gap-1 text-[11px]">
             <span class="text-slate-400">Selisih:</span>
-            <span class="font-extrabold" :class="row.gap >= 0 ? 'text-emerald-400' : 'text-rose-400'">
+            <span v-if="row.isSpk" class="font-extrabold" :class="row.gap >= 0 ? 'text-emerald-400' : 'text-rose-400'">
+              {{ row.gap >= 0 ? `+${formatNumber(row.gap)}` : formatNumber(row.gap) }} Biji ({{ (row.gap >= 0 ? '+' : '') + formatSpkLembar(row.gap) }} Lbr)
+            </span>
+            <span v-else-if="row.isQc" class="font-extrabold" :class="row.gap >= 0 ? 'text-emerald-400' : 'text-rose-400'">
+              {{ row.gap >= 0 ? `+${formatNumber(row.gap)}` : formatNumber(row.gap) }} Check
+            </span>
+            <span v-else class="font-extrabold" :class="row.gap >= 0 ? 'text-emerald-400' : 'text-rose-400'">
               {{ row.gap >= 0 ? `+${formatNumber(row.gap)}` : formatNumber(row.gap) }} Pcs
             </span>
           </div>
@@ -581,13 +844,13 @@
               v-else-if="row.isTargetReached"
               class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
             >
-              Tercapai
+              {{ row.isQc ? 'Check OK' : 'Tercapai' }}
             </span>
             <span
               v-else
               class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20"
             >
-              Belum Target
+              {{ row.isQc ? 'Belum Selesai' : 'Belum Target' }}
             </span>
           </div>
         </div>
@@ -602,7 +865,7 @@
             @focus="activeInputKey = `remark_${row.workerId}`"
             @blur="activeInputKey = null"
             @input="updateRemark(row.workerId, ($event.target as HTMLInputElement).value)"
-            placeholder="Catatan..."
+            :placeholder="row.isQc ? 'Check...' : (row.isSpk ? 'Catatan SPK...' : 'Catatan...')"
             class="w-full h-7 px-2.5 rounded-lg bg-slate-950 border text-slate-300 text-[11px] font-mono focus:outline-none placeholder:text-slate-600"
             :class="isReadOnly ? 'border-slate-800 text-slate-500 cursor-not-allowed' : 'border-slate-800 focus:border-slate-600'"
           />
@@ -873,12 +1136,34 @@ const statusFilterOptions: SelectOption[] = [
   { label: 'Belum Target', value: 'pending' }
 ]
 
+const SPK_PCS_PER_SHEET = 120
+
+function isSpkRole(role?: string): boolean {
+  if (!role) return false
+  const r = role.toUpperCase()
+  return r.includes('SPK') || r.includes('SPEAKER')
+}
+
+function isQcRole(role?: string): boolean {
+  if (!role) return false
+  const r = role.toUpperCase()
+  return r.includes('QC') || r.includes('CHECK')
+}
+
+function formatSpkLembar(qtyPcs: number): string {
+  const lbr = (qtyPcs || 0) / SPK_PCS_PER_SHEET
+  return Number.isInteger(lbr) ? String(lbr) : lbr.toFixed(2).replace(/\.?0+$/, '')
+}
+
 interface WorkerRow {
   workerId: string
   workerNo: string
   workerName: string
   avatarUrl?: string
   teamName: string
+  role?: string
+  isSpk: boolean
+  isQc: boolean
   isPresent: boolean
   workHours: string
   targetQty: number
@@ -933,7 +1218,7 @@ const workerRows = computed<WorkerRow[]>(() => {
     const prodQtyVal = hasProdOverride ? dOverride.prodQty! : baseProdQty
 
     let isPresent = false
-    if (dOverride.remark === 'Hadir ✓' || dOverride.remark === 'Hadir') {
+    if (dOverride.remark === 'Hadir ✓' || dOverride.remark === 'Hadir' || dOverride.remark === 'Check') {
       isPresent = true
     } else if (dOverride.remark === 'Absen ✕' || dOverride.remark === 'Absen') {
       isPresent = prodQtyVal > 0
@@ -958,6 +1243,10 @@ const workerRows = computed<WorkerRow[]>(() => {
     const isNewInInterval = isWorkerNewOnDate(w.joined_date, dateStr, 7)
     const isBeforeJoined = !!w.joined_date && dateStr < w.joined_date
 
+    const role = w.role || ''
+    const isSpk = isSpkRole(role)
+    const isQc = isQcRole(role)
+
     let defaultRemark = 'Absen'
     if (isBeforeJoined && !isPresent) {
       defaultRemark = 'Belum Bergabung'
@@ -966,7 +1255,7 @@ const workerRows = computed<WorkerRow[]>(() => {
     } else if (isOnLeave && !isPresent) {
       defaultRemark = 'Cuti'
     } else if (isPresent) {
-      defaultRemark = isNewInInterval ? 'Hadir (Baru)' : 'Hadir'
+      defaultRemark = isQc ? 'Check' : (isNewInInterval ? 'Hadir (Baru)' : 'Hadir')
     }
 
     const remark = dOverride.remark !== undefined ? dOverride.remark : defaultRemark
@@ -977,6 +1266,9 @@ const workerRows = computed<WorkerRow[]>(() => {
       workerName,
       avatarUrl: w.avatar_url,
       teamName,
+      role,
+      isSpk,
+      isQc,
       isPresent,
       workHours,
       targetQty,
@@ -1189,7 +1481,10 @@ function toggleAttendance(row: WorkerRow) {
   if (isReadOnly.value) return
 
   const newStatus = !row.isPresent
-  const newRemark = newStatus ? 'Hadir' : 'Absen'
+  let newRemark = newStatus ? 'Hadir' : 'Absen'
+  if (newStatus && row.isQc) {
+    newRemark = 'Check'
+  }
   overrideStore.setDailyOverride(row.workerId, selectedDate.value, 'remark', newRemark, 'all_shifts')
 
   if (!newStatus) {
@@ -1234,6 +1529,15 @@ function updateTarget(workerId: string, rawVal: string) {
   _writeTarget(workerId, selectedDate.value, val)
 }
 
+function updateSpkTargetLembar(workerId: string, rawVal: string) {
+  if (isReadOnly.value) return
+  const lembar = Number(rawVal)
+  if (isNaN(lembar) || lembar < 0) return
+  const pcs = Math.round(lembar * SPK_PCS_PER_SHEET)
+  localTargetMap.value[workerId] = pcs
+  _writeTarget(workerId, selectedDate.value, pcs)
+}
+
 function updateProd(workerId: string, rawVal: string) {
   if (isReadOnly.value) return
   const val = Number(rawVal)
@@ -1242,10 +1546,43 @@ function updateProd(workerId: string, rawVal: string) {
   _writeProd(workerId, selectedDate.value, val)
 }
 
+function updateSpkProdLembar(workerId: string, rawVal: string) {
+  if (isReadOnly.value) return
+  const lembar = Number(rawVal)
+  if (isNaN(lembar) || lembar < 0) return
+  const pcs = Math.round(lembar * SPK_PCS_PER_SHEET)
+  localProdMap.value[workerId] = pcs
+  _writeProd(workerId, selectedDate.value, pcs)
+}
+
 function updateWorkHours(workerId: string, val: string) {
   if (isReadOnly.value) return
   localWorkHoursMap.value[workerId] = val
   _writeWorkHours(workerId, selectedDate.value, val)
+}
+
+function toggleQcCheck(row: WorkerRow) {
+  if (isReadOnly.value) return
+
+  const currentProd = localProdMap.value[row.workerId] ?? row.prodQty
+  const currentTarget = localTargetMap.value[row.workerId] ?? (row.targetQty > 0 ? row.targetQty : 500)
+  const isAlreadyChecked = row.isPresent && currentProd >= currentTarget && currentProd > 0
+
+  if (isAlreadyChecked) {
+    // Reset to 0 / Absen
+    overrideStore.setDailyOverride(row.workerId, selectedDate.value, 'prodQty', 0, 'all_shifts')
+    overrideStore.setDailyOverride(row.workerId, selectedDate.value, 'remark', 'Absen', 'all_shifts')
+    localProdMap.value[row.workerId] = 0
+    localRemarkMap.value[row.workerId] = 'Absen'
+    auditStore.logAction('Absensi', `Reset QC Check (${row.workerName})`, `Status QC Check di-reset (${selectedDate.value})`)
+  } else {
+    // Set checked: prodQty = targetQty, remark = 'Check', isPresent = true
+    overrideStore.setDailyOverride(row.workerId, selectedDate.value, 'remark', 'Check', 'all_shifts')
+    overrideStore.setDailyOverride(row.workerId, selectedDate.value, 'prodQty', currentTarget, 'all_shifts')
+    localRemarkMap.value[row.workerId] = 'Check'
+    localProdMap.value[row.workerId] = currentTarget
+    auditStore.logAction('Absensi', `QC Check Semua Produk (${row.workerName})`, `Menandai karyawan QC sudah check semua produk (${currentTarget} Pcs) (${selectedDate.value})`)
+  }
 }
 
 function updateRemark(workerId: string, val: string) {
@@ -1257,7 +1594,15 @@ function updateRemark(workerId: string, val: string) {
 function markAllPresent() {
   if (isReadOnly.value) return
   for (const row of filteredWorkerRows.value) {
-    overrideStore.setDailyOverride(row.workerId, selectedDate.value, 'remark', 'Hadir', 'all_shifts')
+    if (row.isQc) {
+      const target = localTargetMap.value[row.workerId] ?? (row.targetQty > 0 ? row.targetQty : 500)
+      overrideStore.setDailyOverride(row.workerId, selectedDate.value, 'remark', 'Check', 'all_shifts')
+      overrideStore.setDailyOverride(row.workerId, selectedDate.value, 'prodQty', target, 'all_shifts')
+      localRemarkMap.value[row.workerId] = 'Check'
+      localProdMap.value[row.workerId] = target
+    } else {
+      overrideStore.setDailyOverride(row.workerId, selectedDate.value, 'remark', 'Hadir', 'all_shifts')
+    }
   }
 }
 

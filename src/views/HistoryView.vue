@@ -86,18 +86,18 @@
             <!-- Action 1: Rekap Bulanan -->
             <button
               @click="showMonthlyRecapModal = true"
-              class="h-9 px-3 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold text-xs flex items-center justify-center gap-2 transition active:scale-95"
+              class="h-9 px-3 rounded-lg bg-slate-900/90 hover:bg-slate-800 text-emerald-300 border border-emerald-500/40 font-bold text-xs flex items-center justify-center gap-2 transition active:scale-95 shadow-xs hover:border-emerald-400"
             >
-              <Table class="w-4 h-4 text-emerald-400 shrink-0" />
+              <Table class="w-4 h-4 text-emerald-400 stroke-[2.5] shrink-0" />
               <span>{{ t('dashboard.monthlyRecapSheet') }}</span>
             </button>
 
             <!-- Action 2: Unduh Rekap (Excel) -->
             <button
               @click="exportCsv"
-              class="h-9 px-3 rounded-lg bg-slate-950 hover:bg-slate-800 text-teal-300 border border-slate-700 font-bold text-xs flex items-center justify-center gap-2 transition active:scale-95"
+              class="h-9 px-3 rounded-lg bg-slate-900/90 hover:bg-slate-800 text-teal-300 border border-teal-500/40 font-bold text-xs flex items-center justify-center gap-2 transition active:scale-95 shadow-xs hover:border-teal-400"
             >
-              <Download class="w-4 h-4 text-teal-400 shrink-0" />
+              <Download class="w-4 h-4 text-teal-400 stroke-[2.5] shrink-0" />
               <span>{{ t('history.exportCsv') }}</span>
             </button>
           </div>

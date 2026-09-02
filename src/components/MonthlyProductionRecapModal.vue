@@ -407,7 +407,6 @@
                 v-model="selectedProcessInput"
                 :options="processOptions"
                 placeholder="Pilih / Ketik Proses..."
-                storage-key="earflow_role_options"
                 @update:model-value="handleProcessInputChange"
               />
             </div>
@@ -1035,7 +1034,7 @@ const reportRows = computed(() => {
 
     const workerNo = wOverride.workerNo !== undefined ? wOverride.workerNo : ((w.no_karyawan && !isTempWorkerNo(w.no_karyawan) && w.no_karyawan !== '-') ? w.no_karyawan : '')
     const workerName = wOverride.workerName !== undefined ? wOverride.workerName : w.full_name
-    const defaultProcess = selectedProcessInput.value || (w.role || processDefault)
+    const defaultProcess = w.role || selectedProcessInput.value || processDefault
     const rawProcess = wOverride.process !== undefined ? wOverride.process : defaultProcess
     const process = authStore.getProcessCodeForRole(rawProcess)
     const target = activeInputTargetStr || (wOverride.target !== undefined ? wOverride.target : defaultTarget)
@@ -1234,41 +1233,69 @@ const printDayColStyle = computed(() => ({
 
 const isExportingPdf = ref(false)
 
-import { exportToXlsx } from '@/utils/excelExport'
+import { exportMonthlyWithTemplate } from '@/utils/excelExport'
 
-function exportExcel() {
+async function exportExcel() {
   const days = monthDaysData.value
-  const dayHeaderTitles = days.map((d: any) => `TGL ${d.day}`)
-  const headers = ['NO', 'NO KARYAWAN', 'NAMA PEKERJA', 'PROSES', ...dayHeaderTitles, 'TOTAL PROD', 'TARGET BULAN', 'SELISIH', 'CATATAN']
+  const matrix = matrixAndSummary.value.matrix
+  const summary = matrixAndSummary.value
 
-  const dataMatrix = matrixAndSummary.value.matrix
-  const totals = matrixAndSummary.value.workerTotals
+  // Build daily qty map: { workerId: { dayNumber: qty } }
+  const dailyQtyMap: Record<string, Record<number, number>> = {}
+  const workerIdsList: string[] = []
 
-  const rows = reportRows.value.map((r: any) => {
-    const workerId = r.workerId
-    const rowMatrix = dataMatrix[workerId] || {}
-    const dailyValues = days.map((d: any) => (rowMatrix[d.day] ? rowMatrix[d.day].qty : 0))
-    const totalProd = totals[workerId] || 0
-    const targetBulan = (Number(r.target) || 0) * days.length
-    const selisih = totalProd - targetBulan
+  const workersList = reportRows.value.map((r: any) => {
+    workerIdsList.push(r.workerId)
+    const dayMap: Record<number, number> = {}
+    days.forEach((d: any) => {
+      const qty = matrix[r.workerId]?.[d.day]?.qty ?? 0
+      if (qty > 0) dayMap[d.day] = qty
+    })
+    dailyQtyMap[r.workerId] = dayMap
 
-    return [
-      r.no,
-      r.workerNo || '',
-      r.workerName || '',
-      r.process || '',
-      ...dailyValues,
-      totalProd,
-      targetBulan,
-      selisih,
-      r.remark || ''
-    ]
+    return {
+      no: r.no,
+      workerNo: r.workerNo || '',
+      workerName: r.workerName || '',
+      process: r.process || '',
+      target: Number(r.target) || 0,
+      remark: r.remark || ''
+    }
+  })
+
+  // Build dailyTotals as { dayNumber: total }
+  const dailyTotalsMap: Record<number, number> = {}
+  days.forEach((d: any) => {
+    dailyTotalsMap[d.day] = summary.dailyTotals[d.day] ?? 0
   })
 
   const lineName = (selectedTeamLabel.value || 'semualine').replace(/\s+/g, '_')
   const filename = `rekap_laporan_bulanan_${selectedMonthYear.value}_${lineName}.xlsx`
-  exportToXlsx(filename, 'Rekap Bulanan', headers, rows)
+
+  try {
+    await exportMonthlyWithTemplate({
+      filename,
+      productionLine: selectedTeamLabel.value.toUpperCase(),
+      monthLabel: formattedSelectedMonth.value,
+      managerName: foremanName.value,
+      selectedMonthYear: selectedMonthYear.value,
+      workers: workersList,
+      workerIds: workerIdsList,
+      dailyQty: dailyQtyMap,
+      dailyTotals: dailyTotalsMap,
+      presentCounts: summary.presentCounts,
+      absentCounts: summary.absentCounts,
+      totalWorkers: reportRows.value.length,
+      grandTotal: summary.grandTotal,
+      daysInMonth: days.length,
+      foremanName: foremanName.value
+    })
+  } catch (err) {
+    console.error('Export monthly template failed:', err)
+    alert('Gagal export Excel. Pastikan file template tersedia di /templates/Template_Laporan_Bulanan.xlsx')
+  }
 }
+
 
 async function exportPdfLandscape() {
   if (isExportingPdf.value) return

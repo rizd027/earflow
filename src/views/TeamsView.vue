@@ -1299,8 +1299,9 @@
                 v-model="memberRoleInput"
                 :options="roleOptions"
                 :placeholder="t('teams.rolePlaceholder')"
-                storageKey="earflow_role_options"
-                @update:options="handleRoleOptionsUpdate"
+                @add-option="handleAddRoleFromCombobox"
+                @edit-option="handleEditRoleFromCombobox"
+                @delete-option="handleDeleteRoleFromCombobox"
               />
             </div>
 
@@ -1461,8 +1462,9 @@
                 v-model="memberRoleInput"
                 :options="roleOptions"
                 :placeholder="t('teams.rolePlaceholder')"
-                storageKey="earflow_role_options"
-                @update:options="handleRoleOptionsUpdate"
+                @add-option="handleAddRoleFromCombobox"
+                @edit-option="handleEditRoleFromCombobox"
+                @delete-option="handleDeleteRoleFromCombobox"
               />
             </div>
 
@@ -1627,8 +1629,9 @@
                 v-model="memberRoleInput"
                 :options="roleOptions"
                 :placeholder="t('teams.rolePlaceholder')"
-                storageKey="earflow_role_options"
-                @update:options="handleRoleOptionsUpdate"
+                @add-option="handleAddRoleFromCombobox"
+                @edit-option="handleEditRoleFromCombobox"
+                @delete-option="handleDeleteRoleFromCombobox"
               />
             </div>
 
@@ -1885,6 +1888,7 @@ import { useTeamStore, UNASSIGNED_TEAM_ID } from '@/stores/teamStore'
 import { useProductionStore, getLocalDateStr } from '@/stores/productionStore'
 import { useShiftStore } from '@/stores/shiftStore'
 import { useAuditStore } from '@/stores/auditStore'
+import { useAuthStore } from '@/stores/authStore'
 import CustomCombobox, { type ComboboxOption } from '@/components/CustomCombobox.vue'
 import CustomSelect from '@/components/CustomSelect.vue'
 import CustomBulkSelect, { type BulkSelectOption } from '@/components/CustomBulkSelect.vue'
@@ -1904,6 +1908,7 @@ const teamStore = useTeamStore()
 const productionStore = useProductionStore()
 const shiftStore = useShiftStore()
 const auditStore = useAuditStore()
+const authStore = useAuthStore()
 
 const activeView = ref<'table' | 'cards'>('table')
 
@@ -2394,36 +2399,71 @@ function getWorkerStatusDisplay(worker: { team_id?: string; status?: string; joi
   }
 }
 
-const customRoles = ref<ComboboxOption[]>([])
+/**
+ * roleOptions is derived directly from Pengaturan → Kode & Jenis Proses (authStore.processGroups).
+ * Every role configured under each process code group (e.g. SOLDER, QC A1, SPK A1 under KODE A1)
+ * is automatically available as an option here.
+ */
+const roleOptions = computed<ComboboxOption[]>(() => {
+  const groups = authStore.processGroups
+  const seen = new Set<string>()
+  const result: ComboboxOption[] = []
 
-function loadCustomRoles() {
-  try {
-    const saved = localStorage.getItem('earflow_role_options')
-    if (saved !== null) {
-      const parsed = JSON.parse(saved) as ComboboxOption[]
-      if (Array.isArray(parsed)) {
-        customRoles.value = parsed
-        return
+  // 1. Roles from processGroups (Pengaturan → Kode & Jenis Proses)
+  for (const group of groups) {
+    for (const role of group.roles) {
+      const trimmed = role.trim()
+      const key = trimmed.toUpperCase()
+      if (trimmed && !seen.has(key)) {
+        seen.add(key)
+        result.push({
+          label: trimmed,
+          value: trimmed
+        })
       }
     }
-  } catch {}
-  customRoles.value = [
-    { label: t('teams.jobSolder'), value: 'Operator Solder' },
-    { label: t('teams.jobGlue'), value: 'Operator Lem' },
-    { label: t('teams.jobAssembly'), value: 'Assembly & QC' }
-  ]
-}
+  }
 
-const roleOptions = computed<ComboboxOption[]>(() => {
-  return customRoles.value
+  // 2. Fallback defaults if no roles defined in any process group
+  if (result.length === 0) {
+    const defaults = ['SOLDER', 'LEM', 'GULUNG', 'CANGKANG', 'PACKING', 'CHECK']
+    defaults.forEach(r => {
+      result.push({ label: r, value: r })
+    })
+  }
+
+  return result
 })
 
-function handleRoleOptionsUpdate(newOptions: ComboboxOption[]) {
-  customRoles.value = newOptions
-  try {
-    localStorage.setItem('earflow_role_options', JSON.stringify(newOptions))
-    syncAppSettingToCloud('earflow_role_options', newOptions).catch(() => {})
-  } catch {}
+function handleAddRoleFromCombobox(newOpt: ComboboxOption) {
+  const roleName = String(newOpt.value || newOpt.label).trim()
+  if (!roleName) return
+  const targetGroupCode = authStore.processGroups[0]?.code || 'A1'
+  if (!authStore.processGroups.some(g => g.code === targetGroupCode)) {
+    authStore.addProcessCodeGroup(targetGroupCode)
+  }
+  authStore.addRoleToGroup(targetGroupCode, roleName)
+}
+
+function handleEditRoleFromCombobox(opt: ComboboxOption, newLabel: string) {
+  const oldRole = String(opt.value || opt.label).trim()
+  const newRole = newLabel.trim()
+  if (!oldRole || !newRole || oldRole.toUpperCase() === newRole.toUpperCase()) return
+  for (const group of authStore.processGroups) {
+    if (group.roles.some(r => r.toUpperCase() === oldRole.toUpperCase())) {
+      authStore.removeRoleFromGroup(group.code, oldRole)
+      authStore.addRoleToGroup(group.code, newRole)
+      break
+    }
+  }
+}
+
+function handleDeleteRoleFromCombobox(opt: ComboboxOption) {
+  const roleName = String(opt.value || opt.label).trim()
+  if (!roleName) return
+  for (const group of authStore.processGroups) {
+    authStore.removeRoleFromGroup(group.code, roleName)
+  }
 }
 
 function formatRole(role?: string) {
@@ -2447,7 +2487,9 @@ function formatRole(role?: string) {
 }
 
 onMounted(async () => {
-  loadCustomRoles()
+  try {
+    localStorage.removeItem('earflow_role_options')
+  } catch {}
   loadCustomStatuses()
   await teamStore.loadTeams()
   await productionStore.loadLogs()

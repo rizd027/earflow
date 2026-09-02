@@ -171,7 +171,7 @@ const effectiveStorageKey = computed(() => {
 })
 
 const canEditOptions = computed(() => {
-  return Boolean(props.allowEditOptions && effectiveStorageKey.value)
+  return Boolean(props.allowEditOptions)
 })
 
 function loadLocalOptions() {
@@ -234,11 +234,12 @@ watch(
 )
 
 onMounted(() => {
-  // Purge any stale combobox options stored from automatic placeholder keys or shift options
+  // Purge any stale combobox options stored from automatic placeholder keys, legacy role options, or shift options
   try {
+    localStorage.removeItem('earflow_role_options')
     for (let i = localStorage.length - 1; i >= 0; i--) {
       const k = localStorage.key(i)
-      if (k && (k.startsWith('earflow_cb_storage_pilih_shift') || k === 'earflow_shift_options' || k === 'earflow_worker_shift_options')) {
+      if (k && (k.startsWith('earflow_cb_storage_pilih_shift') || k === 'earflow_shift_options' || k === 'earflow_worker_shift_options' || k === 'earflow_role_options')) {
         localStorage.removeItem(k)
       }
     }

@@ -213,6 +213,7 @@ export function exportToXlsxRich(options: {
   document.body.appendChild(link)
   link.click()
 
+
   setTimeout(() => {
     if (document.body.contains(link)) {
       document.body.removeChild(link)
@@ -221,3 +222,206 @@ export function exportToXlsxRich(options: {
   }, 1000)
 }
 
+/**
+ * Monthly production report Excel export using the official template.
+ * Fetches /templates/Template_Laporan_Bulanan.xlsx, injects data into both
+ * sheets (FULL 1-15 & FULL 16-31), and downloads the result, preserving all
+ * template formatting, borders, colors, and merged cells.
+ *
+ * Template column layout (0-indexed):
+ *   A(0)=No  B(1)=NoKrywn  C(2)=Nama  D-E(3-4)=Proses(merged)  F(5)=Target
+ *   G-U(6-20)=Daily production (15 days per sheet)  V(21)=Catatan
+ *   [Extended] W(22)=Total Prod  X(23)=Target Bulan  Y(24)=Selisih
+ */
+export async function exportMonthlyWithTemplate(options: {
+  filename: string
+  productionLine: string    // e.g. 'LINE A'
+  monthLabel: string        // e.g. 'AGUSTUS 2026'
+  managerName: string       // e.g. 'Karen & Lala'
+  selectedMonthYear: string // 'YYYY-MM'
+  workers: {
+    no: number
+    workerNo: string
+    workerName: string
+    process: string
+    target: number
+    remark: string
+  }[]
+  workerIds: string[]
+  dailyQty: Record<string, Record<number, number>>
+  dailyTotals: Record<number, number>
+  presentCounts: Record<number, number>
+  absentCounts: Record<number, number>
+  totalWorkers: number
+  grandTotal: number
+  daysInMonth: number
+  foremanName: string
+}) {
+  // ── Fetch & parse template ────────────────────────────────────────────────
+  const templateUrl = '/templates/Template_Laporan_Bulanan.xlsx'
+  const response = await fetch(templateUrl)
+  if (!response.ok) throw new Error(`Cannot fetch template: ${templateUrl}`)
+  const arrayBuffer = await response.arrayBuffer()
+  const wb = XLSX.read(arrayBuffer, { type: 'array', cellStyles: true, cellDates: false })
+
+  // Convert YYYY-MM-DD to Excel date serial number
+  function dateToSerial(dateStr: string): number {
+    const [y, m, d] = dateStr.split('-').map(Number)
+    const base = new Date(1899, 11, 30)
+    const target = new Date(y, m - 1, d)
+    return Math.round((target.getTime() - base.getTime()) / 86400000)
+  }
+
+  function dayDateStr(day: number): string {
+    const [y, m] = options.selectedMonthYear.split('-')
+    return `${y}-${m}-${String(day).padStart(2, '0')}`
+  }
+
+  // Set cell value, preserving existing cell style from template
+  function setCell(ws: XLSX.WorkSheet, r: number, c: number, value: string | number | null) {
+    const addr = XLSX.utils.encode_cell({ r, c })
+    const existing = ws[addr]
+    if (value === null || value === undefined || value === '') {
+      if (existing) ws[addr] = { ...existing, v: '', t: 's' }
+      return
+    }
+    const t = typeof value === 'number' ? 'n' : 's'
+    if (existing) {
+      ws[addr] = { ...existing, v: value, t }
+    } else {
+      ws[addr] = { v: value, t }
+    }
+  }
+
+  // Column indices
+  const COL_NO = 0
+  const COL_WORKER_NO = 1
+  const COL_NAME = 2
+  const COL_PROCESS = 3
+  const COL_TARGET = 5
+  const COL_DAILY_START = 6
+  const COL_CATATAN = 21
+  const COL_TOTAL_PROD = 22
+  const COL_TARGET_BULAN = 23
+  const COL_SELISIH = 24
+
+  // Row indices (0-based)
+  const ROW_HEADER_INFO = 1
+  const ROW_COL_HEADERS = 2
+  const ROW_DATE_ROW = 3
+  const ROW_DATA_START = 4
+  const ROW_TOTAL_DAILY = 127
+  const ROW_HRUS_KERJA = 128
+  const ROW_KRY_HADIR = 129
+  const ROW_ABSEN = 130
+  const ROW_STATISTISI = 131
+  const ROW_TOTAL_BULAN = 132
+
+  function fillSheet(ws: XLSX.WorkSheet, half: 1 | 2) {
+    const startDay = half === 1 ? 1 : 16
+    const endDay = half === 1 ? Math.min(15, options.daysInMonth) : options.daysInMonth
+    const numDays = endDay - startDay + 1
+
+    // ── Header info row (Row 2 in Excel) ─────────────────────────────
+    setCell(ws, ROW_HEADER_INFO, COL_NO, `Production Line`)
+    setCell(ws, ROW_HEADER_INFO, 3, options.productionLine)
+    setCell(ws, ROW_HEADER_INFO, 4, dateToSerial(`${options.selectedMonthYear}-01`))
+    setCell(ws, ROW_HEADER_INFO, 7, `Bulan: ${options.monthLabel}`)
+    setCell(ws, ROW_HEADER_INFO, 9, `Manajer Produksi生产管理`)
+    setCell(ws, ROW_HEADER_INFO, 12, options.managerName)
+
+    // ── Extended column headers (Row 3) ──────────────────────────────
+    setCell(ws, ROW_COL_HEADERS, COL_TOTAL_PROD, 'Total Prod\n总产量')
+    setCell(ws, ROW_COL_HEADERS, COL_TARGET_BULAN, 'Target Bulan\n月目标')
+    setCell(ws, ROW_COL_HEADERS, COL_SELISIH, 'Selisih\n差值')
+
+    // ── Date serials row (Row 4) ──────────────────────────────────────
+    for (let i = 0; i < numDays; i++) {
+      const day = startDay + i
+      const colIdx = COL_DAILY_START + i
+      const serial = dateToSerial(dayDateStr(day))
+      const addr = XLSX.utils.encode_cell({ r: ROW_DATE_ROW, c: colIdx })
+      const existing = ws[addr]
+      ws[addr] = existing
+        ? { ...existing, v: serial, t: 'n', z: 'D/M' }
+        : { v: serial, t: 'n', z: 'D/M' }
+    }
+
+    // ── Worker data rows (Row 5 onward) ──────────────────────────────
+    options.workers.forEach((worker, idx) => {
+      const rowIdx = ROW_DATA_START + idx
+      const workerId = options.workerIds[idx]
+
+      let workerHalfTotal = 0
+      for (let i = 0; i < numDays; i++) {
+        const day = startDay + i
+        const qty = options.dailyQty[workerId]?.[day] ?? 0
+        setCell(ws, rowIdx, COL_DAILY_START + i, qty > 0 ? qty : null)
+        workerHalfTotal += qty
+      }
+
+      setCell(ws, rowIdx, COL_NO, worker.no)
+      setCell(ws, rowIdx, COL_WORKER_NO, worker.workerNo)
+      setCell(ws, rowIdx, COL_NAME, worker.workerName)
+      setCell(ws, rowIdx, COL_PROCESS, worker.process)
+      setCell(ws, rowIdx, COL_TARGET, worker.target)
+      setCell(ws, rowIdx, COL_CATATAN, worker.remark || '')
+
+      // Extended totals
+      const workerFullTotal = Object.values(options.dailyQty[workerId] || {}).reduce((a, b) => a + b, 0)
+      const targetBulan = worker.target * options.daysInMonth
+      setCell(ws, rowIdx, COL_TOTAL_PROD, workerFullTotal)
+      setCell(ws, rowIdx, COL_TARGET_BULAN, targetBulan)
+      setCell(ws, rowIdx, COL_SELISIH, workerFullTotal - targetBulan)
+    })
+
+    // ── Row 128: Total produksi hari itu ─────────────────────────────
+    let sheetDailyTotal = 0
+    for (let i = 0; i < numDays; i++) {
+      const day = startDay + i
+      const dayTotal = options.dailyTotals[day] ?? 0
+      setCell(ws, ROW_TOTAL_DAILY, COL_DAILY_START + i, dayTotal > 0 ? dayTotal : null)
+      sheetDailyTotal += dayTotal
+    }
+    setCell(ws, ROW_TOTAL_DAILY, COL_TOTAL_PROD, sheetDailyTotal)
+
+    // ── Rows 129-131: Catatan kehadiran ──────────────────────────────
+    for (let i = 0; i < numDays; i++) {
+      const day = startDay + i
+      setCell(ws, ROW_HRUS_KERJA, COL_DAILY_START + i, options.totalWorkers)
+      setCell(ws, ROW_KRY_HADIR, COL_DAILY_START + i, options.presentCounts[day] ?? 0)
+      setCell(ws, ROW_ABSEN, COL_DAILY_START + i, options.absentCounts[day] ?? 0)
+    }
+
+    // ── Row 132: Statistisi ───────────────────────────────────────────
+    setCell(ws, ROW_STATISTISI, COL_NO, `Statistisi 統計人員`)
+    setCell(ws, ROW_STATISTISI, 3, options.foremanName)
+
+    // ── Row 133: Total Produksi Bulan ─────────────────────────────────
+    setCell(ws, ROW_TOTAL_BULAN, COL_DAILY_START, `${options.grandTotal} Pcs`)
+    setCell(ws, ROW_TOTAL_BULAN, COL_TOTAL_PROD, options.grandTotal)
+  }
+
+  // Fill both sheets
+  if (wb.Sheets['FULL 1-15']) fillSheet(wb.Sheets['FULL 1-15'], 1)
+  if (wb.Sheets['FULL 16-31']) fillSheet(wb.Sheets['FULL 16-31'], 2)
+
+  // ── Download ──────────────────────────────────────────────────────────────
+  const safeFilename = options.filename.endsWith('.xlsx') ? options.filename : `${options.filename}.xlsx`
+  const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array', cellStyles: true })
+  const mimeType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  const blob = new Blob([excelBuffer], { type: mimeType })
+  const downloadUrl = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = downloadUrl
+  link.download = safeFilename
+  link.setAttribute('download', safeFilename)
+  link.style.display = 'none'
+  document.body.appendChild(link)
+  link.click()
+
+  setTimeout(() => {
+    if (document.body.contains(link)) document.body.removeChild(link)
+    URL.revokeObjectURL(downloadUrl)
+  }, 1000)
+}
