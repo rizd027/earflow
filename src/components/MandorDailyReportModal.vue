@@ -934,10 +934,19 @@ const totalPresentWorkers = computed(() => {
   }).length
 })
 
-import { exportToXlsx } from '@/utils/excelExport'
+import { exportToXlsxRich } from '@/utils/excelExport'
 
 function exportExcel() {
-  const headers = ['NO', 'NO KARYAWAN', 'NAMA PEKERJA', 'TARGET (PCS)', 'HASIL (PCS)', 'CATATAN']
+  // Bilingual column headers matching the UI table exactly
+  const columnHeaders = [
+    `${t('mandorReport.colNo')} / 序号`,
+    `${t('mandorReport.colWorkerNo')} / 员工编号`,
+    `${t('mandorReport.colWorkerName')} / 姓名`,
+    `${t('mandorReport.colTarget')} / 计划产量`,
+    `${t('mandorReport.colProd')} / 实际产量`,
+    `${t('mandorReport.colRemark')} / 备注`
+  ]
+
   const rows = reportRows.value.map(r => [
     r.no,
     r.workerNo || '',
@@ -947,9 +956,35 @@ function exportExcel() {
     r.remark || ''
   ])
 
+  // Build shift label for sub-header (e.g. "Shift A (07:00-15:00)")
+  const shiftLabelStr = selectedShiftObj.value
+    ? `${selectedShiftObj.value.name}${selectedShiftObj.value.time ? ` (${selectedShiftObj.value.time})` : ''}`
+    : undefined
+
   const shiftName = selectedShiftObj.value ? selectedShiftObj.value.name.replace(/\s+/g, '_') : 'All_Shift'
   const filename = `laporan_target_mandor_${selectedDate.value}_${shiftName}.xlsx`
-  exportToXlsx(filename, 'Target Mandor', headers, rows)
+
+  exportToXlsxRich({
+    filename,
+    sheetName: 'Target Mandor',
+    titleZh: '员工日目标报告表',
+    titleId: t('mandorReport.sheetTitle'),
+    dateLabel: t('mandorReport.date'),
+    dateValue: formattedSelectedDate.value,
+    processLabel: t('mandorReport.process'),
+    processValue: selectedTeamLabel.value.toUpperCase(),
+    shiftLabel: shiftLabelStr,
+    columnHeaders,
+    rows,
+    totalProduction: totalDayProduction.value,
+    totalProductionLabel: `${t('mandorReport.totalToday')} (当天生产总量)`,
+    totalProductionUnit: 'Pcs',
+    expectedWorkersLabel: `${t('mandorReport.expectedWorkers')} (应到员工)`,
+    expectedWorkers: totalExpectedWorkers.value,
+    presentWorkersLabel: `${t('mandorReport.presentWorkers')} (实到员工)`,
+    presentWorkers: totalPresentWorkers.value,
+    personUnit: t('mandorReport.personUnit')
+  })
 }
 
 function triggerPrint() {
