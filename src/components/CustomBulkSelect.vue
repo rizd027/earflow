@@ -23,7 +23,7 @@
         v-if="isOpen"
         ref="dropdownRef"
         :style="dropdownStyle"
-        class="fixed z-[70] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl overflow-hidden py-1 max-h-52 overflow-y-auto no-scrollbar font-mono text-xs min-w-[140px]"
+        class="fixed z-[70] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl overflow-hidden py-1 max-h-52 overflow-y-auto custom-scrollbar overscroll-contain font-mono text-xs min-w-[140px]"
       >
         <div
           v-for="opt in options"

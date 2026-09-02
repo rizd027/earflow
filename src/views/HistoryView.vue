@@ -106,8 +106,8 @@
     </div>
 
     <!-- VIEW A: DESKTOP WIDE TABLE (Visible on md screens and up) -->
-    <div class="hidden md:block bg-slate-900/40 border border-slate-800/80 rounded-md overflow-hidden shadow-xl max-h-[75vh] overflow-y-auto">
-      <div class="overflow-x-auto">
+    <div class="hidden md:block bg-slate-900/40 border border-slate-800/80 rounded-md overflow-hidden shadow-xl max-h-[75vh] overflow-y-auto custom-scrollbar overscroll-contain">
+      <div class="overflow-x-auto custom-scrollbar">
         <table class="w-full text-left text-xs table-fixed">
           <thead class="sticky top-0 z-20 bg-slate-950/95 backdrop-blur-md text-slate-400 font-mono border-b border-slate-800 uppercase tracking-wider text-[11px]">
             <tr>

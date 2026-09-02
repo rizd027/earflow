@@ -34,7 +34,7 @@
       </div>
 
       <!-- Scrollable Document Container (Printable) -->
-      <div class="flex-1 min-h-0 overflow-y-auto no-scrollbar p-4 sm:p-6 print:p-0 print:overflow-visible print:h-auto print:block">
+      <div class="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-4 sm:p-6 print:p-0 print:overflow-visible print:h-auto print:block">
         <!-- Official Printable Paper Sheet (Clipboard Style A4 layout) -->
         <div
           class="mx-auto bg-white text-slate-900 rounded-sm shadow-2xl border border-slate-300 font-sans transition-all duration-300 print:shadow-none print:border-none print:p-2 print:max-w-none print:w-full max-w-4xl p-3 sm:p-8"
@@ -90,7 +90,7 @@
           </div>
 
           <!-- Main Daily Records Table (31 Rows) -->
-          <div class="overflow-x-auto print:overflow-visible -mx-2 sm:mx-0 px-2 sm:px-0">
+          <div class="overflow-x-auto sheet-scrollbar print:overflow-visible -mx-2 sm:mx-0 px-2 sm:px-0">
             <div v-if="isEditing" class="sm:hidden mb-2 px-2.5 py-1.5 bg-amber-500/10 border border-amber-500/30 rounded text-[11px] font-mono text-amber-900 flex items-center gap-1.5 shadow-xs">
               <span class="text-sm">👉</span>
               <span>Geser ke kanan untuk melihat & mengisi semua kolom</span>

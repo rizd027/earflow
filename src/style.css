@@ -63,36 +63,111 @@
   }
 }
 
+html {
+  scroll-behavior: smooth;
+  overscroll-behavior-y: none;
+}
+
 body {
   margin: 0;
   font-family: var(--sans);
   background-color: #0b0f19;
   color: #f8fafc;
+  overflow-x: hidden;
+  overscroll-behavior-y: none;
 }
 
-/* Custom dark scrollbar styling */
+/* Universal Cross-Browser Scrollbar Styles */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 116, 139, 0.4) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Custom dark scrollbar styling for Webkit */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0b0f19;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
+  background: rgba(100, 116, 139, 0.4);
   border-radius: 9999px;
+  transition: background-color 0.2s ease;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: rgba(148, 163, 184, 0.7);
 }
 
-/* Hide scrollbars cleanly across all browsers */
+/* Sleek custom scrollbar container class */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 116, 139, 0.45) transparent;
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.45);
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.75);
+}
+
+/* Dedicated scrollbar for white printable sheets & tables */
+.sheet-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100, 116, 139, 0.6) #f1f5f9;
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+.sheet-scrollbar::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+.sheet-scrollbar::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+.sheet-scrollbar::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 9999px;
+}
+.sheet-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Hide scrollbars cleanly across all browsers while keeping smooth touch/wheel scroll */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+  scroll-behavior: smooth;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent background body scroll when any modal is open */
+body:has(.printable-mandor-modal),
+body:has(.printable-recap-modal),
+body:has(.printable-report-modal),
+body:has(.fixed.inset-0.z-50),
+body.modal-open {
+  overflow: hidden !important;
+  touch-action: none;
 }
 
 h1,

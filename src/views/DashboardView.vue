@@ -249,7 +249,7 @@
     </div>
 
     <!-- Main Attendance & Target Data Table (Desktop View) -->
-    <div class="hidden md:block bg-slate-900/40 border border-slate-800/80 rounded-lg overflow-hidden shadow-md max-h-[75vh] overflow-y-auto">
+    <div class="hidden md:block bg-slate-900/40 border border-slate-800/80 rounded-lg overflow-hidden shadow-md max-h-[75vh] overflow-y-auto custom-scrollbar overscroll-contain">
       <table class="w-full text-left text-xs font-mono">
         <thead class="sticky top-0 z-20 bg-slate-950/95 backdrop-blur-md text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
           <tr>

@@ -44,7 +44,7 @@
     <div
       v-if="isOpen"
       :class="[
-        'absolute z-50 w-full bg-slate-900/95 backdrop-blur-md border border-slate-700/80 rounded-md shadow-2xl overflow-hidden py-1 max-h-60 overflow-y-auto no-scrollbar transition-all duration-150 animate-fadeIn',
+        'absolute z-50 w-full bg-slate-900/95 backdrop-blur-md border border-slate-700/80 rounded-md shadow-2xl overflow-hidden py-1 max-h-60 overflow-y-auto custom-scrollbar overscroll-contain transition-all duration-150 animate-fadeIn',
         openDirection === 'up' ? 'bottom-full mb-1.5 origin-bottom' : 'top-full mt-1.5 origin-top'
       ]"
     >

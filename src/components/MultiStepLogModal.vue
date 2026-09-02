@@ -63,8 +63,8 @@
         </div>
       </div>
 
-      <!-- Fullscreen Scrollable Body (Strict min-h-0 & no-scrollbar) -->
-      <div class="flex-1 min-h-0 overflow-y-auto no-scrollbar p-4 sm:p-6 max-w-xl mx-auto w-full space-y-4">
+      <!-- Fullscreen Scrollable Body (Strict min-h-0 & custom-scrollbar) -->
+      <div class="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-4 sm:p-6 max-w-xl mx-auto w-full space-y-4">
         <!-- STEP 1: Tim, Live Auto Clock & Kehadiran Pekerja -->
         <div v-if="currentStep === 1" class="space-y-4">
           <div class="bg-slate-900/60 p-4 border border-slate-800/80 rounded-md space-y-4 shadow-sm">

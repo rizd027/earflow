@@ -34,10 +34,10 @@
       </div>
 
       <!-- Scrollable Sheet Container -->
-      <div class="flex-1 min-h-0 overflow-y-auto no-scrollbar p-2 sm:p-4 print:p-0 print:overflow-visible print:h-auto print:block bg-slate-950/50">
+      <div class="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-2 sm:p-4 print:p-0 print:overflow-visible print:h-auto print:block bg-slate-950/50">
 
         <!-- Horizontal Touch Scroll Wrapper for Mobile View -->
-        <div class="w-full overflow-x-auto no-scrollbar print:overflow-visible pb-2">
+        <div class="w-full overflow-x-auto sheet-scrollbar print:overflow-visible pb-2">
           <!-- Physical Printable A4 Sheet Paper (Landscape) -->
           <div
             id="monthly-recap-printable-sheet"
@@ -45,7 +45,7 @@
           >
           
           <!-- Sheet Shift Switcher Bar (Excel-like Sheet Tabs, hidden on print) -->
-          <div class="flex items-center gap-1.5 overflow-x-auto pb-2 mb-2 border-b border-black/10 print:hidden">
+          <div class="flex items-center gap-1.5 overflow-x-auto sheet-scrollbar pb-2 mb-2 border-b border-black/10 print:hidden">
             <div class="text-[11px] font-bold font-mono text-slate-700 uppercase tracking-wider shrink-0 mr-1">
               Shift:
             </div>
@@ -76,7 +76,7 @@
           </div>
 
           <!-- Role / Pos Classification Switcher Bar (Pills, hidden on print) -->
-          <div class="flex items-center gap-1.5 overflow-x-auto pb-2 mb-3 border-b border-black/20 print:hidden">
+          <div class="flex items-center gap-1.5 overflow-x-auto sheet-scrollbar pb-2 mb-3 border-b border-black/20 print:hidden">
             <div class="text-[11px] font-bold font-mono text-slate-700 uppercase tracking-wider shrink-0 mr-1">
               Pos/Role:
             </div>
@@ -132,7 +132,7 @@
           </div>
 
           <!-- Main Production Matrix Table (Pure White High-Contrast Grid) -->
-          <div class="overflow-x-auto print:overflow-visible -mx-2 sm:mx-0 px-2 sm:px-0">
+          <div class="overflow-x-auto sheet-scrollbar print:overflow-visible -mx-2 sm:mx-0 px-2 sm:px-0">
             <div v-if="isEditing" class="sm:hidden mb-2 px-2.5 py-1.5 bg-amber-500/10 border border-amber-500/30 rounded text-[11px] font-mono text-amber-900 flex items-center gap-1.5 shadow-xs">
               <span class="text-sm">👉</span>
               <span>Geser ke kanan untuk melihat & mengisi semua kolom</span>
@@ -379,7 +379,7 @@
       >
         <div
           v-if="showOptionsPanel"
-          class="border-t border-slate-800 bg-slate-900/95 backdrop-blur-xl p-4 sm:p-5 shrink-0 print:hidden z-20 shadow-2xl space-y-3"
+          class="border-t border-slate-800 bg-slate-900/95 backdrop-blur-xl p-4 sm:p-5 shrink-0 print:hidden z-20 shadow-2xl space-y-3 max-h-[75vh] overflow-y-auto custom-scrollbar"
         >
           <div class="flex items-center justify-between pb-2 border-b border-slate-800">
             <div class="flex items-center gap-2">

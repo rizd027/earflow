@@ -531,7 +531,7 @@
     <div v-else class="space-y-3">
       <!-- Quick Filter Chips Bar (Visible on desktop view, accessible via 3-dots menu on mobile) -->
       <div class="hidden sm:flex flex-wrap items-center justify-between gap-2 py-1 font-mono text-xs">
-        <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+        <div class="flex items-center gap-1.5 overflow-x-auto custom-scrollbar">
           <span class="text-[10px] text-slate-400 font-bold uppercase shrink-0 mr-1 hidden sm:inline">Filter Cepat:</span>
           <button
             type="button"
@@ -650,8 +650,8 @@
       </Teleport>
 
       <!-- Master Worker Table -->
-      <div class="bg-slate-900/40 border border-slate-800/80 rounded-md overflow-hidden shadow-xl max-h-[75vh] overflow-y-auto">
-        <div class="overflow-x-auto">
+      <div class="bg-slate-900/40 border border-slate-800/80 rounded-md overflow-hidden shadow-xl max-h-[75vh] overflow-y-auto custom-scrollbar overscroll-contain">
+        <div class="overflow-x-auto custom-scrollbar">
           <table class="w-full text-left text-xs min-w-[760px] whitespace-nowrap">
             <thead class="sticky top-0 z-20 bg-slate-950/95 backdrop-blur-md text-slate-400 font-mono border-b border-slate-800 uppercase tracking-wider text-[11px]">
               <tr>
@@ -901,7 +901,7 @@
           </button>
         </div>
 
-        <div class="flex-1 min-h-0 overflow-y-auto no-scrollbar p-4 sm:p-6 max-w-xl mx-auto w-full space-y-4">
+        <div class="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-4 sm:p-6 max-w-xl mx-auto w-full space-y-4">
           <div class="bg-slate-900/60 p-4 sm:p-5 border border-slate-800/80 rounded-md space-y-4 shadow-sm">
             <div>
               <label class="block text-xs font-semibold text-slate-300 mb-1.5">{{ t('teams.teamNameLabel') }}</label>
@@ -994,7 +994,7 @@
           </button>
         </div>
 
-        <div class="flex-1 min-h-0 overflow-y-auto no-scrollbar p-4 sm:p-6 max-w-xl mx-auto w-full space-y-4">
+        <div class="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-4 sm:p-6 max-w-xl mx-auto w-full space-y-4">
           <!-- Direct Input Section for Hasil Dicapai Hari Ini -->
           <div class="p-4 rounded-md bg-teal-500/10 border border-teal-500/30 space-y-2 shadow-sm">
             <label class="block text-xs font-bold text-teal-300 font-mono tracking-wider flex items-center justify-between">
@@ -1214,7 +1214,7 @@
           </button>
         </div>
 
-        <div class="flex-1 min-h-0 overflow-y-auto no-scrollbar p-4 sm:p-6 max-w-xl mx-auto w-full flex items-center justify-center">
+        <div class="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-4 sm:p-6 max-w-xl mx-auto w-full flex items-center justify-center">
           <div class="bg-slate-900/60 p-6 border border-rose-900/40 rounded-md text-center space-y-4 w-full">
             <div class="w-12 h-12 rounded-md bg-rose-500/10 text-rose-400 mx-auto flex items-center justify-center border border-rose-500/20">
               <AlertTriangle class="w-6 h-6" />
@@ -1280,7 +1280,7 @@
           </button>
         </div>
 
-        <div class="flex-1 min-h-0 overflow-y-auto no-scrollbar p-4 sm:p-6 max-w-xl mx-auto w-full space-y-4">
+        <div class="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-4 sm:p-6 max-w-xl mx-auto w-full space-y-4">
           <div class="bg-slate-900/60 p-4 sm:p-5 border border-slate-800/80 rounded-md space-y-4 shadow-sm">
             <div>
               <label class="block text-xs font-semibold text-slate-300 mb-1.5">{{ t('teams.selectWorkerLabel') }}</label>
@@ -1432,7 +1432,7 @@
           </button>
         </div>
 
-        <div class="flex-1 min-h-0 overflow-y-auto no-scrollbar p-4 sm:p-6 max-w-xl mx-auto w-full space-y-4">
+        <div class="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-4 sm:p-6 max-w-xl mx-auto w-full space-y-4">
           <div class="bg-slate-900/60 p-4 sm:p-5 border border-slate-800/80 rounded-md space-y-4 shadow-sm">
             <div>
               <label class="block text-xs font-semibold text-slate-300 mb-1.5">{{ t('teams.teamAssignmentLabel') }}</label>
@@ -1600,7 +1600,7 @@
           </button>
         </div>
 
-        <div class="flex-1 min-h-0 overflow-y-auto no-scrollbar p-4 sm:p-6 max-w-xl mx-auto w-full space-y-4">
+        <div class="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-4 sm:p-6 max-w-xl mx-auto w-full space-y-4">
           <div class="bg-slate-900/60 p-4 sm:p-5 border border-slate-800/80 rounded-md space-y-4 shadow-sm">
             <div>
               <label class="block text-xs font-semibold text-slate-300 mb-1.5">{{ t('teams.teamAssignmentLabel') }}</label>
@@ -1762,7 +1762,7 @@
           </button>
         </div>
 
-        <div class="flex-1 min-h-0 overflow-y-auto no-scrollbar p-4 sm:p-6 max-w-xl mx-auto w-full flex items-center justify-center">
+        <div class="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-4 sm:p-6 max-w-xl mx-auto w-full flex items-center justify-center">
           <div class="bg-slate-900/60 p-6 border border-rose-900/40 rounded-md text-center space-y-4 w-full">
             <div class="w-12 h-12 rounded-md bg-rose-500/10 text-rose-400 mx-auto flex items-center justify-center border border-rose-500/20">
               <AlertTriangle class="w-6 h-6" />

@@ -537,7 +537,7 @@
 
       <!-- VIEW 2: Data Table -->
       <div v-else-if="viewMode === 'table'" class="bg-slate-900/90 border border-slate-800 rounded-xl overflow-hidden shadow-lg">
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto custom-scrollbar">
           <table class="w-full text-left border-collapse font-mono text-xs">
             <thead>
               <tr class="bg-slate-950 text-slate-400 border-b border-slate-800 text-[11px] uppercase tracking-wider">
@@ -597,7 +597,7 @@
 
     <!-- Modal Cetak Laporan A4 (Print Preview) -->
     <Transition enter-active-class="transition duration-200 ease-out" enter-from-class="opacity-0 scale-95" enter-to-class="opacity-100 scale-100" leave-active-class="transition duration-150 ease-in" leave-from-class="opacity-100 scale-100" leave-to-class="opacity-0 scale-95">
-      <div v-if="showPrintModal" class="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-950/85 backdrop-blur-md overflow-y-auto">
+      <div v-if="showPrintModal" class="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-950/85 backdrop-blur-md overflow-y-auto custom-scrollbar">
         <div class="bg-slate-900 border border-slate-700/80 rounded-xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden font-sans">
           <!-- Modal Header -->
           <div class="px-5 py-3.5 bg-slate-950 border-b border-slate-800 flex items-center justify-between shrink-0">
@@ -613,7 +613,7 @@
           </div>
 
           <!-- Printable Sheet Area -->
-          <div class="p-6 overflow-y-auto flex-1 bg-white text-slate-900 font-sans print:p-0 print:m-0" id="print-sheet-area">
+          <div class="p-6 overflow-y-auto custom-scrollbar flex-1 bg-white text-slate-900 font-sans print:p-0 print:m-0" id="print-sheet-area">
             <!-- Kop Surat Header -->
             <div class="border-b-2 border-slate-900 pb-3 mb-4 flex items-center justify-between">
               <div>

@@ -33,7 +33,7 @@
         </div>
 
         <!-- Scrollable Modal Body Container -->
-        <div class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 text-xs no-scrollbar">
+        <div class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 text-xs custom-scrollbar">
           <!-- Warning Alert if Read Only -->
           <div v-if="isReadOnly" class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono flex items-start gap-2">
             <Lock class="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
