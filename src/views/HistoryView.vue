@@ -394,7 +394,7 @@ function exportCsv() {
     log.synced ? 'Synced' : 'Pending'
   ])
 
-  exportToXlsx(`rekap_produksi_earflow_${getLocalDateStr()}.xlsx`, 'Riwayat Produksi', headers, rows)
+  exportToXlsx(`Rekap_Riwayat_Produksi_${getLocalDateStr()}.xlsx`, 'Riwayat Produksi', headers, rows)
 }
 
 function handleHeaderMenuToggle() {

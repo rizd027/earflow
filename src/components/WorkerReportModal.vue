@@ -977,9 +977,10 @@ function exportExcel() {
     d.remark || ''
   ])
 
-  const workerName = (props.worker.full_name || 'karyawan').replace(/\s+/g, '_')
-  const filename = `laporan_bulanan_${workerName}_${selectedMonthYear.value}.xlsx`
-  exportToXlsx(filename, workerName.slice(0, 30), headers, rows)
+  const workerName = (props.worker.full_name || 'Karyawan').trim().replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_')
+  const workerNik = (props.worker.no_karyawan && props.worker.no_karyawan !== '-') ? `_${props.worker.no_karyawan}` : ''
+  const filename = `Laporan_Bulanan_Karyawan_${workerName}${workerNik}_${selectedMonthYear.value}.xlsx`
+  exportToXlsx(filename, (props.worker.full_name || 'Karyawan').slice(0, 30), headers, rows)
 }
 
 function triggerPrint() {

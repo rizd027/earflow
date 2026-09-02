@@ -45,9 +45,9 @@
           >
           
           <!-- Sheet Shift Switcher Bar (Excel-like Sheet Tabs, hidden on print) -->
-          <div class="flex items-center gap-1.5 overflow-x-auto pb-2 mb-3 border-b border-black/20 print:hidden">
+          <div class="flex items-center gap-1.5 overflow-x-auto pb-2 mb-2 border-b border-black/10 print:hidden">
             <div class="text-[11px] font-bold font-mono text-slate-700 uppercase tracking-wider shrink-0 mr-1">
-              Sheet Shift:
+              Shift:
             </div>
             <button
               v-for="shift in activeShiftSheets"
@@ -75,6 +75,25 @@
             </button>
           </div>
 
+          <!-- Role / Pos Classification Switcher Bar (Pills, hidden on print) -->
+          <div class="flex items-center gap-1.5 overflow-x-auto pb-2 mb-3 border-b border-black/20 print:hidden">
+            <div class="text-[11px] font-bold font-mono text-slate-700 uppercase tracking-wider shrink-0 mr-1">
+              Pos/Role:
+            </div>
+            <button
+              v-for="rf in roleFilterOptions"
+              :key="String(rf.value)"
+              type="button"
+              @click="selectedRoleFilter = String(rf.value)"
+              class="px-2.5 py-1 rounded text-xs font-bold font-mono transition-all flex items-center gap-1 shrink-0 border shadow-xs"
+              :class="selectedRoleFilter === String(rf.value)
+                ? 'bg-teal-600 text-white border-teal-700 shadow font-black ring-2 ring-teal-400/40'
+                : 'bg-white text-slate-800 hover:bg-teal-50 hover:text-teal-900 hover:border-teal-400 border-slate-400 shadow-sm'"
+            >
+              <span>{{ rf.label }}</span>
+            </button>
+          </div>
+
           <!-- Official Excel Sheet Header -->
           <div class="flex flex-col md:flex-row md:items-end justify-between gap-3 print:gap-1 mb-3 print:mb-1 pb-2.5 print:pb-1 border-b-2 border-black font-mono text-black">
             <!-- Left Info Block -->
@@ -87,7 +106,7 @@
                 </span>
               </div>
               <div class="text-[11px] print:text-[9px] font-semibold text-slate-800">
-                {{ t('monthlyRecap.processLabel') }}: <span class="font-bold text-black">SOLDER / LEM / GULUNG / PACKING</span>
+                {{ t('monthlyRecap.processLabel') }}: <span class="font-bold text-black">{{ activeProcessSubHeaderDisplay }}</span>
               </div>
             </div>
 
@@ -229,7 +248,7 @@
 
                   <!-- Monthly Worker Sum -->
                   <td class="print-col-total border border-black p-0.5 text-right px-1 font-black text-black text-[9px] bg-white">
-                    {{ (matrixAndSummary.workerTotals[row.workerId] || 0) > 0 ? matrixAndSummary.workerTotals[row.workerId] : '-' }}
+                    {{ row.isQc ? ((matrixAndSummary.workerTotals[row.workerId] || 0) > 0 ? 'CHECK' : '-') : ((matrixAndSummary.workerTotals[row.workerId] || 0) > 0 ? matrixAndSummary.workerTotals[row.workerId] : '-') }}
                   </td>
 
                   <!-- Remark -->
@@ -376,7 +395,7 @@
             </button>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pt-1">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 pt-1">
             <!-- Filter 1: Month Picker -->
             <div class="space-y-1">
               <label class="block text-[11px] font-semibold text-slate-400 font-mono">Pilih Bulan & Tahun</label>
@@ -397,7 +416,17 @@
               />
             </div>
 
-            <!-- Filter 3: Process Configuration Dropdown/Combobox -->
+            <!-- Filter 3: Role Filter -->
+            <div class="space-y-1">
+              <label class="block text-[11px] font-semibold text-slate-400 font-mono">Klasifikasi Role / Pos</label>
+              <CustomSelect
+                v-model="selectedRoleFilter"
+                :options="roleFilterOptions"
+                placeholder="Semua Role / Pos"
+              />
+            </div>
+
+            <!-- Filter 4: Process Configuration Dropdown/Combobox -->
             <div class="space-y-1">
               <label class="block text-[11px] font-semibold text-slate-400 font-mono flex items-center justify-between">
                 <span>Proses Produksi</span>
@@ -411,7 +440,7 @@
               />
             </div>
 
-            <!-- Filter 4: Target Harian Configuration Input -->
+            <!-- Filter 5: Target Harian Configuration Input -->
             <div class="space-y-1">
               <label class="block text-[11px] font-semibold text-slate-400 font-mono flex items-center justify-between">
                 <span>Target Harian (Pcs)</span>
@@ -428,7 +457,7 @@
               />
             </div>
 
-            <!-- Filter 5: Sort -->
+            <!-- Filter 6: Sort -->
             <div class="space-y-1">
               <label class="block text-[11px] font-semibold text-slate-400 font-mono">Urutkan Data</label>
               <CustomSelect
@@ -794,6 +823,7 @@ function deleteShiftItem(id: string) {
 }
 
 const selectedTeamId = ref('')
+const selectedRoleFilter = ref('')
 const selectedMonthYear = ref(getLocalDateStr().slice(0, 7)) // YYYY-MM
 const isEditing = ref(false)
 const sortBy = ref<'joined_date' | 'name' | 'team' | 'worker_no'>('joined_date')
@@ -804,6 +834,69 @@ const sortOptions = [
   { label: 'Urut: Tim / Line', value: 'team' },
   { label: 'Urut: No Karyawan', value: 'worker_no' }
 ]
+
+const roleFilterOptions = computed<SelectOption[]>(() => {
+  const opts: SelectOption[] = [
+    { label: 'Semua Role / Pos', value: '' }
+  ]
+
+  // Add process groups from Settings (e.g. A1 - SOLDER, LEM)
+  authStore.processGroups.forEach(g => {
+    opts.push({
+      label: `KODE ${g.code} (${g.roles.join(', ')})`,
+      value: `group_${g.code}`
+    })
+  })
+
+  // Add QC & SPK if distinct
+  opts.push({ label: 'QC / Pemeriksaan', value: 'QC' })
+  opts.push({ label: 'SPK / Lembaran', value: 'SPK' })
+
+  // Extract other distinct roles
+  const knownRoles = new Set<string>()
+  authStore.processGroups.forEach(g => g.roles.forEach(r => knownRoles.add(r.toUpperCase())))
+  knownRoles.add('QC')
+  knownRoles.add('CHECK')
+  knownRoles.add('SPK')
+
+  teamStore.allWorkers.forEach(w => {
+    if (w.role && w.role.trim()) {
+      const r = w.role.trim()
+      const rUp = r.toUpperCase()
+      if (!knownRoles.has(rUp) && !Array.from(knownRoles).some(k => rUp.includes(k))) {
+        if (!opts.some(o => String(o.value).toLowerCase() === r.toLowerCase())) {
+          opts.push({ label: r, value: r })
+        }
+      }
+    }
+  })
+
+  return opts
+})
+
+function matchesRoleFilter(w: any, filterVal: string): boolean {
+  if (!filterVal) return true
+  const roleUpper = (w.role || '').toUpperCase()
+  const team = teamStore.teams.find(t => t.id === w.team_id)
+  const teamUpper = (team?.name || '').toUpperCase()
+
+  if (filterVal === 'QC') {
+    return roleUpper.includes('QC') || roleUpper.includes('CHECK') || teamUpper.includes('QC')
+  }
+  if (filterVal === 'SPK') {
+    return roleUpper.includes('SPK') || teamUpper.includes('SPK')
+  }
+  if (filterVal.startsWith('group_')) {
+    const code = filterVal.replace('group_', '').toUpperCase()
+    const group = authStore.processGroups.find(g => g.code.toUpperCase() === code)
+    if (group) {
+      if (group.roles.some(r => roleUpper.includes(r.toUpperCase()))) return true
+      if (authStore.getProcessCodeForRole(w.role).toUpperCase() === code) return true
+    }
+    return false
+  }
+  return roleUpper.includes(filterVal.toUpperCase()) || (w.role || '').toLowerCase() === filterVal.toLowerCase()
+}
 
 interface DayInfo {
   day: number
@@ -964,6 +1057,17 @@ const selectedTeamLabel = computed(() => {
   return found ? found.name : 'Semua Line / Tim'
 })
 
+const activeProcessSubHeaderDisplay = computed(() => {
+  if (selectedRoleFilter.value) {
+    const found = roleFilterOptions.value.find(o => o.value === selectedRoleFilter.value)
+    return (found ? found.label : selectedRoleFilter.value).toUpperCase()
+  }
+  if (selectedProcessInput.value && selectedProcessInput.value !== 'Solder') {
+    return selectedProcessInput.value.toUpperCase()
+  }
+  return 'SOLDER / LEM / GULUNG / PACKING'
+})
+
 const monthNames = [
   'JANUARI', 'FEBRUARI', 'MARET', 'APRIL', 'MEI', 'JUNI',
   'JULI', 'AGUSTUS', 'SEPTEMBER', 'OKTOBER', 'NOVEMBER', 'DESEMBER'
@@ -983,6 +1087,9 @@ const reportRows = computed(() => {
   }
   if (selectedShiftObj.value && selectedShiftObj.value.id !== 'all_shifts') {
     workers = workers.filter(w => isWorkerMatchingShift(w, selectedShiftObj.value, teamStore.teams))
+  }
+  if (selectedRoleFilter.value) {
+    workers = workers.filter(w => matchesRoleFilter(w, selectedRoleFilter.value))
   }
 
   // Filter out workers with status 'Keluar' if they have no production logs in targetMonthStr
@@ -1047,6 +1154,7 @@ const reportRows = computed(() => {
     }
     const remark = wOverride.remark !== undefined ? wOverride.remark : defaultRemark
     const teamMemberCount = workerTeam ? (workerTeam.members ? workerTeam.members.length : 1) : 1
+    const isQc = (w.role || '').toUpperCase().includes('QC') || (w.role || '').toUpperCase().includes('CHECK') || (rawProcess || '').toUpperCase().includes('QC') || (rawProcess || '').toUpperCase().includes('CHECK')
 
     return {
       no: idx + 1,
@@ -1056,6 +1164,7 @@ const reportRows = computed(() => {
       process,
       target,
       remark,
+      isQc,
       worker: w,
       teamMemberCount,
       wIdLower: w.id ? w.id.toLowerCase() : '',
@@ -1166,11 +1275,12 @@ const matrixAndSummary = computed(() => {
         qty = Math.max(0, qty)
       }
 
+      const isQcRow = row.isQc
       let display = '-'
       if (isEdited && dOverride?.prodQty !== undefined) {
-        display = String(dOverride.prodQty)
+        display = isQcRow && dOverride.prodQty > 0 ? 'CHECK' : String(dOverride.prodQty)
       } else if (qty > 0) {
-        display = String(qty)
+        display = isQcRow ? 'CHECK' : String(qty)
       } else if (dayInfo.isSunday) {
         display = 'MG'
       }
@@ -1269,8 +1379,9 @@ async function exportExcel() {
     dailyTotalsMap[d.day] = summary.dailyTotals[d.day] ?? 0
   })
 
-  const lineName = (selectedTeamLabel.value || 'semualine').replace(/\s+/g, '_')
-  const filename = `rekap_laporan_bulanan_${selectedMonthYear.value}_${lineName}.xlsx`
+  const lineName = (selectedTeamLabel.value || 'Semua_Line').trim().replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_')
+  const roleName = selectedRoleFilter.value ? `_${selectedRoleFilter.value.replace(/[^a-zA-Z0-9]/g, '_')}` : ''
+  const filename = `Rekap_Bulanan_Produksi_${lineName}${roleName}_${selectedMonthYear.value}.xlsx`
 
   try {
     await exportMonthlyWithTemplate({
@@ -1373,9 +1484,9 @@ async function exportPdfLandscape() {
 
     pdf.addImage(imgData, 'JPEG', xPos, yPos, finalW, finalH, undefined, 'FAST')
 
-    const lineName = selectedTeamLabel.value.replace(/[^a-zA-Z0-9]/g, '_')
-    const monthName = selectedMonthYear.value
-    const filename = `Laporan_Bulanan_${monthName}_${lineName}.pdf`
+    const lineName = (selectedTeamLabel.value || 'Semua_Line').trim().replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_')
+    const roleName = selectedRoleFilter.value ? `_${selectedRoleFilter.value.replace(/[^a-zA-Z0-9]/g, '_')}` : ''
+    const filename = `Rekap_Bulanan_Produksi_${lineName}${roleName}_${selectedMonthYear.value}.pdf`
 
     pdf.save(filename)
   } catch (err: any) {

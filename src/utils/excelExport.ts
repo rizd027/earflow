@@ -73,8 +73,7 @@ export function exportToXlsx(
  * - Row 7+: data rows
  * - Footer: empty row, then Total Produksi, Jumlah Karyawan, Karyawan Hadir
  */
-export function exportToXlsxRich(options: {
-  filename: string
+export interface RichSheetOptions {
   sheetName: string
   titleZh: string        // e.g. '员工日目标报告表'
   titleId: string        // e.g. 'TABEL LAPORAN TARGET HARIAN KARYAWAN'
@@ -93,7 +92,9 @@ export function exportToXlsxRich(options: {
   presentWorkersLabel: string   // e.g. 'Karyawan Hadir (实到员工)'
   presentWorkers: number
   personUnit: string            // e.g. 'Orang'
-}) {
+}
+
+export function buildRichWorksheet(options: RichSheetOptions): XLSX.WorkSheet {
   const numCols = options.columnHeaders.length
   const lastColIdx = numCols - 1
 
@@ -158,9 +159,6 @@ export function exportToXlsxRich(options: {
   const ws = XLSX.utils.aoa_to_sheet(aoa)
 
   // ── Merged cells ──────────────────────────────────────────────────────────
-  // Row 0: Chinese title spans all columns (A1:F1)
-  // Row 1: Indonesian title spans all columns (A2:F2)
-  // Footer label cols: A:D merged for label text
   const merges: XLSX.Range[] = [
     // Chinese title — row 0, col 0 → lastColIdx
     { s: { r: 0, c: 0 }, e: { r: 0, c: lastColIdx } },
@@ -194,12 +192,11 @@ export function exportToXlsxRich(options: {
   })
   ws['!cols'] = colWidths
 
-  // ── Workbook ──────────────────────────────────────────────────────────────
-  const wb = XLSX.utils.book_new()
-  const cleanSheetName = options.sheetName.replace(/[\\/?*:[\]]/g, '').slice(0, 31) || 'Sheet1'
-  XLSX.utils.book_append_sheet(wb, ws, cleanSheetName)
+  return ws
+}
 
-  const safeFilename = options.filename.endsWith('.xlsx') ? options.filename : `${options.filename}.xlsx`
+function downloadWorkbook(wb: XLSX.WorkBook, filename: string) {
+  const safeFilename = filename.endsWith('.xlsx') ? filename : `${filename}.xlsx`
   const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' })
 
   const mimeType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
@@ -213,13 +210,38 @@ export function exportToXlsxRich(options: {
   document.body.appendChild(link)
   link.click()
 
-
   setTimeout(() => {
     if (document.body.contains(link)) {
       document.body.removeChild(link)
     }
     URL.revokeObjectURL(downloadUrl)
   }, 1000)
+}
+
+export function exportToXlsxRich(options: RichSheetOptions & { filename: string }) {
+  const ws = buildRichWorksheet(options)
+  const wb = XLSX.utils.book_new()
+  const cleanSheetName = options.sheetName.replace(/[\\/?*:[\]]/g, '').slice(0, 31) || 'Sheet1'
+  XLSX.utils.book_append_sheet(wb, ws, cleanSheetName)
+  downloadWorkbook(wb, options.filename)
+}
+
+export function exportToXlsxMultiSheetRich(filename: string, sheets: RichSheetOptions[]) {
+  const wb = XLSX.utils.book_new()
+  const usedSheetNames = new Set<string>()
+
+  for (const sheet of sheets) {
+    const ws = buildRichWorksheet(sheet)
+    let cleanSheetName = sheet.sheetName.replace(/[\\/?*:[\]]/g, '').slice(0, 31) || 'Sheet'
+    let counter = 1
+    while (usedSheetNames.has(cleanSheetName.toLowerCase())) {
+      cleanSheetName = `${cleanSheetName.slice(0, 28)}_${counter++}`
+    }
+    usedSheetNames.add(cleanSheetName.toLowerCase())
+    XLSX.utils.book_append_sheet(wb, ws, cleanSheetName)
+  }
+
+  downloadWorkbook(wb, filename)
 }
 
 /**

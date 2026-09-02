@@ -1049,7 +1049,7 @@ function exportExcel() {
       `+${item.pctIncrease}%`
     ])
 
-    const filename = `Laporan_Peningkatan_Performa_${selectedDate.value}.xlsx`
+    const filename = `Statistik_Peningkatan_Performa_${selectedDate.value}.xlsx`
     exportToXlsx(filename, `Peningkatan Performa ${dateLabel}`, headers, rows)
     auditStore.logAction('Pekerja', 'Export Excel Performa', `Export ${rows.length} karyawan peningkatan performa tanggal ${dateLabel}`)
   } else {
@@ -1076,7 +1076,7 @@ function exportExcel() {
       item.isTargetReached ? '100%' : `${item.targetPct}%`
     ])
 
-    const filename = `Laporan_Hasil_Terbanyak_${selectedDate.value}.xlsx`
+    const filename = `Statistik_Hasil_Terbanyak_${selectedDate.value}.xlsx`
     exportToXlsx(filename, `Hasil Terbanyak ${dateLabel}`, headers, rows)
     auditStore.logAction('Pekerja', 'Export Excel Hasil Terbanyak', `Export ${rows.length} karyawan hasil terbanyak tanggal ${dateLabel}`)
   }

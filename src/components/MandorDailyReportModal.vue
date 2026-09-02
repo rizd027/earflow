@@ -44,9 +44,9 @@
           >
           
           <!-- Sheet Shift Switcher Bar (Excel-like Sheet Tabs, hidden on print) -->
-          <div class="flex items-center gap-1.5 overflow-x-auto pb-2 mb-3 border-b border-black/20 print:hidden">
+          <div class="flex items-center gap-1.5 overflow-x-auto pb-2 mb-2 border-b border-black/10 print:hidden">
             <div class="text-[11px] font-bold font-mono text-slate-700 uppercase tracking-wider shrink-0 mr-1">
-              Sheet Shift:
+              Shift:
             </div>
             <button
               v-for="shift in activeShiftSheets"
@@ -74,6 +74,25 @@
             </button>
           </div>
 
+          <!-- Role / Pos Classification Switcher Bar (Pills, hidden on print) -->
+          <div class="flex items-center gap-1.5 overflow-x-auto pb-2 mb-3 border-b border-black/20 print:hidden">
+            <div class="text-[11px] font-bold font-mono text-slate-700 uppercase tracking-wider shrink-0 mr-1">
+              Pos/Role:
+            </div>
+            <button
+              v-for="rf in roleFilterOptions"
+              :key="String(rf.value)"
+              type="button"
+              @click="selectedRoleFilter = String(rf.value)"
+              class="px-2.5 py-1 rounded text-xs font-bold font-mono transition-all flex items-center gap-1 shrink-0 border shadow-xs"
+              :class="selectedRoleFilter === String(rf.value)
+                ? 'bg-teal-600 text-white border-teal-700 shadow font-black ring-2 ring-teal-400/40'
+                : 'bg-white text-slate-800 hover:bg-teal-50 hover:text-teal-900 hover:border-teal-400 border-slate-400 shadow-sm'"
+            >
+              <span>{{ rf.label }}</span>
+            </button>
+          </div>
+
           <!-- Document Main Title Bar -->
           <div class="text-center border-b-2 border-black pb-2 mb-3">
             <h2 class="text-[11px] text-black font-bold font-mono uppercase tracking-widest leading-tight">
@@ -94,7 +113,7 @@
             <div class="flex items-center min-w-0">
               <span class="w-28 text-black font-bold shrink-0">{{ t('mandorReport.process') }}</span>
               <span class="font-extrabold text-black uppercase truncate">
-                : {{ selectedTeamLabel }}
+                : {{ selectedTeamAndRoleLabel }}
                 <span v-if="selectedShiftObj" class="ml-1 font-black text-[10px] text-amber-900 bg-amber-200/90 border border-amber-500 px-1.5 py-0.5 rounded shadow-xs uppercase">
                   • {{ selectedShiftObj.name }} {{ selectedShiftObj.time ? `(${selectedShiftObj.time})` : '' }}
                 </span>
@@ -187,7 +206,9 @@
                         ? 'bg-amber-300 text-amber-950 font-black border-2 border-amber-600 shadow-inner'
                         : 'bg-emerald-50 border border-emerald-500 focus:border-emerald-600 focus:bg-white text-emerald-950 font-extrabold'"
                     />
-                    <span v-else>{{ row.prodQty ? row.prodQty.toLocaleString('id-ID') : '' }}</span>
+                    <span v-else :class="row.isQc && (row.isPresent || row.prodQty > 0 || (row.remark && row.remark.toLowerCase().includes('check'))) ? 'font-black tracking-wider text-center block' : ''">
+                      {{ (row.isQc && (row.isPresent || row.prodQty > 0 || (row.remark && row.remark.toLowerCase().includes('check')))) ? 'CHECK' : (row.prodQty ? row.prodQty.toLocaleString('id-ID') : '') }}
+                    </span>
                   </td>
 
                   <!-- Remark -->
@@ -297,7 +318,7 @@
             </button>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-1">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pt-1">
             <!-- Filter 1: Date Picker -->
             <div class="space-y-1">
               <label class="block text-[11px] font-semibold text-slate-400 font-mono">Pilih Tanggal</label>
@@ -318,7 +339,17 @@
               />
             </div>
 
-            <!-- Filter 3: Target Harian Configuration Input -->
+            <!-- Filter 3: Role / Pos Filter -->
+            <div class="space-y-1">
+              <label class="block text-[11px] font-semibold text-slate-400 font-mono">Klasifikasi Role / Pos</label>
+              <CustomSelect
+                v-model="selectedRoleFilter"
+                :options="roleFilterOptions"
+                placeholder="Semua Role / Pos"
+              />
+            </div>
+
+            <!-- Filter 4: Target Harian Configuration Input -->
             <div class="space-y-1">
               <label class="block text-[11px] font-semibold text-slate-400 font-mono flex items-center justify-between">
                 <span>Target Harian (Pcs)</span>
@@ -335,7 +366,7 @@
               />
             </div>
 
-            <!-- Filter 4: Sort -->
+            <!-- Filter 5: Sort -->
             <div class="space-y-1">
               <label class="block text-[11px] font-semibold text-slate-400 font-mono">Urutkan Data</label>
               <CustomSelect
@@ -660,6 +691,7 @@ function deleteShiftItem(id: string) {
 
 const selectedDate = ref(productionStore.currentDateStr || getLocalDateStr())
 const selectedTeamId = ref('')
+const selectedRoleFilter = ref('')
 
 // Edit Cell mode state
 const isEditing = ref(false)
@@ -671,6 +703,69 @@ const sortOptions = [
   { label: 'Urut: Tim / Line', value: 'team' },
   { label: 'Urut: No Karyawan', value: 'worker_no' }
 ]
+
+const roleFilterOptions = computed<SelectOption[]>(() => {
+  const opts: SelectOption[] = [
+    { label: 'Semua Role / Pos', value: '' }
+  ]
+
+  // Add process groups from Settings (e.g. A1 - SOLDER, LEM)
+  authStore.processGroups.forEach(g => {
+    opts.push({
+      label: `KODE ${g.code} (${g.roles.join(', ')})`,
+      value: `group_${g.code}`
+    })
+  })
+
+  // Add QC & SPK if distinct
+  opts.push({ label: 'QC / Pemeriksaan', value: 'QC' })
+  opts.push({ label: 'SPK / Lembaran', value: 'SPK' })
+
+  // Extract other distinct roles
+  const knownRoles = new Set<string>()
+  authStore.processGroups.forEach(g => g.roles.forEach(r => knownRoles.add(r.toUpperCase())))
+  knownRoles.add('QC')
+  knownRoles.add('CHECK')
+  knownRoles.add('SPK')
+
+  teamStore.allWorkers.forEach(w => {
+    if (w.role && w.role.trim()) {
+      const r = w.role.trim()
+      const rUp = r.toUpperCase()
+      if (!knownRoles.has(rUp) && !Array.from(knownRoles).some(k => rUp.includes(k))) {
+        if (!opts.some(o => String(o.value).toLowerCase() === r.toLowerCase())) {
+          opts.push({ label: r, value: r })
+        }
+      }
+    }
+  })
+
+  return opts
+})
+
+function matchesRoleFilter(w: any, filterVal: string): boolean {
+  if (!filterVal) return true
+  const roleUpper = (w.role || '').toUpperCase()
+  const team = teamStore.teams.find(t => t.id === w.team_id)
+  const teamUpper = (team?.name || '').toUpperCase()
+
+  if (filterVal === 'QC') {
+    return roleUpper.includes('QC') || roleUpper.includes('CHECK') || teamUpper.includes('QC')
+  }
+  if (filterVal === 'SPK') {
+    return roleUpper.includes('SPK') || teamUpper.includes('SPK')
+  }
+  if (filterVal.startsWith('group_')) {
+    const code = filterVal.replace('group_', '').toUpperCase()
+    const group = authStore.processGroups.find(g => g.code.toUpperCase() === code)
+    if (group) {
+      if (group.roles.some(r => roleUpper.includes(r.toUpperCase()))) return true
+      if (authStore.getProcessCodeForRole(w.role).toUpperCase() === code) return true
+    }
+    return false
+  }
+  return roleUpper.includes(filterVal.toUpperCase()) || (w.role || '').toLowerCase() === filterVal.toLowerCase()
+}
 
 function saveCellOverride(rowNo: number, field: string, value: any) {
   const rowWorker = reportRows.value[rowNo - 1]
@@ -767,6 +862,14 @@ const selectedTeamLabel = computed(() => {
   return found ? found.name : t('mandorReport.allTeams')
 })
 
+const selectedTeamAndRoleLabel = computed(() => {
+  const teamLabel = selectedTeamLabel.value
+  if (!selectedRoleFilter.value) return teamLabel
+  const foundRole = roleFilterOptions.value.find(o => o.value === selectedRoleFilter.value)
+  const roleLabel = foundRole ? foundRole.label : selectedRoleFilter.value
+  return `${teamLabel} • ${roleLabel}`
+})
+
 const monthKeys = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
 
 const formattedSelectedDate = computed(() => {
@@ -780,6 +883,95 @@ const formattedSelectedDate = computed(() => {
   return `${day} ${monthName} ${year}`
 })
 
+function buildRowsForWorkers(workerList: typeof teamStore.allWorkers, logsForDate: typeof productionStore.logs) {
+  const rows = []
+  const TOTAL_ROWS = Math.max(32, workerList.length)
+
+  for (let i = 1; i <= TOTAL_ROWS; i++) {
+    const worker = workerList[i - 1]
+    const workerId = worker ? worker.id : `row_${i}`
+    const wOverride = overrideStore.getWorkerOverride(workerId) || {}
+    const dOverride = overrideStore.getDailyOverride(workerId, selectedDate.value, selectedShiftId.value) || {}
+
+    if (worker) {
+      const workerTeam = teamStore.teams.find(t => t.id === worker.team_id)
+      const baseTargetQty = (workerTeam && workerTeam.hourly_target > 0) ? workerTeam.hourly_target : (targetValueInput.value || DEFAULT_DAILY_TARGET)
+      const teamMemberCount = workerTeam ? (workerTeam.members ? workerTeam.members.length : 1) : 1
+
+      const workerLogs = logsForDate.filter(l => isWorkerInLog(l, worker))
+
+      let baseProdQty = 0
+      for (const log of workerLogs) {
+        baseProdQty += getWorkerShareForLog(log, teamMemberCount)
+      }
+      baseProdQty = Math.max(0, baseProdQty)
+
+      const prodQty = dOverride.prodQty !== undefined ? dOverride.prodQty : baseProdQty
+      const isPresent = workerLogs.length > 0 || prodQty > 0
+
+      const remarks = workerLogs.map(l => l.notes).filter(Boolean).filter(n => !n?.includes('Reset hasil')).join('; ')
+      const workerStatus = (worker.status || '').toLowerCase()
+      const isOut = workerStatus.includes('keluar') || workerStatus.includes('out')
+      const isOnLeave = workerStatus.includes('cuti')
+      const isNewInInterval = isWorkerNewOnDate(worker.joined_date, selectedDate.value, 7)
+      const isBeforeJoined = !!worker.joined_date && selectedDate.value < worker.joined_date
+      const effectiveRole = (worker.role || '').toUpperCase()
+      const isQc = effectiveRole.includes('QC') || effectiveRole.includes('CHECK') || (workerTeam?.name || '').toUpperCase().includes('QC') || (dOverride.remark || remarks || '').toLowerCase().includes('check')
+
+      let defaultRemark = ''
+      if (isBeforeJoined && !isPresent) {
+        defaultRemark = 'Belum Bergabung'
+      } else if (isOut && !isPresent) {
+        defaultRemark = 'Keluar'
+      } else if (isOnLeave && !isPresent) {
+        defaultRemark = 'Cuti'
+      } else if (isPresent) {
+        const basePresentText = isQc ? 'Check' : (remarks || t('mandorReport.remarkPresent'))
+        defaultRemark = isNewInInterval ? `${basePresentText} (${t('mandorReport.remarkNew')})` : basePresentText
+      } else {
+        defaultRemark = t('mandorReport.remarkAbsent')
+      }
+
+      const workerNo = wOverride.workerNo !== undefined ? wOverride.workerNo : ((worker.no_karyawan && !isTempWorkerNo(worker.no_karyawan) && worker.no_karyawan !== '-') ? worker.no_karyawan : '')
+      const workerName = wOverride.workerName !== undefined ? wOverride.workerName : worker.full_name
+      const targetQty = dOverride.targetQty !== undefined ? dOverride.targetQty : baseTargetQty
+      const remark = dOverride.remark !== undefined ? dOverride.remark : defaultRemark
+
+      rows.push({
+        no: i,
+        workerId,
+        workerNo,
+        workerName,
+        targetQty,
+        prodQty,
+        remark,
+        isQc,
+        isPresent
+      })
+    } else {
+      const workerNo = wOverride.workerNo !== undefined ? wOverride.workerNo : ''
+      const workerName = wOverride.workerName !== undefined ? wOverride.workerName : ''
+      const targetQty = dOverride.targetQty !== undefined ? dOverride.targetQty : 0
+      const prodQty = dOverride.prodQty !== undefined ? dOverride.prodQty : 0
+      const remark = dOverride.remark !== undefined ? dOverride.remark : ''
+
+      rows.push({
+        no: i,
+        workerId,
+        workerNo,
+        workerName,
+        targetQty,
+        prodQty,
+        remark,
+        isQc: false,
+        isPresent: false
+      })
+    }
+  }
+
+  return rows
+}
+
 // Compute report rows up to 32 fixed rows for a pristine single A4 sheet fit
 const reportRows = computed(() => {
   let workerList = [...teamStore.allWorkers]
@@ -788,6 +980,9 @@ const reportRows = computed(() => {
   }
   if (selectedShiftObj.value && selectedShiftId.value !== 'all_shifts') {
     workerList = workerList.filter(w => isWorkerMatchingShift(w, selectedShiftObj.value, teamStore.teams))
+  }
+  if (selectedRoleFilter.value) {
+    workerList = workerList.filter(w => matchesRoleFilter(w, selectedRoleFilter.value))
   }
 
   const logsForDate = productionStore.logs.filter(l => l.date === selectedDate.value && l.total_qty > 0 && l.hour_slot !== 'Reset Hasil Tim')
@@ -828,87 +1023,7 @@ const reportRows = computed(() => {
     return 0
   })
 
-  const rows = []
-  const TOTAL_ROWS = Math.max(32, workerList.length)
-
-  for (let i = 1; i <= TOTAL_ROWS; i++) {
-    const worker = workerList[i - 1]
-    const workerId = worker ? worker.id : `row_${i}`
-    const wOverride = overrideStore.getWorkerOverride(workerId) || {}
-    const dOverride = overrideStore.getDailyOverride(workerId, selectedDate.value, selectedShiftId.value) || {}
-
-    if (worker) {
-      const workerTeam = teamStore.teams.find(t => t.id === worker.team_id)
-      const baseTargetQty = (workerTeam && workerTeam.hourly_target > 0) ? workerTeam.hourly_target : (targetValueInput.value || DEFAULT_DAILY_TARGET)
-      const teamMemberCount = workerTeam ? (workerTeam.members ? workerTeam.members.length : 1) : 1
-
-      const workerLogs = logsForDate.filter(l => isWorkerInLog(l, worker))
-
-      let baseProdQty = 0
-      for (const log of workerLogs) {
-        baseProdQty += getWorkerShareForLog(log, teamMemberCount)
-      }
-      baseProdQty = Math.max(0, baseProdQty)
-
-      const prodQty = dOverride.prodQty !== undefined ? dOverride.prodQty : baseProdQty
-      const isPresent = workerLogs.length > 0 || prodQty > 0
-
-      const remarks = workerLogs.map(l => l.notes).filter(Boolean).filter(n => !n?.includes('Reset hasil')).join('; ')
-      const workerStatus = (worker.status || '').toLowerCase()
-      const isOut = workerStatus.includes('keluar') || workerStatus.includes('out')
-      const isOnLeave = workerStatus.includes('cuti')
-      const isNewInInterval = isWorkerNewOnDate(worker.joined_date, selectedDate.value, 7)
-      const isBeforeJoined = !!worker.joined_date && selectedDate.value < worker.joined_date
-      const isQc = (worker.role || '').toUpperCase().includes('QC') || (worker.role || '').toUpperCase().includes('CHECK')
-
-      let defaultRemark = ''
-      if (isBeforeJoined && !isPresent) {
-        defaultRemark = 'Belum Bergabung'
-      } else if (isOut && !isPresent) {
-        defaultRemark = 'Keluar'
-      } else if (isOnLeave && !isPresent) {
-        defaultRemark = 'Cuti'
-      } else if (isPresent) {
-        const basePresentText = isQc ? 'Check' : (remarks || t('mandorReport.remarkPresent'))
-        defaultRemark = isNewInInterval ? `${basePresentText} (${t('mandorReport.remarkNew')})` : basePresentText
-      } else {
-        defaultRemark = t('mandorReport.remarkAbsent')
-      }
-
-      const workerNo = wOverride.workerNo !== undefined ? wOverride.workerNo : ((worker.no_karyawan && !isTempWorkerNo(worker.no_karyawan) && worker.no_karyawan !== '-') ? worker.no_karyawan : '')
-      const workerName = wOverride.workerName !== undefined ? wOverride.workerName : worker.full_name
-      const targetQty = dOverride.targetQty !== undefined ? dOverride.targetQty : baseTargetQty
-      const remark = dOverride.remark !== undefined ? dOverride.remark : defaultRemark
-
-      rows.push({
-        no: i,
-        workerId,
-        workerNo,
-        workerName,
-        targetQty,
-        prodQty,
-        remark
-      })
-    } else {
-      const workerNo = wOverride.workerNo !== undefined ? wOverride.workerNo : ''
-      const workerName = wOverride.workerName !== undefined ? wOverride.workerName : ''
-      const targetQty = dOverride.targetQty !== undefined ? dOverride.targetQty : 0
-      const prodQty = dOverride.prodQty !== undefined ? dOverride.prodQty : 0
-      const remark = dOverride.remark !== undefined ? dOverride.remark : ''
-
-      rows.push({
-        no: i,
-        workerId,
-        workerNo,
-        workerName,
-        targetQty,
-        prodQty,
-        remark
-      })
-    }
-  }
-
-  return rows
+  return buildRowsForWorkers(workerList, logsForDate)
 })
 
 const totalDayProduction = computed(() => {
@@ -923,6 +1038,9 @@ const totalExpectedWorkers = computed(() => {
   if (selectedShiftObj.value && selectedShiftId.value !== 'all_shifts') {
     list = list.filter(w => isWorkerMatchingShift(w, selectedShiftObj.value, teamStore.teams))
   }
+  if (selectedRoleFilter.value) {
+    list = list.filter(w => matchesRoleFilter(w, selectedRoleFilter.value))
+  }
   return list.length
 })
 
@@ -935,7 +1053,7 @@ const totalPresentWorkers = computed(() => {
   }).length
 })
 
-import { exportToXlsxRich } from '@/utils/excelExport'
+import { exportToXlsxMultiSheetRich, type RichSheetOptions } from '@/utils/excelExport'
 
 function exportExcel() {
   // Bilingual column headers matching the UI table exactly
@@ -948,44 +1066,102 @@ function exportExcel() {
     `${t('mandorReport.colRemark')} / 备注`
   ]
 
-  const rows = reportRows.value.map(r => [
-    r.no,
-    r.workerNo || '',
-    r.workerName || '',
-    r.targetQty || 0,
-    r.prodQty || 0,
-    r.remark || ''
-  ])
-
-  // Build shift label for sub-header (e.g. "Shift A (07:00-15:00)")
   const shiftLabelStr = selectedShiftObj.value
     ? `${selectedShiftObj.value.name}${selectedShiftObj.value.time ? ` (${selectedShiftObj.value.time})` : ''}`
     : undefined
 
-  const shiftName = selectedShiftObj.value ? selectedShiftObj.value.name.replace(/\s+/g, '_') : 'All_Shift'
-  const filename = `laporan_target_mandor_${selectedDate.value}_${shiftName}.xlsx`
+  const logsForDate = productionStore.logs.filter(l => l.date === selectedDate.value && l.total_qty > 0 && l.hour_slot !== 'Reset Hasil Tim')
 
-  exportToXlsxRich({
-    filename,
-    sheetName: 'Target Mandor',
-    titleZh: '员工日目标报告表',
-    titleId: t('mandorReport.sheetTitle'),
-    dateLabel: t('mandorReport.date'),
-    dateValue: formattedSelectedDate.value,
-    processLabel: t('mandorReport.process'),
-    processValue: selectedTeamLabel.value.toUpperCase(),
-    shiftLabel: shiftLabelStr,
-    columnHeaders,
-    rows,
-    totalProduction: totalDayProduction.value,
-    totalProductionLabel: `${t('mandorReport.totalToday')} (当天生产总量)`,
-    totalProductionUnit: 'Pcs',
-    expectedWorkersLabel: `${t('mandorReport.expectedWorkers')} (应到员工)`,
-    expectedWorkers: totalExpectedWorkers.value,
-    presentWorkersLabel: `${t('mandorReport.presentWorkers')} (实到员工)`,
-    presentWorkers: totalPresentWorkers.value,
-    personUnit: t('mandorReport.personUnit')
+  const baseWorkerList = teamStore.allWorkers.filter(w => {
+    if (selectedTeamId.value && w.team_id !== selectedTeamId.value) return false
+    if (selectedShiftObj.value && selectedShiftId.value !== 'all_shifts' && !isWorkerMatchingShift(w, selectedShiftObj.value, teamStore.teams)) return false
+    return true
   })
+
+  // Build sheets for multi-sheet workbook
+  const sheets: RichSheetOptions[] = []
+
+  // Helper to construct a single RichSheetOptions
+  const createSheetConfig = (name: string, workers: typeof teamStore.allWorkers, roleLabel?: string): RichSheetOptions => {
+    const rowsBuilt = buildRowsForWorkers(workers, logsForDate)
+    const totalProd = rowsBuilt.reduce((acc, r) => acc + (r.prodQty || 0), 0)
+    const absentLabel = t('mandorReport.remarkAbsent').toLowerCase()
+    const presentCount = rowsBuilt.filter(r => {
+      if (!r.workerName || !r.workerName.trim()) return false
+      const rem = (r.remark || '').toLowerCase().trim()
+      return rem !== absentLabel && !rem.includes('absen') && !rem.includes('absent') && !rem.includes('tidak hadir')
+    }).length
+
+    const rowsData = rowsBuilt.map(r => [
+      r.no,
+      r.workerNo || '',
+      r.workerName || '',
+      r.targetQty || 0,
+      r.isQc && (r.isPresent || r.prodQty > 0 || (r.remark && r.remark.toLowerCase().includes('check'))) ? 'CHECK' : (r.prodQty || 0),
+      r.remark || ''
+    ])
+
+    const processDisplay = roleLabel ? `${selectedTeamLabel.value.toUpperCase()} • ${roleLabel.toUpperCase()}` : selectedTeamLabel.value.toUpperCase()
+
+    return {
+      sheetName: name,
+      titleZh: '员工日目标报告表',
+      titleId: t('mandorReport.sheetTitle'),
+      dateLabel: t('mandorReport.date'),
+      dateValue: formattedSelectedDate.value,
+      processLabel: t('mandorReport.process'),
+      processValue: processDisplay,
+      shiftLabel: shiftLabelStr,
+      columnHeaders,
+      rows: rowsData,
+      totalProduction: totalProd,
+      totalProductionLabel: `${t('mandorReport.totalToday')} (当天生产总量)`,
+      totalProductionUnit: 'Pcs',
+      expectedWorkersLabel: `${t('mandorReport.expectedWorkers')} (应到员工)`,
+      expectedWorkers: workers.length,
+      presentWorkersLabel: `${t('mandorReport.presentWorkers')} (实到员工)`,
+      presentWorkers: presentCount,
+      personUnit: t('mandorReport.personUnit')
+    }
+  }
+
+  // If a specific role is currently selected, add it as the first sheet
+  if (selectedRoleFilter.value) {
+    const roleOpt = roleFilterOptions.value.find(o => o.value === selectedRoleFilter.value)
+    const roleLabel = roleOpt ? roleOpt.label : selectedRoleFilter.value
+    const filteredWorkers = baseWorkerList.filter(w => matchesRoleFilter(w, selectedRoleFilter.value))
+    sheets.push(createSheetConfig(roleLabel.slice(0, 25), filteredWorkers, roleLabel))
+  }
+
+  // 1. Sheet: Gabungan Semua
+  sheets.push(createSheetConfig('Semua Tim Gabungan', baseWorkerList))
+
+  // 2. Sheets per Process Code Group (e.g. A1 Solder/Lem, A2, etc.)
+  authStore.processGroups.forEach(g => {
+    const groupWorkers = baseWorkerList.filter(w => matchesRoleFilter(w, `group_${g.code}`))
+    if (groupWorkers.length > 0) {
+      sheets.push(createSheetConfig(`KODE ${g.code} (${g.roles.join(', ')})`.slice(0, 28), groupWorkers, `KODE ${g.code}`))
+    }
+  })
+
+  // 3. Sheet: QC Pemeriksaan
+  const qcWorkers = baseWorkerList.filter(w => matchesRoleFilter(w, 'QC'))
+  if (qcWorkers.length > 0 && !sheets.some(s => s.sheetName.includes('QC'))) {
+    sheets.push(createSheetConfig('QC Pemeriksaan', qcWorkers, 'QC Check'))
+  }
+
+  // 4. Sheet: SPK Lembaran
+  const spkWorkers = baseWorkerList.filter(w => matchesRoleFilter(w, 'SPK'))
+  if (spkWorkers.length > 0 && !sheets.some(s => s.sheetName.includes('SPK'))) {
+    sheets.push(createSheetConfig('SPK Lembaran', spkWorkers, 'SPK'))
+  }
+
+  const lineName = (selectedTeamLabel.value || 'Semua_Tim').trim().replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_')
+  const shiftName = selectedShiftObj.value ? selectedShiftObj.value.name.trim().replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_') : 'Semua_Shift'
+  const roleName = selectedRoleFilter.value ? `_${selectedRoleFilter.value.replace(/[^a-zA-Z0-9]/g, '_')}` : ''
+  const filename = `Laporan_Mandor_Harian_${lineName}${roleName}_${selectedDate.value}_${shiftName}.xlsx`
+
+  exportToXlsxMultiSheetRich(filename, sheets)
 }
 
 function triggerPrint() {
