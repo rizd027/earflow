@@ -96,7 +96,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     // 5. Fallbacks for standard process types
-    if (clean.includes('SOLDER') || clean.includes('LEM')) return 'A1'
+    if (clean.includes('SOLDER') || clean.includes('LEM') || clean.includes('SPK') || clean.includes('SPEAKER')) return 'A1'
     if (clean.includes('GULUNG') || clean.includes('CANGKANG')) return 'A2'
     if (clean.includes('PACKING')) return 'A3'
     if (clean.includes('QC') || clean.includes('CHECK')) {

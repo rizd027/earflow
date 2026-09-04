@@ -206,8 +206,14 @@
                         ? 'bg-amber-300 text-amber-950 font-black border-2 border-amber-600 shadow-inner'
                         : 'bg-emerald-50 border border-emerald-500 focus:border-emerald-600 focus:bg-white text-emerald-950 font-extrabold'"
                     />
-                    <span v-else :class="row.isQc && (row.isPresent || row.prodQty > 0 || (row.remark && row.remark.toLowerCase().includes('check'))) ? 'font-black tracking-wider text-center block' : ''">
-                      {{ (row.isQc && (row.isPresent || row.prodQty > 0 || (row.remark && row.remark.toLowerCase().includes('check')))) ? 'CHECK' : (row.prodQty ? row.prodQty.toLocaleString('id-ID') : '') }}
+                    <span v-else-if="row.isQc && (row.isPresent || row.prodQty > 0 || (row.remark && row.remark.toLowerCase().includes('check')))" class="font-black tracking-wider text-center block">
+                      CHECK
+                    </span>
+                    <span v-else-if="row.isSpk && (row.isPresent || row.prodQty > 0 || (row.remark && (row.remark.toUpperCase().includes('SPK') || row.remark.toUpperCase().includes('SPK-A1'))))" class="font-black tracking-wider text-center block text-amber-700 print:text-black">
+                      SPK-A1
+                    </span>
+                    <span v-else>
+                      {{ row.prodQty ? row.prodQty.toLocaleString('id-ID') : '' }}
                     </span>
                   </td>
 
@@ -917,6 +923,7 @@ function buildRowsForWorkers(workerList: typeof teamStore.allWorkers, logsForDat
       const isBeforeJoined = !!worker.joined_date && selectedDate.value < worker.joined_date
       const effectiveRole = (worker.role || '').toUpperCase()
       const isQc = effectiveRole.includes('QC') || effectiveRole.includes('CHECK') || (workerTeam?.name || '').toUpperCase().includes('QC') || (dOverride.remark || remarks || '').toLowerCase().includes('check')
+      const isSpk = effectiveRole.includes('SPK') || effectiveRole.includes('SPEAKER') || (workerTeam?.name || '').toUpperCase().includes('SPK') || (dOverride.remark || remarks || '').toUpperCase().includes('SPK')
 
       let defaultRemark = ''
       if (isBeforeJoined && !isPresent) {
@@ -926,7 +933,7 @@ function buildRowsForWorkers(workerList: typeof teamStore.allWorkers, logsForDat
       } else if (isOnLeave && !isPresent) {
         defaultRemark = 'Cuti'
       } else if (isPresent) {
-        const basePresentText = isQc ? 'Check' : (remarks || t('mandorReport.remarkPresent'))
+        const basePresentText = isQc ? 'Check' : (isSpk ? 'SPK-A1' : (remarks || t('mandorReport.remarkPresent')))
         defaultRemark = isNewInInterval ? `${basePresentText} (${t('mandorReport.remarkNew')})` : basePresentText
       } else {
         defaultRemark = t('mandorReport.remarkAbsent')
@@ -946,6 +953,7 @@ function buildRowsForWorkers(workerList: typeof teamStore.allWorkers, logsForDat
         prodQty,
         remark,
         isQc,
+        isSpk,
         isPresent
       })
     } else {
@@ -964,6 +972,7 @@ function buildRowsForWorkers(workerList: typeof teamStore.allWorkers, logsForDat
         prodQty,
         remark,
         isQc: false,
+        isSpk: false,
         isPresent: false
       })
     }
@@ -1097,7 +1106,11 @@ function exportExcel() {
       r.workerNo || '',
       r.workerName || '',
       r.targetQty || 0,
-      r.isQc && (r.isPresent || r.prodQty > 0 || (r.remark && r.remark.toLowerCase().includes('check'))) ? 'CHECK' : (r.prodQty || 0),
+      r.isQc && (r.isPresent || r.prodQty > 0 || (r.remark && r.remark.toLowerCase().includes('check')))
+        ? 'CHECK'
+        : (r.isSpk && (r.isPresent || r.prodQty > 0 || (r.remark && (r.remark.toUpperCase().includes('SPK') || r.remark.toUpperCase().includes('SPK-A1'))))
+            ? 'SPK-A1'
+            : (r.prodQty || 0)),
       r.remark || ''
     ])
 

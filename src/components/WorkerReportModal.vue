@@ -181,8 +181,8 @@
                         ? 'bg-amber-300 text-amber-950 font-black border-2 border-amber-600'
                         : 'bg-amber-500/10 border border-amber-500/60 focus:border-amber-600 focus:bg-white'"
                     />
-                    <span v-else class="font-bold text-slate-900" :class="row.isQc ? 'text-cyan-700' : ''">
-                      {{ row.isWorking ? (row.isQc ? 'CHECK' : (row.targetQty ? row.targetQty.toLocaleString('id-ID') : '')) : '' }}
+                    <span v-else class="font-bold text-slate-900" :class="row.isQc ? 'text-cyan-700' : (row.isSpk ? 'text-amber-700 font-bold' : '')">
+                      {{ row.isWorking ? (row.isQc ? 'CHECK' : (row.isSpk ? 'SPK-A1' : (row.targetQty ? row.targetQty.toLocaleString('id-ID') : ''))) : '' }}
                     </span>
                   </td>
 
@@ -202,15 +202,15 @@
                         ? 'bg-amber-300 text-amber-950 font-black border-2 border-amber-600'
                         : 'bg-emerald-500/10 border border-emerald-500/80 focus:border-emerald-600 focus:bg-white text-emerald-950'"
                     />
-                    <span v-else class="font-bold text-slate-950" :class="row.isQc ? 'text-cyan-700 font-black' : ''">
-                      {{ row.isWorking ? (row.isQc ? 'CHECK' : (row.prodQty ? row.prodQty.toLocaleString('id-ID') : '')) : '' }}
+                    <span v-else class="font-bold text-slate-950" :class="row.isQc ? 'text-cyan-700 font-black' : (row.isSpk ? 'text-amber-800 font-black' : '')">
+                      {{ row.isWorking ? (row.isQc ? 'CHECK' : (row.isSpk ? 'SPK-A1' : (row.prodQty ? row.prodQty.toLocaleString('id-ID') : ''))) : '' }}
                     </span>
                   </td>
 
                   <!-- Kumulatif Produksi: hanya tampil jika isWorking & hasWorkActivity -->
                   <td class="border border-slate-900 p-1 text-right px-1 font-extrabold text-slate-950">
-                    <span v-if="row.isWorking && row.hasWorkActivity" :class="row.isQc ? 'text-cyan-700 font-bold' : ''">
-                      {{ row.isQc ? 'CHECK' : (row.cumProdQty ? row.cumProdQty.toLocaleString('id-ID') : '') }}
+                    <span v-if="row.isWorking && row.hasWorkActivity" :class="row.isQc ? 'text-cyan-700 font-bold' : (row.isSpk ? 'text-amber-800 font-bold' : '')">
+                      {{ row.isQc ? 'CHECK' : (row.isSpk ? 'SPK-A1' : (row.cumProdQty ? row.cumProdQty.toLocaleString('id-ID') : '')) }}
                     </span>
                   </td>
 
@@ -242,10 +242,10 @@
                 <tr class="bg-slate-200 text-slate-950 font-black border-t-2 border-slate-900 text-center">
                   <td colspan="2" class="sticky left-0 z-10 border border-slate-900 p-1.5 uppercase text-right pr-2 bg-slate-200 shadow-[1px_0_0_0_#0f172a]">{{ t('workerReport.total') }}</td>
                   <td class="border border-slate-900 p-1.5">{{ totalWorkHours }} Jam</td>
-                  <td class="border border-slate-900 p-1.5 text-left px-2 text-[10px]">{{ t('workerReport.efficiency') }} {{ isQcWorker ? '100%' : `${overallEfficiency}%` }}</td>
-                  <td class="border border-slate-900 p-1.5 text-right px-1">{{ isQcWorker ? 'CHECK' : totalTargetQty.toLocaleString('id-ID') }}</td>
-                  <td class="border border-slate-900 p-1.5 text-right px-1 text-teal-800 print:text-black">{{ isQcWorker ? 'CHECK' : totalProdQty.toLocaleString('id-ID') }}</td>
-                  <td class="border border-slate-900 p-1.5 text-right px-1 text-teal-900 print:text-black">{{ isQcWorker ? 'CHECK' : totalProdQty.toLocaleString('id-ID') }}</td>
+                  <td class="border border-slate-900 p-1.5 text-left px-2 text-[10px]">{{ t('workerReport.efficiency') }} {{ isQcWorker || isSpkWorker ? '100%' : `${overallEfficiency}%` }}</td>
+                  <td class="border border-slate-900 p-1.5 text-right px-1">{{ isQcWorker ? 'CHECK' : (isSpkWorker ? 'SPK-A1' : totalTargetQty.toLocaleString('id-ID')) }}</td>
+                  <td class="border border-slate-900 p-1.5 text-right px-1 text-teal-800 print:text-black">{{ isQcWorker ? 'CHECK' : (isSpkWorker ? 'SPK-A1' : totalProdQty.toLocaleString('id-ID')) }}</td>
+                  <td class="border border-slate-900 p-1.5 text-right px-1 text-teal-900 print:text-black">{{ isQcWorker ? 'CHECK' : (isSpkWorker ? 'SPK-A1' : totalProdQty.toLocaleString('id-ID')) }}</td>
                   <td colspan="2" class="border border-slate-900 p-1.5"></td>
                 </tr>
               </tbody>
@@ -855,6 +855,7 @@ const dailyReportRows = computed(() => {
     }
 
     const isRowQc = isQcWorker.value || (processName || '').toUpperCase().includes('QC') || (processName || '').toUpperCase().includes('CHECK') || remarkLower.includes('check')
+    const isRowSpk = isSpkWorker.value || (processName || '').toUpperCase().includes('SPK') || (processName || '').toUpperCase().includes('SPEAKER') || (remark || '').toUpperCase().includes('SPK')
 
     rows.push({
       day,
@@ -864,6 +865,7 @@ const dailyReportRows = computed(() => {
       isWorking,
       hasWorkActivity,
       isQc: isRowQc,
+      isSpk: isRowSpk,
       workHours,
       cumHours: runningCumHours,
       process: processName,
@@ -883,6 +885,12 @@ const isQcWorker = computed(() => {
   if (!props.worker) return false
   const r = (props.worker.role || '').toUpperCase()
   return r.includes('QC') || r.includes('CHECK')
+})
+
+const isSpkWorker = computed(() => {
+  if (!props.worker) return false
+  const r = (props.worker.role || '').toUpperCase()
+  return r.includes('SPK') || r.includes('SPEAKER')
 })
 
 const totalWorkHours = computed(() => {
@@ -971,9 +979,9 @@ function exportExcel() {
     d.workHours || '-',
     d.cumHours || 0,
     d.process || '',
-    d.isQc && d.isWorking ? 'CHECK' : (d.targetQty || 0),
-    d.isQc && d.isWorking ? 'CHECK' : (d.prodQty || 0),
-    d.isQc && d.isWorking ? 'CHECK' : (d.cumProdQty || 0),
+    d.isQc && d.isWorking ? 'CHECK' : (d.isSpk && d.isWorking ? 'SPK-A1' : (d.targetQty || 0)),
+    d.isQc && d.isWorking ? 'CHECK' : (d.isSpk && d.isWorking ? 'SPK-A1' : (d.prodQty || 0)),
+    d.isQc && d.isWorking ? 'CHECK' : (d.isSpk && d.isWorking ? 'SPK-A1' : (d.cumProdQty || 0)),
     d.remark || ''
   ])
 

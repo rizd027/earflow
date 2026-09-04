@@ -248,7 +248,7 @@
 
                   <!-- Monthly Worker Sum -->
                   <td class="print-col-total border border-black p-0.5 text-right px-1 font-black text-black text-[9px] bg-white">
-                    {{ row.isQc ? ((matrixAndSummary.workerTotals[row.workerId] || 0) > 0 ? 'CHECK' : '-') : ((matrixAndSummary.workerTotals[row.workerId] || 0) > 0 ? matrixAndSummary.workerTotals[row.workerId] : '-') }}
+                    {{ row.isQc ? ((matrixAndSummary.workerTotals[row.workerId] || 0) > 0 ? 'CHECK' : '-') : (row.isSpk ? ((matrixAndSummary.workerTotals[row.workerId] || 0) > 0 ? 'SPK-A1' : '-') : ((matrixAndSummary.workerTotals[row.workerId] || 0) > 0 ? matrixAndSummary.workerTotals[row.workerId] : '-')) }}
                   </td>
 
                   <!-- Remark -->
@@ -1155,6 +1155,7 @@ const reportRows = computed(() => {
     const remark = wOverride.remark !== undefined ? wOverride.remark : defaultRemark
     const teamMemberCount = workerTeam ? (workerTeam.members ? workerTeam.members.length : 1) : 1
     const isQc = (w.role || '').toUpperCase().includes('QC') || (w.role || '').toUpperCase().includes('CHECK') || (rawProcess || '').toUpperCase().includes('QC') || (rawProcess || '').toUpperCase().includes('CHECK')
+    const isSpk = (w.role || '').toUpperCase().includes('SPK') || (w.role || '').toUpperCase().includes('SPEAKER') || (rawProcess || '').toUpperCase().includes('SPK') || (rawProcess || '').toUpperCase().includes('SPEAKER')
 
     return {
       no: idx + 1,
@@ -1165,6 +1166,7 @@ const reportRows = computed(() => {
       target,
       remark,
       isQc,
+      isSpk,
       worker: w,
       teamMemberCount,
       wIdLower: w.id ? w.id.toLowerCase() : '',
@@ -1276,11 +1278,16 @@ const matrixAndSummary = computed(() => {
       }
 
       const isQcRow = row.isQc
+      const isSpkRow = row.isSpk
       let display = '-'
       if (isEdited && dOverride?.prodQty !== undefined) {
-        display = isQcRow && dOverride.prodQty > 0 ? 'CHECK' : String(dOverride.prodQty)
+        display = isQcRow && dOverride.prodQty > 0
+          ? 'CHECK'
+          : (isSpkRow && (dOverride.prodQty > 0 || (dOverride.remark && (dOverride.remark.toUpperCase().includes('SPK') || dOverride.remark.toUpperCase().includes('SPK-A1'))))
+              ? 'SPK-A1'
+              : String(dOverride.prodQty))
       } else if (qty > 0) {
-        display = isQcRow ? 'CHECK' : String(qty)
+        display = isQcRow ? 'CHECK' : (isSpkRow ? 'SPK-A1' : String(qty))
       } else if (dayInfo.isSunday) {
         display = 'MG'
       }
