@@ -254,12 +254,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, defineAsyncComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useProductionStore, getLocalDateStr } from '@/stores/productionStore'
 import { useTeamStore } from '@/stores/teamStore'
 import CustomSelect, { type SelectOption } from '@/components/CustomSelect.vue'
-import MonthlyProductionRecapModal from '@/components/MonthlyProductionRecapModal.vue'
+
+const MonthlyProductionRecapModal = defineAsyncComponent(() => import('@/components/MonthlyProductionRecapModal.vue'))
 import { Download, Search, Check, Clock, Calendar, Table, X, Wrench } from 'lucide-vue-next'
 
 const { t } = useI18n()

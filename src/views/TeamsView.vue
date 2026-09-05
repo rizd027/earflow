@@ -1882,7 +1882,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, onUnmounted } from 'vue'
+import { ref, computed, onMounted, watch, onUnmounted, defineAsyncComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useTeamStore, UNASSIGNED_TEAM_ID } from '@/stores/teamStore'
 import { useProductionStore, getLocalDateStr } from '@/stores/productionStore'
@@ -1892,10 +1892,11 @@ import { useAuthStore } from '@/stores/authStore'
 import CustomCombobox, { type ComboboxOption } from '@/components/CustomCombobox.vue'
 import CustomSelect from '@/components/CustomSelect.vue'
 import CustomBulkSelect, { type BulkSelectOption } from '@/components/CustomBulkSelect.vue'
-import WorkerReportModal from '@/components/WorkerReportModal.vue'
-import MandorDailyReportModal from '@/components/MandorDailyReportModal.vue'
-import MonthlyProductionRecapModal from '@/components/MonthlyProductionRecapModal.vue'
-import AiScanStatistikModal from '@/components/AiScanStatistikModal.vue'
+
+const WorkerReportModal = defineAsyncComponent(() => import('@/components/WorkerReportModal.vue'))
+const MandorDailyReportModal = defineAsyncComponent(() => import('@/components/MandorDailyReportModal.vue'))
+const MonthlyProductionRecapModal = defineAsyncComponent(() => import('@/components/MonthlyProductionRecapModal.vue'))
+const AiScanStatistikModal = defineAsyncComponent(() => import('@/components/AiScanStatistikModal.vue'))
 import { isWorkerMatchingShift, isWorkerInLog, getWorkerShareForLog } from '@/utils/reportUtils'
 import { exportToXlsx } from '@/utils/excelExport'
 import { isTempWorkerNo } from '@/data/noKaryawanData'

@@ -1017,7 +1017,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted, defineAsyncComponent } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useProductionStore, getLocalDateStr } from '@/stores/productionStore'
 import { useTeamStore } from '@/stores/teamStore'
@@ -1025,11 +1025,12 @@ import { useOverrideStore } from '@/stores/overrideStore'
 import { useAuditStore } from '@/stores/auditStore'
 import { useShiftStore } from '@/stores/shiftStore'
 import CustomSelect, { type SelectOption } from '@/components/CustomSelect.vue'
-import MandorDailyReportModal from '@/components/MandorDailyReportModal.vue'
-import MonthlyProductionRecapModal from '@/components/MonthlyProductionRecapModal.vue'
-import WorkerReportModal from '@/components/WorkerReportModal.vue'
-import SetAllTargetModal from '@/components/SetAllTargetModal.vue'
-import AiScanStatistikModal from '@/components/AiScanStatistikModal.vue'
+
+const MandorDailyReportModal = defineAsyncComponent(() => import('@/components/MandorDailyReportModal.vue'))
+const MonthlyProductionRecapModal = defineAsyncComponent(() => import('@/components/MonthlyProductionRecapModal.vue'))
+const WorkerReportModal = defineAsyncComponent(() => import('@/components/WorkerReportModal.vue'))
+const SetAllTargetModal = defineAsyncComponent(() => import('@/components/SetAllTargetModal.vue'))
+const AiScanStatistikModal = defineAsyncComponent(() => import('@/components/AiScanStatistikModal.vue'))
 import {
   Target,
   Calendar,
@@ -1050,7 +1051,7 @@ import {
   Unlock,
   ScanText
 } from 'lucide-vue-next'
-import { DEFAULT_DAILY_TARGET, isWorkerNewOnDate, calculateWorkerProdMap, isWorkerInLog } from '@/utils/reportUtils'
+import { DEFAULT_DAILY_TARGET, isWorkerNewOnDate, calculateWorkerProdMap } from '@/utils/reportUtils'
 
 const { t } = useI18n()
 const productionStore = useProductionStore()
@@ -1260,9 +1261,9 @@ const workerRows = computed<WorkerRow[]>(() => {
   const workersWithLogsInMonth = new Set<string>()
   for (const log of productionStore.logs) {
     if (log.date && log.date.startsWith(selectedMonthStr)) {
-      for (const w of allWorkers) {
-        if (isWorkerInLog(log, w)) {
-          workersWithLogsInMonth.add(w.id)
+      if (Array.isArray(log.present_member_ids)) {
+        for (const id of log.present_member_ids) {
+          workersWithLogsInMonth.add(id)
         }
       }
     }
