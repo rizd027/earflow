@@ -1,5 +1,5 @@
 <template>
-  <NConfigProvider :theme="naiveTheme" :theme-overrides="earflowThemeOverrides">
+  <NConfigProvider :theme="naiveTheme" :theme-overrides="currentNaiveOverrides">
     <div v-if="route.path === '/auth'" class="min-h-screen bg-slate-950">
       <router-view />
     </div>
@@ -33,7 +33,7 @@
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { NConfigProvider } from 'naive-ui'
-import { darkTheme, earflowThemeOverrides } from '@/theme/naiveTheme'
+import { darkTheme, darkThemeOverrides, lightThemeOverrides } from '@/theme/naiveTheme'
 import Navbar from '@/components/Navbar.vue'
 import MobileBottomNav from '@/components/MobileBottomNav.vue'
 import OfflineIndicator from '@/components/OfflineIndicator.vue'
@@ -74,16 +74,20 @@ function onPopState(_e: PopStateEvent) {
     showLogModal.value = false
   }
 }
-
 const activeTheme = ref(localStorage.getItem('theme') || 'light')
 const naiveTheme = computed(() => {
   return activeTheme.value === 'dark' ? darkTheme : null
+})
+const currentNaiveOverrides = computed(() => {
+  return activeTheme.value === 'dark' ? darkThemeOverrides : lightThemeOverrides
 })
 
 function applyTheme(theme: string) {
   if (theme === 'light') {
     document.documentElement.classList.add('light')
+    document.documentElement.classList.remove('dark')
   } else {
+    document.documentElement.classList.add('dark')
     document.documentElement.classList.remove('light')
   }
 }

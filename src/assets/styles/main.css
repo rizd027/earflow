@@ -16,7 +16,7 @@
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  /* Dark Theme values (Default) */
+  /* Dark Theme values (Default / .dark) */
   --bg-slate-950: #0b0f19;
   --bg-slate-900: #111827;
   --border-slate-800: #1f2937;
@@ -30,15 +30,15 @@
 
 html.light {
   /* Light Theme values */
-  --bg-slate-950: #f8fafc;      /* Clean background */
+  --bg-slate-950: #f8fafc;      /* Clean crisp canvas background */
   --bg-slate-900: #ffffff;      /* Pure white cards */
   --border-slate-800: #e2e8f0;  /* Very soft borders */
   --border-slate-700: #cbd5e1;  /* Medium gray borders */
   --text-slate-100: #0f172a;    /* Near-black text */
   --text-slate-200: #1e293b;    /* Dark slate text */
-  --text-slate-300: #334155;    /* Gray body text */
+  --text-slate-300: #334155;    /* High-contrast body text */
   --text-slate-400: #475569;    /* Medium gray text */
-  --text-slate-500: #64748b;    /* Light gray text */
+  --text-slate-500: #64748b;    /* Subtitle & muted text */
 }
 
 body {
@@ -101,19 +101,102 @@ input, select, textarea, button {
   border-radius: 4px;
 }
 
+html.light .status-badge-success {
+  background: #dcfce7 !important;
+  color: #15803d !important;
+  border-color: #86efac !important;
+}
+
+html.light .status-badge-warning {
+  background: #fef3c7 !important;
+  color: #b45309 !important;
+  border-color: #fcd34d !important;
+}
+
 /* Bottom Bar Safe Inset for Mobile */
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom, 5.5rem);
 }
 
-/* Force dark text for text-slate-950 class globally to support high-contrast button labels */
+/* ==========================================================================
+   BUTTON & BADGE TEXT CONTRAST SYSTEM (HIGH-CONTRAST ENGINE)
+   ========================================================================== */
+
+/* 1. Primary Bright Buttons (Teal, Amber, Emerald, Yellow) MUST ALWAYS HAVE PITCH-BLACK TEXT */
 .text-slate-950,
 button.text-slate-950,
-a.text-slate-950 {
+a.text-slate-950,
+button.bg-teal-500,
+button.bg-teal-400,
+button.bg-amber-400,
+button.bg-amber-500,
+button.bg-emerald-400,
+button.bg-emerald-500,
+button.bg-gradient-to-r.from-teal-500 {
   color: #020617 !important;
 }
 
-/* Specific overrides for light theme inputs & components */
+button.bg-teal-500 *,
+button.bg-teal-400 *,
+button.bg-amber-400 *,
+button.bg-amber-500 *,
+button.bg-emerald-400 *,
+button.bg-emerald-500 *,
+button.bg-gradient-to-r.from-teal-500 * {
+  color: #020617 !important;
+}
+
+button.bg-teal-500 svg,
+button.bg-teal-400 svg,
+button.bg-amber-400 svg,
+button.bg-amber-500 svg,
+button.bg-emerald-400 svg,
+button.bg-emerald-500 svg,
+button.bg-gradient-to-r.from-teal-500 svg {
+  stroke: #020617 !important;
+}
+
+/* 2. Solid Saturated Buttons (Teal 600, Sky 600, Rose 600, Indigo 600, etc.) MUST ALWAYS HAVE WHITE TEXT */
+button.bg-teal-600,
+button.bg-sky-600,
+button.bg-indigo-600,
+button.bg-rose-600,
+button.bg-rose-500,
+button.bg-emerald-600,
+button.bg-blue-600,
+button.bg-amber-600,
+.btn-solid-white {
+  color: #ffffff !important;
+}
+button.bg-teal-600 *,
+button.bg-sky-600 *,
+button.bg-indigo-600 *,
+button.bg-rose-600 *,
+button.bg-rose-500 *,
+button.bg-emerald-600 *,
+button.bg-blue-600 *,
+button.bg-amber-600 *,
+.btn-solid-white * {
+  color: #ffffff !important;
+}
+
+button.bg-teal-600 svg,
+button.bg-sky-600 svg,
+button.bg-indigo-600 svg,
+button.bg-rose-600 svg,
+button.bg-rose-500 svg,
+button.bg-emerald-600 svg,
+button.bg-blue-600 svg,
+button.bg-amber-600 svg,
+.btn-solid-white svg {
+  stroke: #ffffff !important;
+}
+
+/* ==========================================================================
+   LIGHT MODE SPECIFIC OVERRIDES & HIGH-CONTRAST PALETTE
+   ========================================================================== */
+
+/* Light Mode Input & Select Elements */
 html.light input,
 html.light select,
 html.light textarea {
@@ -122,98 +205,107 @@ html.light textarea {
   color: #0f172a !important;
 }
 
-html.light input:focus,
-html.light select:focus {
-  border-color: #14b8a6 !important;
-  box-shadow: 0 0 0 1px #14b8a6 !important;
+html.light input::placeholder,
+html.light textarea::placeholder {
+  color: #64748b !important;
 }
 
+html.light input:focus,
+html.light select:focus,
+html.light textarea:focus {
+  border-color: #0f766e !important;
+  box-shadow: 0 0 0 1px #0f766e !important;
+}
+
+/* High Contrast Accent Texts in Light Mode */
+html.light .text-teal-100,
 html.light .text-teal-200,
-html.light .text-teal-300 {
-  color: #0f766e !important; /* Deep Teal 700 for high contrast */
-}
+html.light .text-teal-300,
 html.light .text-teal-400 {
-  color: #0f766e !important;
+  color: #0f766e !important; /* Deep Teal 700 */
 }
+
+html.light .text-cyan-100,
 html.light .text-cyan-200,
-html.light .text-cyan-300 {
+html.light .text-cyan-300,
+html.light .text-cyan-400 {
   color: #0e7490 !important; /* Deep Cyan 700 */
 }
-html.light .text-cyan-400 {
-  color: #0e7490 !important;
-}
+
+html.light .text-emerald-100,
 html.light .text-emerald-200,
-html.light .text-emerald-300 {
-  color: #15803d !important; /* Emerald 700 */
-}
+html.light .text-emerald-300,
 html.light .text-emerald-400 {
-  color: #15803d !important;
+  color: #15803d !important; /* Deep Emerald 700 */
 }
+
+html.light .text-amber-100,
 html.light .text-amber-200,
-html.light .text-amber-300 {
-  color: #b45309 !important; /* Amber 700 */
-}
+html.light .text-amber-300,
 html.light .text-amber-400 {
-  color: #b45309 !important;
+  color: #b45309 !important; /* Deep Amber 700 */
 }
 
-/* Ensure solid buttons retain crisp white text in both light and dark themes */
-button.bg-teal-600,
-button.bg-sky-600,
-button.bg-indigo-600,
-button.bg-rose-600,
-button.bg-emerald-600,
-button.bg-blue-600,
-.btn-solid-white {
-  color: #ffffff !important;
-}
-button.bg-teal-600 *,
-button.bg-sky-600 *,
-button.bg-indigo-600 *,
-button.bg-rose-600 *,
-button.bg-emerald-600 *,
-button.bg-blue-600 *,
-.btn-solid-white * {
-  color: #ffffff !important;
+html.light .text-rose-100,
+html.light .text-rose-200,
+html.light .text-rose-300,
+html.light .text-rose-400 {
+  color: #be123c !important; /* Deep Rose 700 */
 }
 
-/* Add shadow depth to card elements in light mode */
-html.light .bg-slate-900,
-html.light .flat-panel,
-html.light .bg-slate-900\/60,
-html.light .bg-slate-900\/50,
-html.light .bg-slate-900\/40 {
-  box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23, 42, 0.05) !important;
+html.light .text-sky-100,
+html.light .text-sky-200,
+html.light .text-sky-300,
+html.light .text-sky-400 {
+  color: #0369a1 !important; /* Deep Sky 700 */
 }
 
-/* Modal backgrounds in light mode */
-html.light .fixed.inset-0.bg-slate-950 {
-  background-color: #f1f5f9 !important;
+html.light .text-blue-100,
+html.light .text-blue-200,
+html.light .text-blue-300,
+html.light .text-blue-400 {
+  color: #1d4ed8 !important; /* Deep Blue 700 */
 }
 
-html.light .bg-slate-950\/80 {
-  background-color: rgba(241, 245, 249, 0.8) !important;
+html.light .text-indigo-100,
+html.light .text-indigo-200,
+html.light .text-indigo-300,
+html.light .text-indigo-400 {
+  color: #4338ca !important; /* Deep Indigo 700 */
 }
 
-/* Force high contrast text colors globally in light mode to fix readability */
+/* Light Theme Neutral Text Contrast */
 html.light .text-slate-400,
 html.light p.text-slate-400,
 html.light span.text-slate-400,
-html.light div.text-slate-400 {
-  color: #334155 !important; /* Dark gray instead of faint white-gray */
+html.light div.text-slate-400,
+html.light label.text-slate-400 {
+  color: #334155 !important;
 }
 
 html.light .text-slate-300,
 html.light p.text-slate-300,
 html.light span.text-slate-300,
-html.light div.text-slate-300 {
+html.light div.text-slate-300,
+html.light label.text-slate-300 {
   color: #1e293b !important;
 }
 
 html.light .text-slate-200,
 html.light p.text-slate-200,
 html.light span.text-slate-200,
-html.light div.text-slate-200 {
+html.light div.text-slate-200,
+html.light label.text-slate-200 {
+  color: #0f172a !important;
+}
+
+html.light .text-slate-100,
+html.light p.text-slate-100,
+html.light span.text-slate-100,
+html.light div.text-slate-100,
+html.light h1.text-slate-100,
+html.light h2.text-slate-100,
+html.light h3.text-slate-100 {
   color: #0f172a !important;
 }
 
@@ -221,51 +313,74 @@ html.light .text-slate-500,
 html.light p.text-slate-500,
 html.light span.text-slate-500,
 html.light div.text-slate-500 {
-  color: #475569 !important;
+  color: #64748b !important;
 }
 
-/* Dynamic container overrides for light theme */
+/* Light Mode Containers & Card Overrides */
 html.light .bg-slate-950 {
-  background-color: #f1f5f9 !important;
-}
-html.light .bg-slate-950\/60,
-html.light .bg-slate-950\/80,
-html.light .bg-slate-950\/90 {
   background-color: #f8fafc !important;
 }
 
+html.light .bg-slate-950\/60,
+html.light .bg-slate-950\/70,
+html.light .bg-slate-950\/80,
+html.light .bg-slate-950\/90,
+html.light .bg-slate-950\/95 {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+html.light .bg-slate-900,
+html.light .bg-slate-900\/95,
+html.light .bg-slate-900\/90,
+html.light .bg-slate-900\/80,
 html.light .bg-slate-900\/60,
 html.light .bg-slate-900\/50,
-html.light .bg-slate-900\/40 {
+html.light .bg-slate-900\/40,
+html.light .flat-panel {
   background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
 }
-html.light .hover\:bg-slate-800\/40:hover {
+
+html.light .bg-slate-800 {
+  background-color: #f1f5f9 !important;
+  color: #1e293b !important;
+  border-color: #cbd5e1 !important;
+}
+
+html.light .bg-slate-800\/80,
+html.light .bg-slate-800\/50,
+html.light .bg-slate-800\/40 {
+  background-color: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+}
+
+html.light .hover\:bg-slate-800:hover,
+html.light .hover\:bg-slate-800\/80:hover,
+html.light .hover\:bg-slate-800\/50:hover,
+html.light .hover\:bg-slate-800\/40:hover,
+html.light .hover\:bg-slate-700:hover {
   background-color: #f1f5f9 !important;
 }
 
-/* Sync warnings/offline indicator panels & badge colors in light theme */
+/* Light Theme Badges & Alert Panels */
+html.light .bg-amber-500\/25,
 html.light .bg-amber-500\/20,
 html.light .bg-amber-500\/15,
 html.light .bg-amber-500\/10 {
-  background-color: #fef3c7 !important; /* solid warm yellow alert */
-  color: #b45309 !important; /* dark amber text */
+  background-color: #fef3c7 !important;
+  color: #b45309 !important;
   border-color: #fcd34d !important;
 }
-html.light .text-amber-300,
-html.light .text-amber-400 {
-  color: #b45309 !important;
-}
 
+html.light .bg-rose-500\/25,
 html.light .bg-rose-500\/20,
 html.light .bg-rose-500\/15,
 html.light .bg-rose-500\/10 {
   background-color: #ffe4e6 !important;
   color: #be123c !important;
   border-color: #fecdd3 !important;
-}
-html.light .text-rose-300,
-html.light .text-rose-400 {
-  color: #be123c !important;
 }
 
 html.light .bg-emerald-500\/25,
@@ -276,46 +391,35 @@ html.light .bg-emerald-500\/10 {
   color: #15803d !important;
   border-color: #86efac !important;
 }
-html.light .text-emerald-300,
-html.light .text-emerald-400 {
-  color: #15803d !important;
-}
 
+html.light .bg-cyan-500\/25,
 html.light .bg-cyan-500\/20,
+html.light .bg-cyan-500\/15,
 html.light .bg-cyan-500\/10 {
   background-color: #cffafe !important;
   color: #0e7490 !important;
   border-color: #67e8f9 !important;
 }
-html.light .text-cyan-300,
-html.light .text-cyan-400 {
-  color: #0e7490 !important;
-}
 
+html.light .bg-teal-500\/25,
 html.light .bg-teal-500\/20,
+html.light .bg-teal-500\/15,
 html.light .bg-teal-500\/10 {
   background-color: #ccfbf1 !important;
   color: #0f766e !important;
   border-color: #5eead4 !important;
 }
 
-/* Role Badge & Shift Badge in light mode */
-html.light .bg-slate-800 {
-  background-color: #e2e8f0 !important;
-  color: #334155 !important;
-  border-color: #cbd5e1 !important;
-}
-
-/* Floating Bulk Action Bar & Selected Row Toolbar Styles */
+/* Floating Bulk Action Bar in Both Themes */
 .bulk-action-bar {
-  background-color: #0f172a !important; /* Deep dark slate in dark mode */
+  background-color: #0f172a !important;
   border: 1px solid #334155 !important;
   color: #f8fafc !important;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4) !important;
 }
 
 html.light .bulk-action-bar {
-  background-color: #ffffff !important; /* Crisp white card in light mode */
+  background-color: #ffffff !important;
   border: 1px solid #cbd5e1 !important;
   color: #0f172a !important;
   box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.15), 0 8px 10px -6px rgba(15, 23, 42, 0.1) !important;
@@ -323,7 +427,7 @@ html.light .bulk-action-bar {
 
 .bulk-select {
   background-color: #1e293b !important;
-  color: #2dd4bf !important; /* Vibrant Teal 400 */
+  color: #2dd4bf !important;
   border: 1px solid #334155 !important;
   appearance: none !important;
   -webkit-appearance: none !important;
@@ -351,7 +455,7 @@ html.light .bulk-action-bar {
 
 html.light .bulk-select {
   background-color: #f8fafc !important;
-  color: #0f766e !important; /* Deep Teal 700 */
+  color: #0f766e !important;
   border: 1px solid #cbd5e1 !important;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%230f766e' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
   background-repeat: no-repeat !important;
@@ -373,7 +477,7 @@ html.light .bulk-select option {
 /* Checkbox selected row highlight in Light Mode */
 html.light tr.bg-teal-950\/20,
 html.light .bg-teal-950\/20 {
-  background-color: #f0fdf4 !important; /* Clean light mint highlight */
+  background-color: #f0fdf4 !important;
 }
 
 /* Filter Chips Inactive State in Light Mode */
@@ -389,11 +493,26 @@ html.light button.filter-chip-inactive:hover {
 }
 
 /* Master Table Header in Light Mode */
+html.light thead.bg-slate-950\/95,
 html.light thead.bg-slate-950\/80,
+html.light thead.bg-slate-950,
 html.light thead {
   background-color: #f1f5f9 !important;
-  color: #334155 !important;
+  color: #1e293b !important;
   border-bottom: 2px solid #cbd5e1 !important;
+}
+
+html.light thead th {
+  color: #1e293b !important;
+  font-weight: 700 !important;
+}
+
+/* Custom Dropdown / Combobox Popover Menus in Light Mode */
+html.light [class*="CustomSelect"] [class*="bg-slate-900"],
+html.light [class*="CustomCombobox"] [class*="bg-slate-900"] {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
 }
 
 /* Naive UI components overrides in light mode */
@@ -401,7 +520,10 @@ html.light .n-config-provider {
   color: #0f172a !important;
 }
 
-/* Fix printable A4 Excel report card styles specifically to bypass inverted theme scales */
+/* ==========================================================================
+   PRINTABLE A4 REPORTS & MODALS (FIXED WHITE SHEET LAYOUT)
+   ========================================================================== */
+
 .printable-report-modal .bg-white,
 .printable-mandor-modal .bg-white,
 .printable-recap-modal .bg-white {
@@ -531,16 +653,16 @@ html.light .n-config-provider {
 }
 
 .printable-report-modal .bg-slate-200 {
-  background-color: #e2e8f0 !important; /* Clean summary gray */
+  background-color: #e2e8f0 !important;
 }
 
 .printable-report-modal .bg-slate-50\/70,
 .printable-report-modal .bg-rose-500\/15,
 .printable-report-modal .print\:bg-rose-100\/50 {
-  background-color: rgba(244, 63, 94, 0.12) !important; /* Soft transparent red for Sunday row */
+  background-color: rgba(244, 63, 94, 0.12) !important;
 }
 
-/* Universal Print & PDF Export Page Settings for Desktop & Mobile Engines */
+/* Universal Print & PDF Export Page Settings */
 @page {
   size: A4 landscape;
   margin: 3mm 4mm;
@@ -564,7 +686,7 @@ html.light .n-config-provider {
   }
 }
 
-/* Disable all UI transitions and decorative animations, preserving only loading spinners */
+/* Disable unwanted UI transition jitter while preserving spinners */
 *,
 *::before,
 *::after {
@@ -581,7 +703,7 @@ html.light .n-config-provider {
   animation-duration: 0.7s !important;
 }
 
-/* High Contrast Performance Increase Card Styles (Light & Dark Theme) */
+/* High Contrast Performance Increase Card Styles */
 .perf-increase-item {
   background-color: var(--bg-slate-950);
   border: 1px solid rgba(16, 185, 129, 0.4);

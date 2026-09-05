@@ -61,6 +61,7 @@ export default defineConfig({
       output: {
         manualChunks: {
           vendor: ['vue', 'vue-router', 'pinia', 'vue-i18n'],
+          ui: ['naive-ui', '@vicons/ionicons5', 'lucide-vue-next'],
           exportTools: ['jspdf', 'html-to-image', 'xlsx'],
           charts: ['apexcharts', 'vue3-apexcharts']
         }
