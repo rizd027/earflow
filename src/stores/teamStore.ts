@@ -175,7 +175,8 @@ export const useTeamStore = defineStore('team', () => {
   async function saveTeamToDB(team: LocalTeam) {
     const db = await getDB()
     const now = new Date().toISOString()
-    const payload = JSON.parse(JSON.stringify({ ...team, updated_at: team.updated_at || now }))
+    team.updated_at = now
+    const payload = JSON.parse(JSON.stringify(team))
     await db.put('teams', payload)
 
     const cloudPayload = {
@@ -184,11 +185,17 @@ export const useTeamStore = defineStore('team', () => {
       shift: team.shift || '',
       hourly_target: team.hourly_target || 180,
       members: team.members || [],
-      updated_at: payload.updated_at
+      updated_at: now
     }
 
     if (isCloudEnabled.value && navigator.onLine) {
-      supabase.from('teams').upsert(cloudPayload, { onConflict: 'id' }).then()
+      try {
+        const { error } = await supabase.from('teams').upsert(cloudPayload, { onConflict: 'id' })
+        if (error) throw error
+      } catch (err) {
+        console.warn('[TeamStore] Supabase push failed, saving to outbox:', err)
+        await addToOutbox('teams', 'upsert', cloudPayload)
+      }
     } else if (isCloudEnabled.value) {
       // Offline: queue to outbox
       await addToOutbox('teams', 'upsert', cloudPayload)
@@ -218,7 +225,13 @@ export const useTeamStore = defineStore('team', () => {
     }
 
     if (isCloudEnabled.value && navigator.onLine) {
-      supabase.from('teams').upsert(cloudPayload, { onConflict: 'id' }).then()
+      try {
+        const { error } = await supabase.from('teams').upsert(cloudPayload, { onConflict: 'id' })
+        if (error) throw error
+      } catch (err) {
+        console.warn('[TeamStore] Unassigned push failed, saving to outbox:', err)
+        await addToOutbox('teams', 'upsert', cloudPayload)
+      }
     } else if (isCloudEnabled.value) {
       await addToOutbox('teams', 'upsert', cloudPayload)
     }
@@ -260,7 +273,12 @@ export const useTeamStore = defineStore('team', () => {
     const db = await getDB()
     await db.delete('teams', teamId)
     if (isCloudEnabled.value && navigator.onLine) {
-      supabase.from('teams').delete().eq('id', teamId).then()
+      try {
+        const { error } = await supabase.from('teams').delete().eq('id', teamId)
+        if (error) throw error
+      } catch {
+        await addToOutbox('teams', 'delete', { id: teamId })
+      }
     } else if (isCloudEnabled.value) {
       await addToOutbox('teams', 'delete', { id: teamId })
     }
@@ -284,7 +302,14 @@ export const useTeamStore = defineStore('team', () => {
       await db.delete('teams', id)
     }
     if (isCloudEnabled.value && navigator.onLine && teamIds.length > 0) {
-      supabase.from('teams').delete().in('id', teamIds).then()
+      try {
+        const { error } = await supabase.from('teams').delete().in('id', teamIds)
+        if (error) throw error
+      } catch {
+        for (const id of teamIds) {
+          await addToOutbox('teams', 'delete', { id })
+        }
+      }
     } else if (isCloudEnabled.value) {
       for (const id of teamIds) {
         await addToOutbox('teams', 'delete', { id })

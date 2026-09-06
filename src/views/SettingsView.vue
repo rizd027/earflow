@@ -908,8 +908,20 @@ async function handleImportBackup(event: Event) {
 
       await auditStore.logAction('System', 'Restore Backup Data', 'Memulihkan seluruh data aplikasi dari file backup JSON')
 
-      statusType.value = 'success'
-      statusMessage.value = t('settings.importSuccess')
+      // Automatically sync restored data to Supabase Cloud if online
+      if (isCloudConnected.value || navigator.onLine) {
+        try {
+          await forceUploadAllToCloud()
+          statusType.value = 'success'
+          statusMessage.value = 'Data backup berhasil dipulihkan & langsung di-upload ke Cloud Supabase!'
+        } catch {
+          statusType.value = 'success'
+          statusMessage.value = t('settings.importSuccess')
+        }
+      } else {
+        statusType.value = 'success'
+        statusMessage.value = t('settings.importSuccess')
+      }
     } catch (err) {
       statusType.value = 'error'
       statusMessage.value = t('settings.importError')

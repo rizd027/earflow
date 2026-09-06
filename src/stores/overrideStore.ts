@@ -132,15 +132,29 @@ export const useOverrideStore = defineStore('override', () => {
 
       if (isCloudEnabled.value && navigator.onLine) {
         if (cloudDeletes.length > 0) {
-          for (const k of cloudDeletes) {
-            supabase.from('overrides').delete().eq('key', k).then()
+          try {
+            await supabase.from('overrides').delete().in('key', cloudDeletes)
+          } catch {
+            for (const k of cloudDeletes) {
+              await addToOutbox('overrides', 'delete', { key: k })
+            }
           }
         }
         if (cloudUpserts.length > 0) {
-          supabase.from('overrides').upsert(cloudUpserts, { onConflict: 'key' }).then()
+          try {
+            const { error } = await supabase.from('overrides').upsert(cloudUpserts, { onConflict: 'key' })
+            if (error) throw error
+          } catch {
+            for (const upsert of cloudUpserts) {
+              await addToOutbox('overrides', 'upsert', upsert)
+            }
+          }
         }
-      } else if (isCloudEnabled.value && !navigator.onLine) {
-        // Offline: queue upserts to outbox for auto-flush when online
+      } else if (isCloudEnabled.value) {
+        // Offline: queue to outbox for auto-flush when online
+        for (const k of cloudDeletes) {
+          await addToOutbox('overrides', 'delete', { key: k })
+        }
         for (const upsert of cloudUpserts) {
           await addToOutbox('overrides', 'upsert', upsert)
         }

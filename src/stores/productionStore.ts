@@ -165,7 +165,14 @@ export const useProductionStore = defineStore('production', () => {
 
       const logIds = toRemove.map(l => l.id)
       if (isCloudEnabled.value && navigator.onLine) {
-        supabase.from('production_logs').delete().in('id', logIds).then()
+        try {
+          const { error } = await supabase.from('production_logs').delete().in('id', logIds)
+          if (error) throw error
+        } catch {
+          for (const id of logIds) {
+            await addToOutbox('logs', 'delete', { id })
+          }
+        }
       } else if (isCloudEnabled.value) {
         for (const id of logIds) {
           await addToOutbox('logs', 'delete', { id })
@@ -191,33 +198,36 @@ export const useProductionStore = defineStore('production', () => {
   }
 
   async function syncSingleLogToSupabase(log: LocalProductionLog) {
-    if (!isCloudEnabled.value || !isOnline.value) return
-    try {
-      const now = new Date().toISOString()
-      const { error } = await supabase.from('production_logs').upsert({
-        id: log.id,
-        team_id: log.team_id,
-        team_name: log.team_name,
-        date: log.date,
-        hour_slot: log.hour_slot,
-        total_qty: log.total_qty,
-        present_count: log.present_count,
-        present_member_ids: log.present_member_ids || [],
-        photo_url: log.photo_url || null,
-        notes: log.notes || null,
-        created_at: log.created_at,
-        updated_at: log.updated_at || now   // ← include updated_at for delta sync
-      }, { onConflict: 'id' })
+    if (!isCloudEnabled.value) return
+    const now = new Date().toISOString()
+    const payload = {
+      id: log.id,
+      team_id: log.team_id,
+      team_name: log.team_name,
+      date: log.date,
+      hour_slot: log.hour_slot,
+      total_qty: log.total_qty,
+      present_count: log.present_count,
+      present_member_ids: log.present_member_ids || [],
+      photo_url: log.photo_url || null,
+      notes: log.notes || null,
+      created_at: log.created_at || now,
+      updated_at: log.updated_at || now
+    }
 
-      if (!error) {
+    if (isOnline.value) {
+      try {
+        const { error } = await supabase.from('production_logs').upsert(payload, { onConflict: 'id' })
+        if (error) throw error
         log.synced = true
         const db = await getDB()
         await db.put('logs', JSON.parse(JSON.stringify(log)))
-      } else {
-        console.warn('Supabase production log sync notice:', error.message)
+      } catch (err) {
+        console.warn('[ProdStore] Supabase log push failed, saving to outbox:', err)
+        await addToOutbox('logs', 'upsert', payload)
       }
-    } catch (err) {
-      console.warn('Background sync exception:', err)
+    } else {
+      await addToOutbox('logs', 'upsert', payload)
     }
   }
 

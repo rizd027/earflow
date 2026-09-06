@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { syncAppSettingToCloud } from '@/services/supabaseSyncService'
+import { syncAppSettingToCloud, syncUserProfileToCloud } from '@/services/supabaseSyncService'
 
 export interface UserProfile {
   id: string
@@ -177,6 +177,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
     syncAppSettingToCloud('earflow_foreman_name', trimmed).catch(() => {})
     syncAppSettingToCloud('foreman_name', trimmed).catch(() => {})
+    syncUserProfileToCloud().catch(() => {})
   }
 
   function addProcessType(type: string) {

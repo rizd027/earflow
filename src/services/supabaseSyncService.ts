@@ -102,9 +102,10 @@ export async function pullCloudDataFromSupabase(sinceIso?: string | null): Promi
   logsCount: number
   teamsCount: number
   overridesCount: number
+  usersCount: number
 }> {
   if (!isCloudEnabled.value || !navigator.onLine) {
-    return { success: false, logsCount: 0, teamsCount: 0, overridesCount: 0 }
+    return { success: false, logsCount: 0, teamsCount: 0, overridesCount: 0, usersCount: 0 }
   }
 
   try {
@@ -112,16 +113,49 @@ export async function pullCloudDataFromSupabase(sinceIso?: string | null): Promi
     let pulledLogs = 0
     let pulledTeams = 0
     let pulledOverrides = 0
+    let pulledUsers = 0
+
+    // Apply safety buffer (2 minutes before sinceIso) to prevent clock drift between devices from dropping records
+    let filterIso = sinceIso
+    if (filterIso) {
+      const bufferTime = new Date(new Date(filterIso).getTime() - 2 * 60 * 1000).toISOString()
+      filterIso = bufferTime
+    }
+
+    // ── 0. Users (Foreman / Profile) ──────────────────────────────────────────
+    let usersQuery = supabase.from('users').select('*')
+    if (filterIso) {
+      usersQuery = usersQuery.gt('updated_at', filterIso)
+    }
+    const { data: cloudUsers, error: userErr } = await usersQuery
+    if (!userErr && Array.isArray(cloudUsers) && cloudUsers.length > 0) {
+      const tx = db.transaction('users', 'readwrite')
+      for (const cu of cloudUsers) {
+        await tx.objectStore('users').put({
+          id: cu.id,
+          email: cu.email || '',
+          full_name: cu.full_name || '',
+          role: cu.role || 'mandor',
+          avatar_url: cu.avatar_url || undefined
+        })
+        if (cu.role === 'mandor' && cu.full_name) {
+          localStorage.setItem('earflow_foreman_name', cu.full_name)
+          localStorage.setItem('foreman_name', cu.full_name)
+        }
+        pulledUsers++
+      }
+      await tx.done
+    }
 
     // ── 1. Production Logs (delta or full) ──────────────────────────────────
     let logsQuery = supabase
       .from('production_logs')
       .select('*')
       .order('updated_at', { ascending: false })
-      .limit(5000)
+      .limit(10000)
 
-    if (sinceIso) {
-      logsQuery = logsQuery.gt('updated_at', sinceIso)
+    if (filterIso) {
+      logsQuery = logsQuery.gt('updated_at', filterIso)
     }
 
     const { data: cloudLogs, error: logErr } = await logsQuery
@@ -129,10 +163,9 @@ export async function pullCloudDataFromSupabase(sinceIso?: string | null): Promi
       const tx = db.transaction('logs', 'readwrite')
       for (const cl of cloudLogs) {
         const cloudUpdatedAt = cl.updated_at || cl.created_at || new Date().toISOString()
-        // Last-write-wins: skip if local version is newer
         const existingLocal = await tx.objectStore('logs').get(cl.id)
         if (existingLocal && isNewer(existingLocal.updated_at, cloudUpdatedAt)) {
-          continue // local is newer — keep it
+          continue // local is newer
         }
         const localLog: LocalProductionLog = {
           id: cl.id,
@@ -146,7 +179,7 @@ export async function pullCloudDataFromSupabase(sinceIso?: string | null): Promi
           photo_url: cl.photo_url || undefined,
           notes: cl.notes || undefined,
           synced: true,
-          created_at: cl.created_at,
+          created_at: cl.created_at || cloudUpdatedAt,
           updated_at: cloudUpdatedAt
         }
         await tx.objectStore('logs').put(localLog)
@@ -157,8 +190,8 @@ export async function pullCloudDataFromSupabase(sinceIso?: string | null): Promi
 
     // ── 2. Teams (delta or full) ─────────────────────────────────────────────
     let teamsQuery = supabase.from('teams').select('*')
-    if (sinceIso) {
-      teamsQuery = teamsQuery.gt('updated_at', sinceIso)
+    if (filterIso) {
+      teamsQuery = teamsQuery.gt('updated_at', filterIso)
     }
 
     const { data: cloudTeams, error: teamErr } = await teamsQuery
@@ -166,10 +199,9 @@ export async function pullCloudDataFromSupabase(sinceIso?: string | null): Promi
       const tx = db.transaction('teams', 'readwrite')
       for (const ct of cloudTeams) {
         const cloudUpdatedAt = ct.updated_at || new Date().toISOString()
-        // Last-write-wins
         const existingLocal = await tx.objectStore('teams').get(ct.id)
         if (existingLocal && isNewer(existingLocal.updated_at, cloudUpdatedAt)) {
-          continue // local is newer — keep it
+          continue // local is newer
         }
         const localTeam: LocalTeam = {
           id: ct.id,
@@ -187,8 +219,8 @@ export async function pullCloudDataFromSupabase(sinceIso?: string | null): Promi
 
     // ── 3. Overrides (delta or full) ─────────────────────────────────────────
     let ovrQuery = supabase.from('overrides').select('*')
-    if (sinceIso) {
-      ovrQuery = ovrQuery.gt('updated_at', sinceIso)
+    if (filterIso) {
+      ovrQuery = ovrQuery.gt('updated_at', filterIso)
     }
 
     const { data: cloudOverrides, error: ovrErr } = await ovrQuery
@@ -214,8 +246,8 @@ export async function pullCloudDataFromSupabase(sinceIso?: string | null): Promi
 
     // ── 4. Shifts ────────────────────────────────────────────────────────────
     let shiftsQuery = supabase.from('shifts').select('*')
-    if (sinceIso) {
-      shiftsQuery = shiftsQuery.gt('updated_at', sinceIso)
+    if (filterIso) {
+      shiftsQuery = shiftsQuery.gt('updated_at', filterIso)
     }
     const { data: cloudShifts, error: shiftErr } = await shiftsQuery
     if (!shiftErr && Array.isArray(cloudShifts) && cloudShifts.length > 0) {
@@ -225,8 +257,7 @@ export async function pullCloudDataFromSupabase(sinceIso?: string | null): Promi
         startTime: s.start_time,
         endTime: s.end_time
       }))
-      // Merge with existing local shifts (don't overwrite all if delta)
-      if (sinceIso) {
+      if (filterIso) {
         const existing = JSON.parse(localStorage.getItem('earflow_shifts') || '[]')
         const merged = [...existing]
         for (const cs of mappedShifts) {
@@ -242,8 +273,8 @@ export async function pullCloudDataFromSupabase(sinceIso?: string | null): Promi
 
     // ── 5. App Settings ──────────────────────────────────────────────────────
     let settingsQuery = supabase.from('app_settings').select('*')
-    if (sinceIso) {
-      settingsQuery = settingsQuery.gt('updated_at', sinceIso)
+    if (filterIso) {
+      settingsQuery = settingsQuery.gt('updated_at', filterIso)
     }
     const { data: cloudSettings, error: setErr } = await settingsQuery
     if (!setErr && Array.isArray(cloudSettings) && cloudSettings.length > 0) {
@@ -257,8 +288,8 @@ export async function pullCloudDataFromSupabase(sinceIso?: string | null): Promi
 
     // ── 6. Audit Logs ────────────────────────────────────────────────────────
     let auditQuery = supabase.from('audit_logs').select('*').limit(500)
-    if (sinceIso) {
-      auditQuery = auditQuery.gt('timestamp', sinceIso)
+    if (filterIso) {
+      auditQuery = auditQuery.gt('created_at', filterIso)
     }
     const { data: cloudAudits, error: auditErr } = await auditQuery
     if (!auditErr && Array.isArray(cloudAudits) && cloudAudits.length > 0) {
@@ -280,10 +311,10 @@ export async function pullCloudDataFromSupabase(sinceIso?: string | null): Promi
       window.dispatchEvent(new CustomEvent('supabase-data-updated'))
     }
 
-    return { success: true, logsCount: pulledLogs, teamsCount: pulledTeams, overridesCount: pulledOverrides }
+    return { success: true, logsCount: pulledLogs, teamsCount: pulledTeams, overridesCount: pulledOverrides, usersCount: pulledUsers }
   } catch (err: any) {
     console.warn('[Sync] Error in pullCloudDataFromSupabase:', err)
-    return { success: false, logsCount: 0, teamsCount: 0, overridesCount: 0 }
+    return { success: false, logsCount: 0, teamsCount: 0, overridesCount: 0, usersCount: 0 }
   }
 }
 
@@ -361,6 +392,29 @@ export async function flushOutbox(): Promise<{ flushed: number; failed: number }
 
   pendingSyncCount.value = failed
   return { flushed, failed }
+}
+
+// ─── USERS / FOREMAN CLOUD SYNC ─────────────────────────────────────────────
+
+export async function syncUserProfileToCloud(): Promise<boolean> {
+  if (!isCloudEnabled.value || !navigator.onLine) {
+    return false
+  }
+  try {
+    const foremanName = localStorage.getItem('earflow_foreman_name') || localStorage.getItem('foreman_name') || 'Mandor'
+    const now = new Date().toISOString()
+    const { error } = await supabase.from('users').upsert({
+      id: 'm1',
+      email: 'mandor.hendra@earflow.com',
+      full_name: foremanName,
+      role: 'mandor',
+      avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
+      updated_at: now
+    }, { onConflict: 'id' })
+    return !error
+  } catch (err) {
+    return false
+  }
 }
 
 // ─── SHIFTS CLOUD SYNC ──────────────────────────────────────────────────────
@@ -456,7 +510,7 @@ export async function pushAllAppSettingsToCloud(): Promise<boolean> {
     const settingsPayload: Array<{ key: string; value: any; updated_at: string }> = []
     for (const key of APP_SETTING_KEYS) {
       const val = localStorage.getItem(key)
-      if (val !== null && val !== undefined) {
+      if (val !== null && val !== undefined && val !== '') {
         let parsedVal: any = val
         try { parsedVal = JSON.parse(val) } catch {}
         settingsPayload.push({ key, value: parsedVal, updated_at: now })
@@ -479,8 +533,11 @@ export async function pushAllAppSettingsToCloud(): Promise<boolean> {
 // ─── DELTA SYNC (startup / periodic) ───────────────────────────────────────
 
 /**
- * Efficient delta sync: flush outbox + push settings & shifts + pull only rows changed since last sync.
- * Does NOT do a full table dump — only fetches changed rows.
+ * Bidirectional delta sync:
+ * 1. Flush pending offline writes in outbox
+ * 2. Pull all changes from Supabase (if local is empty, does a full pull)
+ * 3. Sync user profile
+ * 4. Update sync timestamp and notify stores
  */
 export async function performFullSync(onDataUpdated?: () => void): Promise<{
   success: boolean
@@ -505,15 +562,19 @@ export async function performFullSync(onDataUpdated?: () => void): Promise<{
     // 1. Flush pending offline writes first
     const { flushed } = await flushOutbox()
 
-    // 1.5. Push local settings and shifts to cloud so local changes aren't lost
-    await pushAllAppSettingsToCloud()
-    await pushAllShiftsToCloud()
+    // 2. Check if local database is empty: if empty, force full pull
+    const db = await getDB()
+    const localTeamsCount = await db.count('teams')
+    const localLogsCount = await db.count('logs')
+    const sinceIso = (localTeamsCount === 0 && localLogsCount === 0) ? null : getLastSyncAt()
 
-    // 2. Delta pull — only rows updated since last successful sync
-    const sinceIso = getLastSyncAt()
+    // 3. Pull latest cloud data FIRST to avoid wiping cloud data with blank device state
     const pullResult = await pullCloudDataFromSupabase(sinceIso)
 
-    // 3. Record sync timestamp for next delta
+    // 4. Sync current user profile
+    await syncUserProfileToCloud()
+
+    // 5. Record sync timestamp
     const nowIso = new Date().toISOString()
     setLastSyncAt(nowIso)
 
@@ -529,9 +590,9 @@ export async function performFullSync(onDataUpdated?: () => void): Promise<{
 
     if (onDataUpdated) onDataUpdated()
 
-    const pullMsg = pullResult.logsCount > 0 || pullResult.teamsCount > 0
-      ? ` | ${pullResult.teamsCount} tim & ${pullResult.logsCount} log baru diunduh`
-      : ' | Tidak ada perubahan baru'
+    const pullMsg = (pullResult.logsCount > 0 || pullResult.teamsCount > 0 || pullResult.overridesCount > 0)
+      ? ` | ${pullResult.teamsCount} tim, ${pullResult.logsCount} log, ${pullResult.overridesCount} override diunduh`
+      : ' | Sinkron'
     const pushMsg = flushed > 0 ? `${flushed} antrian berhasil dikirim` : ''
 
     return {
@@ -567,6 +628,9 @@ export async function pushLocalDataToSupabase(): Promise<{
   try {
     const db = await getDB()
     const now = new Date().toISOString()
+
+    // 0. User Profile / Foreman
+    await syncUserProfileToCloud()
 
     // 1. All production logs (chunked)
     const allLogs = await db.getAll('logs')
