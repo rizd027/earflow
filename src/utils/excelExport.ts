@@ -1,4 +1,35 @@
 import * as XLSX from 'xlsx'
+import { MONTHLY_TEMPLATE_BASE64 } from './monthlyTemplateBase64'
+
+async function loadMonthlyTemplateWorkbook(): Promise<XLSX.WorkBook> {
+  const baseUrl = (typeof import.meta !== 'undefined' && import.meta.env?.BASE_URL) ? import.meta.env.BASE_URL.replace(/\/$/, '') : ''
+  const candidateUrls = [
+    `${baseUrl}/templates/Template_Laporan_Bulanan.xlsx`,
+    '/templates/Template_Laporan_Bulanan.xlsx',
+    'templates/Template_Laporan_Bulanan.xlsx',
+    './templates/Template_Laporan_Bulanan.xlsx'
+  ]
+
+  for (const url of candidateUrls) {
+    try {
+      const response = await fetch(url)
+      if (response.ok) {
+        const arrayBuffer = await response.arrayBuffer()
+        return XLSX.read(arrayBuffer, { type: 'array', cellStyles: true, cellDates: false })
+      }
+    } catch {
+      // Continue to next candidate
+    }
+  }
+
+  // Fallback to embedded base64 template to ensure export works offline or when static fetch fails
+  const binaryString = atob(MONTHLY_TEMPLATE_BASE64)
+  const bytes = new Uint8Array(binaryString.length)
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i)
+  }
+  return XLSX.read(bytes, { type: 'array', cellStyles: true, cellDates: false })
+}
 
 /**
  * Utility to export data to genuine Microsoft Excel (.xlsx) files with auto-column width sizing.
@@ -279,12 +310,8 @@ export async function exportMonthlyWithTemplate(options: {
   daysInMonth: number
   foremanName: string
 }) {
-  // ── Fetch & parse template ────────────────────────────────────────────────
-  const templateUrl = '/templates/Template_Laporan_Bulanan.xlsx'
-  const response = await fetch(templateUrl)
-  if (!response.ok) throw new Error(`Cannot fetch template: ${templateUrl}`)
-  const arrayBuffer = await response.arrayBuffer()
-  const wb = XLSX.read(arrayBuffer, { type: 'array', cellStyles: true, cellDates: false })
+  // ── Load & parse template (with base64 fallback) ───────────────────────
+  const wb = await loadMonthlyTemplateWorkbook()
 
   // Convert YYYY-MM-DD to Excel date serial number
   function dateToSerial(dateStr: string): number {

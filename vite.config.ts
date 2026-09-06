@@ -13,7 +13,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'auto',
-      includeAssets: ['favicon.svg', 'icons.svg'],
+      includeAssets: ['favicon.svg', 'icons.svg', 'templates/Template_Laporan_Bulanan.xlsx'],
       manifest: {
         name: 'EarFlow - Earphone Production Management System',
         short_name: 'EarFlow',
@@ -37,7 +37,7 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,xlsx}'],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024
       }
     })
