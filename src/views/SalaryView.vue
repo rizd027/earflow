@@ -163,7 +163,7 @@
     </div>
 
     <!-- Master Salary Table -->
-    <div class="bg-slate-900/40 border border-slate-800/80 rounded-md overflow-hidden shadow-xl max-h-[78vh] overflow-y-auto custom-scrollbar overscroll-contain">
+    <div class="bg-slate-900/40 border border-slate-800/80 rounded-md overflow-hidden shadow-xl">
       <div class="overflow-x-auto custom-scrollbar">
         <table class="w-full text-left text-xs min-w-[950px] whitespace-nowrap">
           <thead class="sticky top-0 z-20 bg-slate-950/95 backdrop-blur-md text-slate-400 font-mono border-b border-slate-800 uppercase tracking-wider text-[11px]">
@@ -822,6 +822,39 @@ function formatMonthLabel(monthStr: string): string {
   return `${monthName} ${y}`
 }
 
+function parseWorkHoursString(val: any): number {
+  if (val == null) return 7
+  const str = String(val).trim()
+  if (!str || str === '-') return 7
+
+  // Check if contains explicit "(Xh)" or "(X jam)" e.g. "06 - 13 (6h)"
+  const parenMatch = str.match(/\((\d+(?:[.,]\d+)?)\s*(?:h|jam)?\)/i)
+  if (parenMatch && parenMatch[1]) {
+    const num = parseFloat(parenMatch[1].replace(',', '.'))
+    if (!isNaN(num) && num > 0 && num <= 24) return num
+  }
+
+  // Check if time range like "06:00 - 13:00" or "06 - 13" or "7-14"
+  const rangeMatch = str.match(/^(\d{1,2})(?::(\d{2}))?\s*[-–—]\s*(\d{1,2})(?::(\d{2}))?/)
+  if (rangeMatch && rangeMatch[1] && rangeMatch[3]) {
+    const startH = parseInt(rangeMatch[1], 10)
+    const startM = rangeMatch[2] ? parseInt(rangeMatch[2], 10) : 0
+    let endH = parseInt(rangeMatch[3], 10)
+    const endM = rangeMatch[4] ? parseInt(rangeMatch[4], 10) : 0
+    if (endH < startH) endH += 24 // overnight
+    const diffHours = (endH + endM / 60) - (startH + startM / 60)
+    if (diffHours > 0 && diffHours <= 24) return Math.round(diffHours * 10) / 10
+  }
+
+  // Check simple number e.g. "7" or "7.5"
+  const singleNum = parseFloat(str.replace(',', '.').replace(/[^\d.]/g, ''))
+  if (!isNaN(singleNum) && singleNum > 0 && singleNum <= 24) {
+    return singleNum
+  }
+
+  return 7
+}
+
 // Calculate attendance days, total work hours & total production output for each worker for the selected month
 const calculatedRows = computed(() => {
   const month = selectedMonth.value
@@ -883,10 +916,8 @@ const calculatedRows = computed(() => {
       wData.prodQty += Number(val.prodQty)
     }
     if (val.workHours) {
-      const parsed = parseFloat(String(val.workHours).replace(',', '.').replace(/[^\d.]/g, ''))
-      if (!isNaN(parsed) && parsed > 0) {
-        wData.dateHours.set(dateStr, parsed)
-      }
+      const parsed = parseWorkHoursString(val.workHours)
+      wData.dateHours.set(dateStr, parsed)
     }
   }
 

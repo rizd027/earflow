@@ -650,7 +650,7 @@
       </Teleport>
 
       <!-- Master Worker Table -->
-      <div class="bg-slate-900/40 border border-slate-800/80 rounded-md overflow-hidden shadow-xl max-h-[75vh] overflow-y-auto custom-scrollbar overscroll-contain">
+      <div class="bg-slate-900/40 border border-slate-800/80 rounded-md overflow-hidden shadow-xl">
         <div class="overflow-x-auto custom-scrollbar">
           <table class="w-full text-left text-xs min-w-[760px] whitespace-nowrap">
             <thead class="sticky top-0 z-20 bg-slate-950/95 backdrop-blur-md text-slate-400 font-mono border-b border-slate-800 uppercase tracking-wider text-[11px]">
