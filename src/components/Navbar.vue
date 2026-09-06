@@ -1,6 +1,6 @@
 <template>
   <header class="sticky top-0 z-40 bg-slate-950/90 backdrop-blur-xl border-b border-slate-800/80 font-sans shadow-lg transition-all">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-3">
+    <div class="w-full px-3 sm:px-4 h-14 flex items-center justify-between gap-3">
       <!-- Left: Real-Time Date & Clock Widget (Replaces Logo & EarFlow Text) -->
       <div class="flex items-center gap-2 min-w-0">
         <div class="font-mono text-left flex flex-col justify-center">
@@ -13,17 +13,17 @@
         </div>
       </div>
 
-      <!-- Center: Desktop Navigation Links -->
-      <nav class="hidden lg:flex items-center gap-1 p-1 bg-slate-900/60 border border-slate-800/80 rounded-xl font-mono">
+      <!-- Center: Desktop Navigation Links (Underline Indicator) -->
+      <nav class="hidden lg:flex items-center gap-1 sm:gap-2 h-full font-mono">
         <router-link
           v-for="link in navLinks"
           :key="link.path"
           :to="link.path"
-          class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap"
+          class="h-full px-3.5 flex items-center text-xs font-bold transition-all whitespace-nowrap border-b-2 -mb-px"
           :class="[
             route.path === link.path
-              ? 'text-teal-300 bg-teal-500/15 border border-teal-500/40 shadow-xs'
-              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+              ? 'text-teal-400 border-teal-400'
+              : 'text-slate-400 hover:text-slate-200 border-transparent hover:border-slate-600'
           ]"
         >
           {{ link.label }}
@@ -49,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import { MoreVertical } from 'lucide-vue-next'
@@ -69,11 +69,9 @@ function toggleMenu(e: MouseEvent) {
   window.dispatchEvent(new CustomEvent('toggle-header-menu'))
 }
 
-function onDocumentClick(e: MouseEvent) {
-  if (headerMenuStore.isOpen && menuWrapperRef.value && !menuWrapperRef.value.contains(e.target as Node)) {
-    headerMenuStore.close()
-  }
-}
+watch(() => route.path, () => {
+  headerMenuStore.close()
+})
 
 function updateTime() {
   const days = [
@@ -104,19 +102,17 @@ let timer: any = null
 onMounted(() => {
   updateTime()
   timer = setInterval(updateTime, 1000)
-  document.addEventListener('click', onDocumentClick)
 })
 
 onUnmounted(() => {
   if (timer) clearInterval(timer)
-  document.removeEventListener('click', onDocumentClick)
 })
 
 const navLinks = [
   { path: '/', label: 'Absensi & Target' },
-  { path: '/performance', label: 'Peningkatan Performa' },
-  { path: '/teams', label: 'Manajemen Tim' },
-  { path: '/history', label: 'Riwayat & Rekap' },
+  { path: '/performance', label: 'Performa' },
+  { path: '/teams', label: 'Karyawan' },
+  { path: '/salary', label: 'Estimasi Gaji' },
   { path: '/settings', label: 'Pengaturan' },
 ]
 </script>

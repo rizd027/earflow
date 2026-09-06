@@ -31,7 +31,7 @@
       </div>
 
       <!-- Collapsible Panel: Date Selector, Filters, and Tools & Laporan -->
-      <div v-if="showFilterConfig" class="pt-2.5 border-t border-slate-800/80 space-y-3 font-mono">
+      <div v-if="headerMenuStore.isOpen" class="pt-2.5 border-t border-slate-800/80 space-y-3 font-mono">
         <!-- Date Selector Bar -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-950/60 p-2.5 rounded-lg border border-slate-800/60">
           <div class="flex items-center justify-between sm:justify-start gap-2">
@@ -64,7 +64,7 @@
             </button>
             <button
               @click="setToday"
-              class="h-8 px-3 rounded-lg bg-teal-50 hover:bg-teal-100 dark:bg-teal-500/20 text-teal-900 dark:text-teal-100 border border-teal-400 dark:border-teal-500/40 text-xs font-extrabold shrink-0 shadow-2xs active:scale-95 transition"
+              class="h-8 px-3 rounded-lg bg-teal-50 hover:bg-teal-100 active:bg-teal-200 dark:bg-teal-950/60 dark:hover:bg-teal-900/60 text-teal-800 dark:text-teal-300 border border-teal-300 dark:border-teal-700/60 text-xs font-bold shrink-0 shadow-xs active:scale-95 transition cursor-pointer"
             >
               Hari Ini
             </button>
@@ -75,7 +75,7 @@
         <div class="grid grid-cols-2 gap-2.5">
           <!-- Filter Tim -->
           <div class="space-y-1">
-            <label class="block text-[10px] sm:text-[11px] font-bold text-slate-700 dark:text-slate-300">Tim / Line</label>
+            <label class="block text-[10px] sm:text-[11px] font-bold text-slate-400">Tim / Line</label>
             <CustomSelect
               v-model="selectedTeamId"
               :options="teamFilterOptions"
@@ -85,7 +85,7 @@
 
           <!-- Filter Status -->
           <div class="space-y-1">
-            <label class="block text-[10px] sm:text-[11px] font-bold text-slate-700 dark:text-slate-300">Status Absensi</label>
+            <label class="block text-[10px] sm:text-[11px] font-bold text-slate-400">Status Absensi</label>
             <CustomSelect
               v-model="statusFilter"
               :options="statusFilterOptions"
@@ -96,7 +96,7 @@
 
         <!-- Unified Tools & Laporan Section -->
         <div class="pt-2.5 border-t border-slate-800/80 space-y-2">
-          <div class="text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+          <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
             <Wrench class="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
             <span>Tools & Laporan</span>
           </div>
@@ -228,30 +228,62 @@
     </div>
 
 
+    <!-- Quick Status Filter Tabs & Action Bar -->
+    <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-mono px-0.5">
+      <!-- Left: Quick Filter Pills -->
+      <div class="flex items-center gap-1.5 p-1 bg-slate-900/80 border border-slate-800/80 rounded-lg">
+        <button
+          type="button"
+          @click="statusFilter = ''"
+          class="px-2.5 py-1 rounded-md text-[11px] font-bold transition flex items-center gap-1 cursor-pointer"
+          :class="statusFilter === '' ? 'bg-teal-500/20 text-teal-300 border border-teal-500/40' : 'text-slate-400 hover:text-slate-200'"
+        >
+          <span>Semua</span>
+          <span class="text-[10px] opacity-75">({{ totalWorkersCount }})</span>
+        </button>
+        <button
+          type="button"
+          @click="statusFilter = 'present'"
+          class="px-2.5 py-1 rounded-md text-[11px] font-bold transition flex items-center gap-1 cursor-pointer"
+          :class="statusFilter === 'present' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'text-slate-400 hover:text-slate-200'"
+        >
+          <Check class="w-3 h-3 text-emerald-400" />
+          <span>Hadir</span>
+          <span class="text-[10px] opacity-75">({{ presentWorkersCount }})</span>
+        </button>
+        <button
+          type="button"
+          @click="statusFilter = 'absent'"
+          class="px-2.5 py-1 rounded-md text-[11px] font-bold transition flex items-center gap-1 cursor-pointer"
+          :class="statusFilter === 'absent' ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40' : 'text-slate-400 hover:text-slate-200'"
+        >
+          <X class="w-3 h-3 text-rose-400" />
+          <span>Absen</span>
+          <span class="text-[10px] opacity-75">({{ absentWorkersCount }})</span>
+        </button>
+      </div>
 
-    <!-- Count Summary Bar -->
-    <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-mono px-1 text-slate-700 dark:text-slate-300">
+      <!-- Right: Set Target Button & Counter -->
       <div class="flex items-center gap-2">
-        <span class="font-black text-slate-900 dark:text-slate-100">Daftar Karyawan</span>
         <button
           :disabled="isReadOnly"
           @click="showSetAllTargetModal = true"
-          class="px-2.5 py-0.5 rounded-md bg-teal-50 hover:bg-teal-100 dark:bg-teal-500/20 text-teal-900 dark:text-teal-100 border border-teal-400 dark:border-teal-500/40 text-[10px] font-black inline-flex items-center gap-1 active:scale-95 disabled:opacity-50 transition shadow-2xs"
+          class="px-3 py-1 rounded-md bg-teal-50 hover:bg-teal-100 active:bg-teal-200 dark:bg-teal-950/60 dark:hover:bg-teal-900/60 text-teal-800 dark:text-teal-300 border border-teal-300 dark:border-teal-700/60 text-xs font-bold inline-flex items-center gap-1.5 active:scale-95 disabled:opacity-50 transition shadow-xs cursor-pointer"
           title="Buka Form Konfigurasi Target Massal Karyawan"
         >
-          <Target class="w-3 h-3 text-teal-700 dark:text-teal-400 shrink-0" />
-          <span>Set Target</span>
+          <Target class="w-3.5 h-3.5 text-teal-700 dark:text-teal-400 shrink-0" />
+          <span class="font-bold text-teal-800 dark:text-teal-300">Set Target</span>
         </button>
+        <span class="text-[11px] font-bold text-slate-400 hidden sm:inline">
+          <strong class="text-teal-600 dark:text-teal-400 font-black">{{ filteredWorkerRows.length }}</strong> / {{ workerRows.length }} Karyawan
+        </span>
       </div>
-      <span class="text-[11px] font-bold">
-        <strong class="text-teal-700 dark:text-teal-300 font-black">{{ filteredWorkerRows.length }}</strong> / {{ workerRows.length }} Karyawan
-      </span>
     </div>
 
     <!-- Main Attendance & Target Data Table (Desktop View) -->
-    <div class="hidden md:block bg-slate-900/40 border border-slate-800/80 rounded-lg overflow-hidden shadow-md max-h-[75vh] overflow-y-auto custom-scrollbar overscroll-contain">
+    <div class="hidden md:block bg-slate-900/40 border border-slate-800/80 rounded-lg shadow-md">
       <table class="w-full text-left text-xs font-mono">
-        <thead class="sticky top-0 z-20 bg-slate-950/95 backdrop-blur-md text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
+        <thead class="sticky top-14 z-20 bg-slate-950/95 backdrop-blur-md text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
           <tr>
             <th class="py-3 px-3 w-10 text-center">No</th>
             <th class="py-3 px-4 min-w-[200px]">Karyawan / Line</th>
@@ -269,8 +301,8 @@
           <tr
             v-for="(row, idx) in displayedWorkerRows"
             :key="row.workerId"
-            class="hover:bg-slate-800/40"
-            :class="!row.isPresent ? 'bg-rose-950/10' : ''"
+            class="transition-colors duration-100 hover:bg-slate-800/30 border-l-4"
+            :class="row.isPresent ? 'border-l-emerald-500 bg-slate-900/20' : 'border-l-transparent'"
           >
             <!-- No -->
             <td class="py-3 px-3 text-center text-slate-500 font-bold">{{ idx + 1 }}</td>
@@ -638,8 +670,8 @@
       <div
         v-for="row in displayedWorkerRows"
         :key="row.workerId"
-        class="bg-slate-900/80 border border-slate-800/90 rounded-lg p-3 sm:p-3.5 space-y-3 shadow-md transition"
-        :class="!row.isPresent ? 'border-rose-900/30 bg-rose-950/20' : ''"
+        class="bg-slate-900/80 border border-slate-800/90 rounded-lg p-3 sm:p-3.5 space-y-3 shadow-md transition border-l-4"
+        :class="row.isPresent ? 'border-l-emerald-500' : 'border-l-slate-700/50'"
       >
         <!-- Top Row: Avatar, Name, No Krywn, Team, Role Badge, Stats & Absensi Button -->
         <div class="flex items-center justify-between gap-2 pb-2.5 border-b border-slate-800/70">
@@ -688,10 +720,10 @@
             <!-- Stats Button -->
             <button
               @click="openWorkerReport(row)"
-              class="h-7 px-2 rounded-lg bg-teal-50 hover:bg-teal-100 dark:bg-teal-500/20 text-teal-950 dark:text-teal-100 border border-teal-400 dark:border-teal-500/40 text-xs font-black font-mono flex items-center gap-1 active:scale-95 shadow-2xs"
+              class="h-7 px-2 rounded-lg bg-teal-50 hover:bg-teal-100 dark:bg-teal-950/60 dark:hover:bg-teal-900/60 text-teal-800 dark:text-teal-300 border border-teal-300 dark:border-teal-700/60 text-xs font-bold font-mono flex items-center gap-1 active:scale-95 shadow-xs cursor-pointer"
               title="Lihat Statistik Karyawan"
             >
-              <BarChart3 class="w-3.5 h-3.5 text-teal-700 dark:text-teal-300 shrink-0" />
+              <BarChart3 class="w-3.5 h-3.5 text-teal-700 dark:text-teal-400 shrink-0" />
               <span>Stats</span>
             </button>
 
@@ -1024,6 +1056,7 @@ import { useTeamStore } from '@/stores/teamStore'
 import { useOverrideStore } from '@/stores/overrideStore'
 import { useAuditStore } from '@/stores/auditStore'
 import { useShiftStore } from '@/stores/shiftStore'
+import { useHeaderMenuStore } from '@/stores/headerMenuStore'
 import CustomSelect, { type SelectOption } from '@/components/CustomSelect.vue'
 
 const MandorDailyReportModal = defineAsyncComponent(() => import('@/components/MandorDailyReportModal.vue'))
@@ -1059,10 +1092,10 @@ const teamStore = useTeamStore()
 const overrideStore = useOverrideStore()
 const auditStore = useAuditStore()
 const shiftStore = useShiftStore()
+const headerMenuStore = useHeaderMenuStore()
 
 defineEmits(['open-log-modal'])
 
-const showFilterConfig = ref(false)
 const showMandorReportModal = ref(false)
 const showMonthlyRecapModal = ref(false)
 const showWorkerReportModal = ref(false)
@@ -1518,6 +1551,10 @@ const filteredWorkerRows = computed(() => {
   })
 })
 
+const totalWorkersCount = computed(() => workerRows.value.length)
+const presentWorkersCount = computed(() => workerRows.value.filter(r => r.isPresent).length)
+const absentWorkersCount = computed(() => workerRows.value.filter(r => !r.isPresent).length)
+
 const visibleWorkerCount = ref(35)
 
 watch([searchQuery, selectedTeamId, statusFilter, selectedDate], () => {
@@ -1715,15 +1752,7 @@ function resetDateOverrides() {
   overrideStore.resetDailyOverridesForDate(selectedDate.value)
 }
 
-function handleHeaderMenuToggle() {
-  showFilterConfig.value = !showFilterConfig.value
-}
-
-onMounted(() => {
-  window.addEventListener('toggle-header-menu', handleHeaderMenuToggle)
-})
-
 onUnmounted(() => {
-  window.removeEventListener('toggle-header-menu', handleHeaderMenuToggle)
+  headerMenuStore.close()
 })
 </script>

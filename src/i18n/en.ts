@@ -127,7 +127,7 @@ export default {
     filterTeamPlaceholder: 'Search / select team...',
     totalWorkersLabel: 'Total Workers:',
     tableHeaderWorker: 'Worker',
-    tableHeaderRole: 'Role Specialization',
+    tableHeaderRole: 'Role',
     tableHeaderTeam: 'Assigned Team',
     tableHeaderStatus: 'Status',
     tableHeaderAction: 'Action',

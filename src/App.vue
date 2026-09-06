@@ -12,7 +12,7 @@
       <Navbar />
 
       <!-- Main Page View Container -->
-      <main class="flex-1 max-w-7xl w-full mx-auto px-2 sm:px-3 lg:px-4 pt-2 sm:pt-3 pb-24 md:pb-6">
+      <main class="flex-1 w-full px-2 sm:px-3 pt-2 sm:pt-3 pb-24 md:pb-6">
         <router-view v-slot="{ Component }">
           <keep-alive :max="10">
             <component :is="Component" @open-log-modal="showLogModal = true" />

@@ -29,12 +29,12 @@
       </router-link>
 
       <router-link
-        to="/history"
+        to="/salary"
         class="flex flex-col items-center justify-center gap-1 h-full text-[9px] font-semibold transition"
-        :class="[route.path === '/history' ? 'text-teal-400 font-bold' : 'text-slate-400 hover:text-slate-200']"
+        :class="[route.path === '/salary' ? 'text-teal-400 font-bold' : 'text-slate-400 hover:text-slate-200']"
       >
-        <ClipboardList class="w-4 h-4" />
-        <span>Rekap</span>
+        <Calculator class="w-4 h-4" />
+        <span>Gaji</span>
       </router-link>
 
       <router-link
@@ -51,7 +51,7 @@
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { UserCheck, Users, ClipboardList, Settings, TrendingUp } from 'lucide-vue-next'
+import { UserCheck, Users, Calculator, Settings, TrendingUp } from 'lucide-vue-next'
 
 const route = useRoute()
 </script>

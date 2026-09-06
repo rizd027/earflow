@@ -18,8 +18,8 @@ export default {
   nav: {
     dashboard: 'Absensi & Target',
     inputHourly: 'Input Per Jam',
-    history: 'Riwayat & Rekap',
-    teams: 'Manajemen Tim',
+    salary: 'Estimasi Gaji',
+    teams: 'Karyawan',
     settings: 'Pengaturan'
   },
   auth: {
@@ -127,7 +127,7 @@ export default {
     filterTeamPlaceholder: 'Cari / pilih tim...',
     totalWorkersLabel: 'Total Karyawan:',
     tableHeaderWorker: 'Karyawan',
-    tableHeaderRole: 'Spesialisasi Role',
+    tableHeaderRole: 'Role',
     tableHeaderTeam: 'Tim Penugasan',
     tableHeaderStatus: 'Status',
     tableHeaderAction: 'Aksi',

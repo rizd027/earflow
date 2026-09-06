@@ -45,7 +45,7 @@
         leave-from-class="opacity-100 translate-y-0 max-h-[500px]"
         leave-to-class="opacity-0 -translate-y-2 max-h-0 overflow-hidden"
       >
-        <div v-show="isFiltersOpen" class="space-y-3 pt-2 border-t border-slate-800/80">
+        <div v-show="headerMenuStore.isOpen" class="space-y-3 pt-2 border-t border-slate-800/80">
           <!-- Switcher Tabs & Quick Action Buttons -->
           <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
             <!-- Ranking Mode Category Switcher Tabs -->
@@ -737,15 +737,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onUnmounted } from 'vue'
 import { useTeamStore, UNASSIGNED_TEAM_ID } from '@/stores/teamStore'
 import { useProductionStore, getLocalDateStr } from '@/stores/productionStore'
 import { useShiftStore } from '@/stores/shiftStore'
 import { useOverrideStore } from '@/stores/overrideStore'
 import { useAuditStore } from '@/stores/auditStore'
+import { useHeaderMenuStore } from '@/stores/headerMenuStore'
 import CustomSelect, { type SelectOption } from '@/components/CustomSelect.vue'
 import { calculateWorkerProdMap } from '@/utils/reportUtils'
-import { exportToXlsx } from '@/utils/excelExport'
 import { TrendingUp, Calendar, Search, Printer, FileSpreadsheet, Users, Award, BarChart3, Filter, Sparkles, LayoutGrid, Table, X, Trophy } from 'lucide-vue-next'
 
 const teamStore = useTeamStore()
@@ -753,9 +753,9 @@ const productionStore = useProductionStore()
 const shiftStore = useShiftStore()
 const overrideStore = useOverrideStore()
 const auditStore = useAuditStore()
+const headerMenuStore = useHeaderMenuStore()
 
 const rankingMode = ref<'increase' | 'top_output'>('increase')
-const isFiltersOpen = ref<boolean>(false)
 const selectedDate = ref<string>(getLocalDateStr())
 const selectedTeamId = ref<string>('')
 const selectedShift = ref<string>('')
@@ -1021,7 +1021,7 @@ function formatShortDate(dateStr: string): string {
   return `${d} ${months[m] || ''}`
 }
 
-function exportExcel() {
+async function exportExcel() {
   const dateLabel = formatDisplayDate(selectedDate.value)
   const prevLabel = formatDisplayDate(prevDateStr.value)
 
@@ -1049,6 +1049,7 @@ function exportExcel() {
       `+${item.pctIncrease}%`
     ])
 
+    const { exportToXlsx } = await import('@/utils/excelExport')
     const filename = `Statistik_Peningkatan_Performa_${selectedDate.value}.xlsx`
     exportToXlsx(filename, `Peningkatan Performa ${dateLabel}`, headers, rows)
     auditStore.logAction('Pekerja', 'Export Excel Performa', `Export ${rows.length} karyawan peningkatan performa tanggal ${dateLabel}`)
@@ -1076,6 +1077,7 @@ function exportExcel() {
       item.isTargetReached ? '100%' : `${item.targetPct}%`
     ])
 
+    const { exportToXlsx } = await import('@/utils/excelExport')
     const filename = `Statistik_Hasil_Terbanyak_${selectedDate.value}.xlsx`
     exportToXlsx(filename, `Hasil Terbanyak ${dateLabel}`, headers, rows)
     auditStore.logAction('Pekerja', 'Export Excel Hasil Terbanyak', `Export ${rows.length} karyawan hasil terbanyak tanggal ${dateLabel}`)
@@ -1086,15 +1088,7 @@ function triggerPrint() {
   window.print()
 }
 
-function handleHeaderMenuToggle() {
-  isFiltersOpen.value = !isFiltersOpen.value
-}
-
-onMounted(() => {
-  window.addEventListener('toggle-header-menu', handleHeaderMenuToggle)
-})
-
 onUnmounted(() => {
-  window.removeEventListener('toggle-header-menu', handleHeaderMenuToggle)
+  headerMenuStore.close()
 })
 </script>

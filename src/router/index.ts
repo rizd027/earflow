@@ -5,7 +5,8 @@ const routes = [
   { path: '/', name: 'dashboard', component: DashboardView },
   { path: '/performance', name: 'performance', component: () => import('@/views/PerformanceView.vue') },
   { path: '/teams', name: 'teams', component: () => import('@/views/TeamsView.vue') },
-  { path: '/history', name: 'history', component: () => import('@/views/HistoryView.vue') },
+  { path: '/salary', name: 'salary', component: () => import('@/views/SalaryView.vue') },
+  { path: '/history', redirect: '/salary' },
   { path: '/settings', name: 'settings', component: () => import('@/views/SettingsView.vue') },
   { path: '/auth', name: 'auth', component: () => import('@/views/AuthView.vue') },
   { path: '/:pathMatch(.*)*', redirect: '/' }

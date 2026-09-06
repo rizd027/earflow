@@ -93,7 +93,7 @@
         </div>
 
         <!-- Header Actions & Filters Dropdown Menu (Triggered by Global Navbar 3-Dots Button) -->
-        <div v-if="!isSearchFocused && !workerSearchQueryInput" class="relative shrink-0" v-click-outside="() => showHeaderMenu = false">
+        <div v-if="!isSearchFocused && !workerSearchQueryInput" class="relative shrink-0" v-click-outside="() => headerMenuStore.close()">
           <!-- Dropdown Menu (Unified Filter & Actions) -->
           <Transition
             enter-active-class="transition ease-out duration-150"
@@ -104,7 +104,7 @@
             leave-to-class="opacity-0 scale-95 translate-y-1"
           >
             <div
-              v-if="showHeaderMenu"
+              v-if="headerMenuStore.isOpen"
               class="absolute right-0 top-full mt-2 w-72 sm:w-80 max-h-[calc(100vh-120px)] overflow-y-auto bg-slate-900/95 backdrop-blur-xl border border-slate-700/80 rounded-xl shadow-2xl z-50 p-3.5 space-y-3 font-mono text-xs"
             >
               <!-- Mode Tampilan Switcher (Sangat berguna di Mobile) -->
@@ -288,7 +288,7 @@
                   <div class="grid grid-cols-2 gap-1.5">
                     <button
                       type="button"
-                      @click="openAddTeamModal(); showHeaderMenu = false"
+                      @click="openAddTeamModal(); headerMenuStore.close()"
                       class="h-8 px-2 rounded-lg bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 border border-teal-500/30 font-bold flex items-center justify-center gap-1.5 transition text-[11px]"
                     >
                       <Plus class="w-3.5 h-3.5 text-teal-400 shrink-0" />
@@ -296,7 +296,7 @@
                     </button>
                     <button
                       type="button"
-                      @click="openAddMasterWorkerModal(); showHeaderMenu = false"
+                      @click="openAddMasterWorkerModal(); headerMenuStore.close()"
                       class="h-8 px-2 rounded-lg bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 border border-teal-500/30 font-bold flex items-center justify-center gap-1.5 transition text-[11px]"
                     >
                       <UserPlus class="w-3.5 h-3.5 text-teal-400 shrink-0" />
@@ -310,7 +310,7 @@
                   <div class="text-[9px] font-bold text-slate-400 uppercase tracking-wider px-0.5">Laporan & Ekspor</div>
                   <button
                     type="button"
-                    @click="showMandorReportModal = true; showHeaderMenu = false"
+                    @click="showMandorReportModal = true; headerMenuStore.close()"
                     class="w-full h-8 px-2.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold flex items-center gap-2 transition text-xs"
                   >
                     <ClipboardList class="w-3.5 h-3.5 text-amber-400 shrink-0" />
@@ -318,7 +318,7 @@
                   </button>
                   <button
                     type="button"
-                    @click="showMonthlyRecapModal = true; showHeaderMenu = false"
+                    @click="showMonthlyRecapModal = true; headerMenuStore.close()"
                     class="w-full h-8 px-2.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold flex items-center gap-2 transition text-xs"
                   >
                     <Table class="w-3.5 h-3.5 text-emerald-400 shrink-0" />
@@ -326,7 +326,7 @@
                   </button>
                   <button
                     type="button"
-                    @click="exportWorkerTableToExcel(); showHeaderMenu = false"
+                    @click="exportWorkerTableToExcel(); headerMenuStore.close()"
                     class="w-full h-8 px-2.5 rounded-lg bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 border border-teal-500/30 font-bold flex items-center gap-2 transition text-xs"
                   >
                     <FileSpreadsheet class="w-3.5 h-3.5 text-teal-400 shrink-0" />
@@ -339,7 +339,7 @@
                   <button
                     v-if="teamStore.teams.length > 0"
                     type="button"
-                    @click="triggerDeleteAllTeams(); showHeaderMenu = false"
+                    @click="triggerDeleteAllTeams(); headerMenuStore.close()"
                     class="w-full h-7 px-2.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 font-bold flex items-center justify-center gap-1.5 transition text-[11px]"
                   >
                     <Trash2 class="w-3.5 h-3.5 text-rose-400 shrink-0" />
@@ -665,63 +665,53 @@
                 </th>
                 <th 
                   @click="toggleSort('no')"
-                  class="p-3 w-32 whitespace-nowrap cursor-pointer hover:text-teal-300 transition select-none"
+                  class="p-3 w-32 text-center whitespace-nowrap cursor-pointer hover:text-teal-300 transition select-none"
                   :title="t('teams.sortByNoAsc')"
                 >
-                  <div class="flex items-center gap-1.5">
+                  <div class="flex items-center justify-center gap-1.5">
                     <span>{{ t('teams.colWorkerNo') }}</span>
                     <ArrowUpDown class="w-3.5 h-3.5" :class="[workerSortBy === 'no-asc' ? 'text-teal-400 font-bold' : 'text-slate-600']" />
                   </div>
                 </th>
                 <th 
                   @click="toggleSort('name')"
-                  class="p-3 w-48 whitespace-nowrap cursor-pointer hover:text-teal-300 transition select-none"
+                  class="p-3 w-48 text-center whitespace-nowrap cursor-pointer hover:text-teal-300 transition select-none"
                   title="Klik untuk mengurutkan berdasarkan Nama"
                 >
-                  <div class="flex items-center gap-1.5">
+                  <div class="flex items-center justify-center gap-1.5">
                     <span>{{ t('teams.tableHeaderWorker') }}</span>
                     <ArrowUpDown class="w-3.5 h-3.5" :class="[workerSortBy.startsWith('name') ? 'text-teal-400 font-bold' : 'text-slate-600']" />
                   </div>
                 </th>
                 <th 
                   @click="toggleSort('role')"
-                  class="p-3 w-36 whitespace-nowrap cursor-pointer hover:text-teal-300 transition select-none"
+                  class="p-3 w-36 text-center whitespace-nowrap cursor-pointer hover:text-teal-300 transition select-none"
                   title="Klik untuk mengurutkan berdasarkan Role"
                 >
-                  <div class="flex items-center gap-1.5">
+                  <div class="flex items-center justify-center gap-1.5">
                     <span>{{ t('teams.tableHeaderRole') }}</span>
                     <ArrowUpDown class="w-3.5 h-3.5" :class="[workerSortBy === 'role-asc' ? 'text-teal-400 font-bold' : 'text-slate-600']" />
                   </div>
                 </th>
-                <th 
-                  @click="toggleSort('team')"
-                  class="p-3 w-32 whitespace-nowrap cursor-pointer hover:text-teal-300 transition select-none"
-                  title="Klik untuk mengurutkan berdasarkan Tim"
-                >
-                  <div class="flex items-center gap-1.5">
-                    <span>{{ t('teams.tableHeaderTeam') }}</span>
-                    <ArrowUpDown class="w-3.5 h-3.5" :class="[workerSortBy === 'team-asc' ? 'text-teal-400 font-bold' : 'text-slate-600']" />
-                  </div>
-                </th>
-                <th class="p-3 w-32 whitespace-nowrap">Shift Karyawan</th>
+                <th class="p-3 w-32 text-center whitespace-nowrap">Shift Karyawan</th>
                 <th
                   @click="toggleSort('joined')"
-                  class="p-3 w-28 whitespace-nowrap cursor-pointer hover:text-teal-300 transition select-none"
+                  class="p-3 w-28 text-center whitespace-nowrap cursor-pointer hover:text-teal-300 transition select-none"
                   title="Klik untuk mengurutkan berdasarkan Tanggal Masuk"
                 >
-                  <div class="flex items-center gap-1.5">
+                  <div class="flex items-center justify-center gap-1.5">
                     <span>Tgl Masuk</span>
                     <ArrowUpDown class="w-3.5 h-3.5" :class="[workerSortBy === 'joined-asc' ? 'text-teal-400 font-bold' : 'text-slate-600']" />
                   </div>
                 </th>
                 <th class="p-3 text-center w-36 whitespace-nowrap">Status Bulan Ini</th>
-                <th class="p-3 text-right whitespace-nowrap">{{ t('teams.tableHeaderAction') }}</th>
+                <th class="p-3 text-center whitespace-nowrap">{{ t('teams.tableHeaderAction') }}</th>
               </tr>
             </thead>
 
             <tbody class="divide-y divide-slate-800/60 font-sans">
               <tr v-if="filteredWorkers.length === 0">
-                <td colspan="8" class="p-8 text-center text-slate-500 whitespace-nowrap">
+                <td colspan="7" class="p-8 text-center text-slate-500 whitespace-nowrap">
                   {{ t('teams.noWorkersFound') }}
                 </td>
               </tr>
@@ -777,16 +767,6 @@
                 <td class="p-3 whitespace-nowrap">
                   <span class="inline-block px-2 py-0.5 rounded text-[10px] font-medium bg-slate-800 text-teal-300 border border-teal-500/20 whitespace-nowrap">
                     {{ formatRole(worker.role) }}
-                  </span>
-                </td>
-
-                <!-- Team -->
-                <td class="p-3 font-semibold text-slate-200 whitespace-nowrap">
-                  <span v-if="worker.team_id === UNASSIGNED_TEAM_ID" class="text-amber-400 italic text-[11px] whitespace-nowrap">
-                    {{ t('teams.unassignedTeam') }}
-                  </span>
-                  <span v-else class="text-[11px] whitespace-nowrap">
-                    {{ worker.team_name }}
                   </span>
                 </td>
 
@@ -1898,9 +1878,9 @@ const MandorDailyReportModal = defineAsyncComponent(() => import('@/components/M
 const MonthlyProductionRecapModal = defineAsyncComponent(() => import('@/components/MonthlyProductionRecapModal.vue'))
 const AiScanStatistikModal = defineAsyncComponent(() => import('@/components/AiScanStatistikModal.vue'))
 import { isWorkerMatchingShift, isWorkerInLog, getWorkerShareForLog } from '@/utils/reportUtils'
-import { exportToXlsx } from '@/utils/excelExport'
 import { isTempWorkerNo } from '@/data/noKaryawanData'
 import { syncAppSettingToCloud } from '@/services/supabaseSyncService'
+import { useHeaderMenuStore } from '@/stores/headerMenuStore'
 import { LayoutGrid, Users, Plus, Pencil, Trash2, Search, X, UserPlus, AlertTriangle, Check, Package, Printer, RotateCcw, UserMinus, ClipboardList, ArrowUpDown, Table, SlidersHorizontal, Filter, FileSpreadsheet, Calendar, ScanText } from 'lucide-vue-next'
 
 
@@ -1910,6 +1890,7 @@ const productionStore = useProductionStore()
 const shiftStore = useShiftStore()
 const auditStore = useAuditStore()
 const authStore = useAuthStore()
+const headerMenuStore = useHeaderMenuStore()
 
 const activeView = ref<'table' | 'cards'>('table')
 
@@ -2002,7 +1983,6 @@ async function bulkDeleteSelectedWorkers() {
   }
 }
 
-const showHeaderMenu = ref(false)
 const menuTab = ref<'filters' | 'actions'>('filters')
 const shiftFilter = ref('')
 const workerSearchQueryInput = ref('')
@@ -2497,6 +2477,10 @@ onMounted(async () => {
   if (teamStore.teams.length > 0) {
     targetTeamId.value = teamStore.teams[0].id
   }
+})
+
+onUnmounted(() => {
+  headerMenuStore.close()
 })
 
 function getTeamDailyTarget(hourlyTarget: number) {
@@ -3125,18 +3109,6 @@ const isAnyModalOpen = computed(() => {
     showDialog.value
 })
 
-function handleHeaderMenuToggle() {
-  showHeaderMenu.value = !showHeaderMenu.value
-}
-
-onMounted(() => {
-  window.addEventListener('toggle-header-menu', handleHeaderMenuToggle)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('toggle-header-menu', handleHeaderMenuToggle)
-})
-
 watch(isAnyModalOpen, (isOpen) => {
   if (isOpen) {
     document.documentElement.style.setProperty('overflow', 'hidden', 'important')
@@ -3180,7 +3152,7 @@ function openAddMasterWorkerModal() {
   triggerAddMasterWorker()
 }
 
-function exportWorkerTableToExcel() {
+async function exportWorkerTableToExcel() {
   const workers = filteredWorkers.value.length > 0 ? filteredWorkers.value : teamStore.allWorkers
   const monthLabel = formatMonthLabel(selectedMonthFilter.value)
 
@@ -3189,7 +3161,7 @@ function exportWorkerTableToExcel() {
     'No. Karyawan (NIK)',
     'Nama Karyawan',
     'No. Telepon / HP',
-    'Spesialisasi Role',
+    'Role',
     'Tim Penugasan',
     'Shift Operasional',
     'Tanggal Masuk',
@@ -3211,6 +3183,7 @@ function exportWorkerTableToExcel() {
     ]
   })
 
+  const { exportToXlsx } = await import('@/utils/excelExport')
   const filename = `Daftar_Karyawan_EarFlow_${selectedMonthFilter.value}.xlsx`
   exportToXlsx(filename, `Daftar Karyawan ${monthLabel}`, headers, rows)
   auditStore.logAction('Pekerja', 'Export Excel Karyawan', `Export ${rows.length} karyawan periode ${monthLabel} ke file ${filename}`)
