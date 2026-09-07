@@ -206,7 +206,7 @@
               type="button"
               @click="handleTestSupabase"
               :disabled="isTestingCloud"
-              class="h-10 px-4 rounded-lg bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-100 border border-slate-300 dark:border-slate-700 font-bold text-xs transition flex items-center justify-center gap-2 disabled:opacity-50"
+              class="h-10 px-4 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 font-bold text-xs transition flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
             >
               <Activity class="w-4 h-4 text-teal-600 dark:text-teal-400" />
               <span>{{ isTestingCloud ? 'Menghubungkan...' : 'Tes Koneksi Cloud' }}</span>
@@ -218,7 +218,7 @@
             <button
               type="button"
               @click="handleExportBackup"
-              class="h-9 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 dark:bg-slate-800/80 dark:hover:bg-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-300 dark:border-slate-700 transition flex items-center justify-center gap-1.5 active:scale-95"
+              class="h-9 px-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-200 text-xs font-bold border border-slate-700 transition flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer"
             >
               <Download class="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
               <span>Ekspor JSON</span>
@@ -227,13 +227,13 @@
             <button
               type="button"
               @click="handleShareBackup"
-              class="h-9 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 dark:bg-slate-800/80 dark:hover:bg-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-300 dark:border-slate-700 transition flex items-center justify-center gap-1.5 active:scale-95"
+              class="h-9 px-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-200 text-xs font-bold border border-slate-700 transition flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer"
             >
               <Share2 class="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
               <span>Bagikan JSON</span>
             </button>
 
-            <label class="h-9 px-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 dark:bg-slate-800/80 dark:hover:bg-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-300 dark:border-slate-700 transition flex items-center justify-center gap-1.5 cursor-pointer active:scale-95">
+            <label class="h-9 px-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-200 text-xs font-bold border border-slate-700 transition flex items-center justify-center gap-1.5 cursor-pointer active:scale-95">
               <Upload class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
               <span>Restore JSON</span>
               <input type="file" accept=".json" @change="handleImportBackup" class="hidden" />

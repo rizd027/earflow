@@ -589,14 +589,14 @@
           class="fixed bottom-20 md:bottom-6 left-3 right-3 md:left-auto md:right-6 z-50 bulk-action-bar p-2.5 sm:p-3 rounded-2xl shadow-2xl font-mono text-xs transition-all flex flex-col sm:flex-row items-center justify-between gap-2.5"
         >
           <!-- Left: Count Badge -->
-          <div class="h-9 px-3 rounded-xl bg-teal-50 dark:bg-teal-500/10 text-teal-800 dark:text-teal-400 border border-teal-300 dark:border-teal-500/30 flex items-center justify-between sm:justify-start gap-2 font-bold shrink-0 w-full sm:w-auto">
+          <div class="h-9 px-3 rounded-xl bg-teal-500/15 text-teal-700 dark:text-teal-300 border border-teal-500/40 flex items-center justify-between sm:justify-start gap-2 font-bold shrink-0 w-full sm:w-auto">
             <div class="flex items-center gap-2">
               <Check class="w-4 h-4 text-teal-600 dark:text-teal-400 shrink-0" />
               <span>{{ selectedWorkerIds.length }} Terpilih</span>
             </div>
             <button
               @click="selectedWorkerIds = []"
-              class="sm:hidden w-6 h-6 rounded-lg bg-teal-200/60 dark:bg-slate-800 text-teal-900 dark:text-slate-300 hover:bg-teal-200 flex items-center justify-center active:scale-95"
+              class="sm:hidden w-6 h-6 rounded-lg bg-teal-500/20 text-teal-800 dark:text-teal-200 hover:bg-teal-500/30 flex items-center justify-center active:scale-95 cursor-pointer"
               title="Batal Pilihan"
             >
               <X class="w-3.5 h-3.5" />
@@ -630,7 +630,7 @@
             <button
               type="button"
               @click="bulkDeleteSelectedWorkers"
-              class="h-9 px-3.5 rounded-xl bg-rose-50 dark:bg-rose-500/15 hover:bg-rose-100 dark:hover:bg-rose-500/25 text-rose-700 dark:text-rose-400 border border-rose-300 dark:border-rose-500/30 text-xs font-bold transition flex items-center justify-center gap-1.5 active:scale-95 shrink-0"
+              class="h-9 px-3.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-600 dark:text-rose-400 border border-rose-500/30 text-xs font-bold transition flex items-center justify-center gap-1.5 active:scale-95 shrink-0 cursor-pointer"
             >
               <Trash2 class="w-4 h-4" />
               <span>Hapus</span>
@@ -640,7 +640,7 @@
             <button
               type="button"
               @click="selectedWorkerIds = []"
-              class="hidden sm:inline-flex h-9 px-3.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 text-xs font-bold transition items-center justify-center gap-1.5 active:scale-95 shrink-0"
+              class="hidden sm:inline-flex h-9 px-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 hover:text-slate-100 border border-slate-700 text-xs font-bold transition items-center justify-center gap-1.5 active:scale-95 shrink-0 cursor-pointer"
             >
               <X class="w-4 h-4 text-slate-400" />
               <span>Batal</span>

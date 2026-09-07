@@ -577,7 +577,7 @@
             </div>
             <div class="mt-1">
               <span class="text-slate-500 text-[10px] block">ROLE / POSISI</span>
-              <span class="font-semibold text-slate-800">{{ selectedSlipRow.worker.role || 'Operator' }}</span>
+              <span class="font-semibold text-slate-200">{{ selectedSlipRow.worker.role || 'Operator' }}</span>
             </div>
             <div class="mt-1">
               <span class="text-slate-500 text-[10px] block">METODE PENGGAJIAN</span>
@@ -635,7 +635,7 @@
             <button
               type="button"
               @click="showSlipModal = false"
-              class="px-3.5 py-1.5 rounded bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold cursor-pointer"
+              class="px-3.5 py-1.5 rounded bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 text-xs font-bold cursor-pointer"
             >
               Tutup
             </button>
@@ -713,7 +713,7 @@
             <button
               type="button"
               @click="showFullPayrollPrintModal = false"
-              class="px-3.5 py-1.5 rounded bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold cursor-pointer"
+              class="px-3.5 py-1.5 rounded bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 text-xs font-bold cursor-pointer"
             >
               Tutup
             </button>
