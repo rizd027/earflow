@@ -335,7 +335,9 @@ export const useOverrideStore = defineStore('override', () => {
 
   async function resetDailyOverridesForDate(dateStr: string) {
     for (const key of Object.keys(dailyMap.value)) {
-      if (key.endsWith(`_${dateStr}`)) {
+      // Match base key (w1_2026-09-07), all_shifts key (w1_2026-09-07_all_shifts),
+      // and shift-specific keys (w1_2026-09-07_shift_pagi) — NOT just endsWith
+      if (key.includes(`_${dateStr}`)) {
         delete dailyMap.value[key]
         persistSingleOverride(key, 'daily', undefined)
       }

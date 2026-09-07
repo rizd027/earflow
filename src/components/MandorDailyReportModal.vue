@@ -801,7 +801,7 @@ function resetCellOverrides() {
 
 const hasOverrides = computed(() => {
   const dateStr = selectedDate.value
-  return Object.keys(overrideStore.dailyMap).some(k => k.endsWith(`_${dateStr}`))
+  return Object.keys(overrideStore.dailyMap).some(k => k.includes(`_${dateStr}`))
 })
 
 const teamFilterOptions = computed<SelectOption[]>(() => {
