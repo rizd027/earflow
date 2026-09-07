@@ -27,18 +27,18 @@ let realtimeDebounceTimer: any = null
 // ISO timestamp of the last successful sync — used for delta queries
 const LAST_SYNC_AT_KEY = 'earflow_last_sync_at'
 
-function getLastSyncAt(): string | null {
+export function getLastSyncAt(): string | null {
   return localStorage.getItem(LAST_SYNC_AT_KEY)
 }
 
-function setLastSyncAt(isoStr: string) {
+export function setLastSyncAt(isoStr: string) {
   localStorage.setItem(LAST_SYNC_AT_KEY, isoStr)
 }
 
 export const isCloudEnabled = computed(() => isSupabaseConfigured)
 
 // ─── Helper: compare ISO timestamps ────────────────────────────────────────
-function isNewer(a?: string, b?: string): boolean {
+export function isNewer(a?: string, b?: string): boolean {
   if (!a) return false
   if (!b) return true
   return new Date(a).getTime() >= new Date(b).getTime()
@@ -88,14 +88,41 @@ export async function testSupabaseConnection(
   }
 }
 
-// ─── DELTA PULL (Last-Write-Wins) ──────────────────────────────────────────
+// ─── DELTA & FULL PULL (Supabase Source-of-Truth) ─────────────────────────
 
 /**
- * Pull only rows that changed in Supabase since lastSyncAt.
- * Uses last-write-wins: cloud row replaces local only if cloud updated_at is newer.
- *
- * @param sinceIso - ISO timestamp to filter (only rows updated after this).
- *                   null = full pull (first time or explicit force download).
+ * Helper to fetch all rows with automatic pagination (1,000 rows per chunk).
+ * This completely avoids Supabase PostgREST default limit (1,000) which would truncate data.
+ */
+async function fetchAllRows(tableName: string, orderCol?: string, filterIso?: string | null): Promise<any[]> {
+  const all: any[] = []
+  let from = 0
+  const step = 1000
+  while (true) {
+    let query = supabase.from(tableName).select('*').range(from, from + step - 1)
+    if (filterIso) {
+      query = query.gt('updated_at', filterIso)
+    }
+    if (orderCol) {
+      query = query.order(orderCol, { ascending: false })
+    }
+    const { data, error } = await query
+    if (error) {
+      console.warn(`[Sync] Error fetching ${tableName} range [${from}, ${from + step - 1}]:`, error.message)
+      break
+    }
+    if (!data || data.length === 0) break
+    all.push(...data)
+    if (data.length < step) break
+    from += step
+  }
+  return all
+}
+
+/**
+ * Pull rows from Supabase into local IndexedDB and localStorage.
+ * - If sinceIso is provided: delta pull (only updated rows).
+ * - If sinceIso is null/undefined: full sync with deletion reconciliation.
  */
 export async function pullCloudDataFromSupabase(sinceIso?: string | null): Promise<{
   success: boolean
@@ -110,6 +137,12 @@ export async function pullCloudDataFromSupabase(sinceIso?: string | null): Promi
 
   try {
     const db = await getDB()
+    const isFullReconcile = !sinceIso
+    const pendingOutbox = await getPendingOutbox()
+    const pendingTeamIds = new Set(pendingOutbox.filter(o => o.table === 'teams').map(o => o.payload?.id || o.payload))
+    const pendingLogIds = new Set(pendingOutbox.filter(o => o.table === 'logs').map(o => o.payload?.id || o.payload))
+    const pendingOvrKeys = new Set(pendingOutbox.filter(o => o.table === 'overrides').map(o => o.payload?.key || o.payload))
+
     let pulledLogs = 0
     let pulledTeams = 0
     let pulledOverrides = 0
@@ -123,12 +156,8 @@ export async function pullCloudDataFromSupabase(sinceIso?: string | null): Promi
     }
 
     // ── 0. Users (Foreman / Profile) ──────────────────────────────────────────
-    let usersQuery = supabase.from('users').select('*')
-    if (filterIso) {
-      usersQuery = usersQuery.gt('updated_at', filterIso)
-    }
-    const { data: cloudUsers, error: userErr } = await usersQuery
-    if (!userErr && Array.isArray(cloudUsers) && cloudUsers.length > 0) {
+    const cloudUsers = await fetchAllRows('users', undefined, filterIso)
+    if (Array.isArray(cloudUsers) && cloudUsers.length > 0) {
       const tx = db.transaction('users', 'readwrite')
       for (const cu of cloudUsers) {
         await tx.objectStore('users').put({
@@ -147,26 +176,15 @@ export async function pullCloudDataFromSupabase(sinceIso?: string | null): Promi
       await tx.done
     }
 
-    // ── 1. Production Logs (delta or full) ──────────────────────────────────
-    let logsQuery = supabase
-      .from('production_logs')
-      .select('*')
-      .order('updated_at', { ascending: false })
-      .limit(10000)
-
-    if (filterIso) {
-      logsQuery = logsQuery.gt('updated_at', filterIso)
-    }
-
-    const { data: cloudLogs, error: logErr } = await logsQuery
-    if (!logErr && Array.isArray(cloudLogs) && cloudLogs.length > 0) {
+    // ── 1. Production Logs (paginated) ──────────────────────────────────────
+    const cloudLogs = await fetchAllRows('production_logs', 'date', filterIso)
+    if (Array.isArray(cloudLogs)) {
       const tx = db.transaction('logs', 'readwrite')
+      const cloudLogIds = new Set<string>()
+
       for (const cl of cloudLogs) {
+        cloudLogIds.add(cl.id)
         const cloudUpdatedAt = cl.updated_at || cl.created_at || new Date().toISOString()
-        const existingLocal = await tx.objectStore('logs').get(cl.id)
-        if (existingLocal && isNewer(existingLocal.updated_at, cloudUpdatedAt)) {
-          continue // local is newer
-        }
         const localLog: LocalProductionLog = {
           id: cl.id,
           team_id: cl.team_id,
@@ -185,24 +203,29 @@ export async function pullCloudDataFromSupabase(sinceIso?: string | null): Promi
         await tx.objectStore('logs').put(localLog)
         pulledLogs++
       }
+
+      // Reconcile deletions if doing full pull: delete local logs that no longer exist in Supabase
+      if (isFullReconcile) {
+        const localLogs = await db.getAll('logs')
+        for (const ll of localLogs) {
+          if (!cloudLogIds.has(ll.id) && !pendingLogIds.has(ll.id)) {
+            await tx.objectStore('logs').delete(ll.id)
+          }
+        }
+      }
+
       await tx.done
     }
 
-    // ── 2. Teams (delta or full) ─────────────────────────────────────────────
-    let teamsQuery = supabase.from('teams').select('*')
-    if (filterIso) {
-      teamsQuery = teamsQuery.gt('updated_at', filterIso)
-    }
-
-    const { data: cloudTeams, error: teamErr } = await teamsQuery
-    if (!teamErr && Array.isArray(cloudTeams) && cloudTeams.length > 0) {
+    // ── 2. Teams (paginated) ────────────────────────────────────────────────
+    const cloudTeams = await fetchAllRows('teams', undefined, filterIso)
+    if (Array.isArray(cloudTeams)) {
       const tx = db.transaction('teams', 'readwrite')
+      const cloudTeamIds = new Set<string>()
+
       for (const ct of cloudTeams) {
+        cloudTeamIds.add(ct.id)
         const cloudUpdatedAt = ct.updated_at || new Date().toISOString()
-        const existingLocal = await tx.objectStore('teams').get(ct.id)
-        if (existingLocal && isNewer(existingLocal.updated_at, cloudUpdatedAt)) {
-          continue // local is newer
-        }
         const localTeam: LocalTeam = {
           id: ct.id,
           name: ct.name,
@@ -214,24 +237,29 @@ export async function pullCloudDataFromSupabase(sinceIso?: string | null): Promi
         await tx.objectStore('teams').put(localTeam)
         pulledTeams++
       }
+
+      // Reconcile deletions if doing full pull: delete local teams that no longer exist in Supabase
+      if (isFullReconcile) {
+        const localTeams = await db.getAll('teams')
+        for (const lt of localTeams) {
+          if (!cloudTeamIds.has(lt.id) && !pendingTeamIds.has(lt.id)) {
+            await tx.objectStore('teams').delete(lt.id)
+          }
+        }
+      }
+
       await tx.done
     }
 
-    // ── 3. Overrides (delta or full) ─────────────────────────────────────────
-    let ovrQuery = supabase.from('overrides').select('*')
-    if (filterIso) {
-      ovrQuery = ovrQuery.gt('updated_at', filterIso)
-    }
-
-    const { data: cloudOverrides, error: ovrErr } = await ovrQuery
-    if (!ovrErr && Array.isArray(cloudOverrides) && cloudOverrides.length > 0) {
+    // ── 3. Overrides (paginated, full 5,000+ records) ────────────────────────
+    const cloudOverrides = await fetchAllRows('overrides', undefined, filterIso)
+    if (Array.isArray(cloudOverrides)) {
       const tx = db.transaction('overrides', 'readwrite')
+      const cloudOvrKeys = new Set<string>()
+
       for (const co of cloudOverrides) {
+        cloudOvrKeys.add(co.key)
         const cloudUpdatedAt = co.updated_at || new Date().toISOString()
-        const existingLocal = await tx.objectStore('overrides').get(co.key)
-        if (existingLocal && isNewer(existingLocal.updated_at, cloudUpdatedAt)) {
-          continue
-        }
         const localOvr: LocalOverrideRecord = {
           key: co.key,
           type: co.type || 'daily',
@@ -241,16 +269,23 @@ export async function pullCloudDataFromSupabase(sinceIso?: string | null): Promi
         await tx.objectStore('overrides').put(localOvr)
         pulledOverrides++
       }
+
+      // Reconcile deletions if doing full pull: delete local overrides that no longer exist in Supabase
+      if (isFullReconcile) {
+        const localOverrides = await db.getAll('overrides')
+        for (const lo of localOverrides) {
+          if (!cloudOvrKeys.has(lo.key) && !pendingOvrKeys.has(lo.key)) {
+            await tx.objectStore('overrides').delete(lo.key)
+          }
+        }
+      }
+
       await tx.done
     }
 
     // ── 4. Shifts ────────────────────────────────────────────────────────────
-    let shiftsQuery = supabase.from('shifts').select('*')
-    if (filterIso) {
-      shiftsQuery = shiftsQuery.gt('updated_at', filterIso)
-    }
-    const { data: cloudShifts, error: shiftErr } = await shiftsQuery
-    if (!shiftErr && Array.isArray(cloudShifts) && cloudShifts.length > 0) {
+    const cloudShifts = await fetchAllRows('shifts', undefined, filterIso)
+    if (Array.isArray(cloudShifts) && cloudShifts.length > 0) {
       const mappedShifts = cloudShifts.map(s => ({
         id: s.id,
         name: s.name,
@@ -272,12 +307,8 @@ export async function pullCloudDataFromSupabase(sinceIso?: string | null): Promi
     }
 
     // ── 5. App Settings ──────────────────────────────────────────────────────
-    let settingsQuery = supabase.from('app_settings').select('*')
-    if (filterIso) {
-      settingsQuery = settingsQuery.gt('updated_at', filterIso)
-    }
-    const { data: cloudSettings, error: setErr } = await settingsQuery
-    if (!setErr && Array.isArray(cloudSettings) && cloudSettings.length > 0) {
+    const cloudSettings = await fetchAllRows('app_settings', undefined, filterIso)
+    if (Array.isArray(cloudSettings) && cloudSettings.length > 0) {
       for (const setting of cloudSettings) {
         if (setting.key && setting.value !== undefined && setting.value !== null) {
           const valToStore = typeof setting.value === 'string' ? setting.value : JSON.stringify(setting.value)
@@ -287,12 +318,8 @@ export async function pullCloudDataFromSupabase(sinceIso?: string | null): Promi
     }
 
     // ── 6. Audit Logs ────────────────────────────────────────────────────────
-    let auditQuery = supabase.from('audit_logs').select('*').limit(500)
-    if (filterIso) {
-      auditQuery = auditQuery.gt('created_at', filterIso)
-    }
-    const { data: cloudAudits, error: auditErr } = await auditQuery
-    if (!auditErr && Array.isArray(cloudAudits) && cloudAudits.length > 0) {
+    const cloudAudits = await fetchAllRows('audit_logs', 'created_at', filterIso)
+    if (Array.isArray(cloudAudits) && cloudAudits.length > 0) {
       const tx = db.transaction('audit_logs', 'readwrite')
       for (const ca of cloudAudits) {
         await tx.objectStore('audit_logs').put({
@@ -461,7 +488,9 @@ export const APP_SETTING_KEYS = [
   'earflow_process_groups',
   'earflow_process_types',
   'earflow_worker_status_options',
-  'earflow_role_options'
+  'earflow_role_options',
+  'earflow_salary_rates_v1',
+  'earflow_worker_salary_config_v1'
 ]
 
 /**
@@ -530,14 +559,14 @@ export async function pushAllAppSettingsToCloud(): Promise<boolean> {
   }
 }
 
-// ─── DELTA SYNC (startup / periodic) ───────────────────────────────────────
+// ─── FULL SYNC (startup / periodic / manual) ───────────────────────────────
 
 /**
- * Bidirectional delta sync:
+ * Bidirectional full sync:
  * 1. Flush pending offline writes in outbox
- * 2. Pull all changes from Supabase (if local is empty, does a full pull)
+ * 2. Pull all authoritative data from Supabase with complete deletion reconciliation
  * 3. Sync user profile
- * 4. Update sync timestamp and notify stores
+ * 4. Update sync timestamp and notify all active stores
  */
 export async function performFullSync(onDataUpdated?: () => void): Promise<{
   success: boolean
@@ -562,19 +591,13 @@ export async function performFullSync(onDataUpdated?: () => void): Promise<{
     // 1. Flush pending offline writes first
     const { flushed } = await flushOutbox()
 
-    // 2. Check if local database is empty: if empty, force full pull
-    const db = await getDB()
-    const localTeamsCount = await db.count('teams')
-    const localLogsCount = await db.count('logs')
-    const sinceIso = (localTeamsCount === 0 && localLogsCount === 0) ? null : getLastSyncAt()
+    // 2. Full pull and reconcile from Supabase (null = full pull, complete reconciliation)
+    const pullResult = await pullCloudDataFromSupabase(null)
 
-    // 3. Pull latest cloud data FIRST to avoid wiping cloud data with blank device state
-    const pullResult = await pullCloudDataFromSupabase(sinceIso)
-
-    // 4. Sync current user profile
+    // 3. Sync current user profile
     await syncUserProfileToCloud()
 
-    // 5. Record sync timestamp
+    // 4. Record sync timestamp
     const nowIso = new Date().toISOString()
     setLastSyncAt(nowIso)
 
@@ -590,8 +613,12 @@ export async function performFullSync(onDataUpdated?: () => void): Promise<{
 
     if (onDataUpdated) onDataUpdated()
 
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('supabase-data-updated'))
+    }
+
     const pullMsg = (pullResult.logsCount > 0 || pullResult.teamsCount > 0 || pullResult.overridesCount > 0)
-      ? ` | ${pullResult.teamsCount} tim, ${pullResult.logsCount} log, ${pullResult.overridesCount} override diunduh`
+      ? ` | ${pullResult.teamsCount} tim, ${pullResult.logsCount} log, ${pullResult.overridesCount} override tersinkron`
       : ' | Sinkron'
     const pushMsg = flushed > 0 ? `${flushed} antrian berhasil dikirim` : ''
 
@@ -864,19 +891,100 @@ export function initSupabaseRealtime(onCloudChange?: (tableName: string) => void
   try {
     realtimeChannel = supabase
       .channel('earflow-realtime-sync')
-      .on('postgres_changes', { event: '*', schema: 'public' }, (payload) => {
-        const tableName = payload.table
+      .on('postgres_changes', { event: '*', schema: 'public' }, async (payload) => {
+        const table = payload.table
+        const eventType = payload.eventType
+        const newRecord = payload.new as any
+        const oldRecord = payload.old as any
+
+        try {
+          const db = await getDB()
+          if (table === 'teams') {
+            if (eventType === 'DELETE') {
+              const id = oldRecord?.id
+              if (id) await db.delete('teams', id)
+            } else if (newRecord && newRecord.id) {
+              await db.put('teams', {
+                id: newRecord.id,
+                name: newRecord.name,
+                shift: newRecord.shift || '',
+                hourly_target: newRecord.hourly_target || 180,
+                members: Array.isArray(newRecord.members) ? newRecord.members : [],
+                updated_at: newRecord.updated_at || new Date().toISOString()
+              })
+            }
+          } else if (table === 'production_logs') {
+            if (eventType === 'DELETE') {
+              const id = oldRecord?.id
+              if (id) await db.delete('logs', id)
+            } else if (newRecord && newRecord.id) {
+              await db.put('logs', {
+                id: newRecord.id,
+                team_id: newRecord.team_id,
+                team_name: newRecord.team_name || '',
+                date: newRecord.date,
+                hour_slot: newRecord.hour_slot,
+                total_qty: newRecord.total_qty,
+                present_count: newRecord.present_count || 1,
+                present_member_ids: Array.isArray(newRecord.present_member_ids) ? newRecord.present_member_ids : [],
+                photo_url: newRecord.photo_url || undefined,
+                notes: newRecord.notes || undefined,
+                synced: true,
+                created_at: newRecord.created_at,
+                updated_at: newRecord.updated_at || new Date().toISOString()
+              })
+            }
+          } else if (table === 'overrides') {
+            if (eventType === 'DELETE') {
+              const key = oldRecord?.key
+              if (key) await db.delete('overrides', key)
+            } else if (newRecord && newRecord.key) {
+              await db.put('overrides', {
+                key: newRecord.key,
+                type: newRecord.type || 'daily',
+                data: newRecord.data || {},
+                updated_at: newRecord.updated_at || new Date().toISOString()
+              })
+            }
+          } else if (table === 'shifts') {
+            const { data: cloudShifts } = await supabase.from('shifts').select('*')
+            if (cloudShifts && Array.isArray(cloudShifts)) {
+              const mapped = cloudShifts.map(s => ({
+                id: s.id,
+                name: s.name,
+                startTime: s.start_time,
+                endTime: s.end_time
+              }))
+              localStorage.setItem('earflow_shifts', JSON.stringify(mapped))
+            }
+          } else if (table === 'app_settings') {
+            if (newRecord && newRecord.key) {
+              const val = typeof newRecord.value === 'string' ? newRecord.value : JSON.stringify(newRecord.value)
+              localStorage.setItem(newRecord.key, val)
+            }
+          } else if (table === 'users') {
+            if (newRecord && newRecord.role === 'mandor' && newRecord.full_name) {
+              localStorage.setItem('earflow_foreman_name', newRecord.full_name)
+              localStorage.setItem('foreman_name', newRecord.full_name)
+            }
+          }
+        } catch (err) {
+          console.warn('[Realtime] Error applying immediate payload:', err)
+        }
+
+        // Notify app and stores
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('supabase-data-updated'))
+        }
+        if (onCloudChange) onCloudChange(table)
+
+        // Debounced safety reconciliation
         clearTimeout(realtimeDebounceTimer)
         realtimeDebounceTimer = setTimeout(async () => {
-          // If we are currently pushing/uploading or syncing, ignore echoes
-          if (isSyncInProgress) return
-
-          // Delta pull — only fetch what changed since last sync
-          const sinceIso = getLastSyncAt()
-          await pullCloudDataFromSupabase(sinceIso)
-          setLastSyncAt(new Date().toISOString())
-          if (onCloudChange) onCloudChange(tableName)
-        }, 1200)
+          if (!isSyncInProgress && navigator.onLine) {
+            await performFullSync()
+          }
+        }, 3000)
       })
       .subscribe((status) => {
         if (status === 'SUBSCRIBED') {
@@ -900,26 +1008,51 @@ export async function updatePendingCount(): Promise<void> {
   }
 }
 
-// ─── AUTO-INIT (network listeners) ─────────────────────────────────────────
+// ─── AUTO-INIT (network & tab focus listeners) ──────────────────────────────
 
+let isSyncServiceInitialized = false
+
+export function initSyncService(onDataUpdated?: () => void) {
+  if (typeof window === 'undefined') return
+
+  if (!isSyncServiceInitialized) {
+    isSyncServiceInitialized = true
+
+    // 1. Network listeners
+    window.addEventListener('online', async () => {
+      syncStatus.value = 'syncing'
+      await flushOutbox()
+      await performFullSync(onDataUpdated)
+    })
+
+    window.addEventListener('offline', () => {
+      syncStatus.value = 'offline'
+      isCloudConnected.value = false
+    })
+
+    // 2. Tab focus / Visibility change listener (instant re-sync when user switches back to app)
+    window.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && navigator.onLine && isCloudEnabled.value && !isSyncInProgress) {
+        performFullSync(onDataUpdated)
+      }
+    })
+    window.addEventListener('focus', () => {
+      if (navigator.onLine && isCloudEnabled.value && !isSyncInProgress) {
+        performFullSync(onDataUpdated)
+      }
+    })
+  }
+
+  // 3. IMMEDIATELY trigger sync on load without 1000ms delay!
+  if (navigator.onLine && isCloudEnabled.value) {
+    performFullSync(onDataUpdated)
+    initSupabaseRealtime((_tableName) => {
+      if (onDataUpdated) onDataUpdated()
+    })
+  }
+}
+
+// Immediate run on startup
 if (typeof window !== 'undefined') {
-  window.addEventListener('online', async () => {
-    syncStatus.value = 'syncing'
-    // Flush outbox first, then delta pull
-    await flushOutbox()
-    await performFullSync()
-  })
-
-  window.addEventListener('offline', () => {
-    syncStatus.value = 'offline'
-    isCloudConnected.value = false
-  })
-
-  // Initial sync on load
-  setTimeout(async () => {
-    if (navigator.onLine && isCloudEnabled.value) {
-      await performFullSync()
-      initSupabaseRealtime()
-    }
-  }, 1000)
+  initSyncService()
 }

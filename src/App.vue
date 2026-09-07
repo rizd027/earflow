@@ -43,6 +43,8 @@ import { useProductionStore } from '@/stores/productionStore'
 import { useOverrideStore } from '@/stores/overrideStore'
 import { useShiftStore } from '@/stores/shiftStore'
 import { useAuthStore } from '@/stores/authStore'
+import { useSalaryStore } from '@/stores/salaryStore'
+import { isCloudEnabled, performFullSync, initSupabaseRealtime } from '@/services/supabaseSyncService'
 
 const route = useRoute()
 const showLogModal = ref(false)
@@ -51,6 +53,7 @@ const productionStore = useProductionStore()
 const overrideStore = useOverrideStore()
 const shiftStore = useShiftStore()
 const authStore = useAuthStore()
+const salaryStore = useSalaryStore()
 
 // Modal Back-Button History Support
 let isProgrammaticClose = false
@@ -97,28 +100,40 @@ const onThemeChanged = (e: any) => {
   applyTheme(e.detail)
 }
 
-onMounted(() => {
+const refreshStoresFromCloud = () => {
+  teamStore.loadTeams(true)
+  productionStore.loadLogs(true)
+  overrideStore.loadFromStorage(true)
+  shiftStore.reloadFromStorage()
+  authStore.reloadFromStorage()
+  salaryStore.loadFromStorage()
+}
+
+onMounted(async () => {
   applyTheme(activeTheme.value)
   window.addEventListener('theme-changed', onThemeChanged)
-
-  const refreshStoresFromCloud = () => {
-    teamStore.loadTeams(true)
-    productionStore.loadLogs(true)
-    overrideStore.loadFromStorage(true)
-    shiftStore.reloadFromStorage()
-    authStore.reloadFromStorage()
-  }
-
   window.addEventListener('supabase-data-updated', refreshStoresFromCloud)
   
-  // Pre-load data in background on initialization for instant view switching
-  teamStore.loadTeams()
-  productionStore.loadLogs()
-  overrideStore.loadFromStorage()
+  // 1. Pre-load local cached data immediately for instant zero-latency view switching
+  await Promise.all([
+    teamStore.loadTeams(),
+    productionStore.loadLogs(),
+    overrideStore.loadFromStorage(),
+    salaryStore.loadFromStorage()
+  ])
+
+  // 2. Langsung sinkronkan dengan Supabase Cloud di awal pemuatan (immediate startup sync)
+  if (isCloudEnabled.value && navigator.onLine) {
+    performFullSync(refreshStoresFromCloud)
+    initSupabaseRealtime(() => {
+      refreshStoresFromCloud()
+    })
+  }
 })
 
 onUnmounted(() => {
   window.removeEventListener('theme-changed', onThemeChanged)
   window.removeEventListener('popstate', onPopState)
+  window.removeEventListener('supabase-data-updated', refreshStoresFromCloud)
 })
 </script>

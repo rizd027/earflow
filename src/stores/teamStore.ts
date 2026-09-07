@@ -81,8 +81,8 @@ export const useTeamStore = defineStore('team', () => {
       teams.value = realTeams
       unassignedMembers.value = unassignedList
 
-      // Auto-sync worker NIKs against master no_karyawan list
-      await autoSyncNoKaryawan(realTeams, unassignedList)
+      // Auto-sync worker NIKs against master no_karyawan list (in-memory, do not auto-overwrite cloud)
+      await autoSyncNoKaryawan(realTeams, unassignedList, false)
       isLoaded.value = true
     } catch (err) {
       console.error('Failed to load teams from local db:', err)
@@ -91,7 +91,7 @@ export const useTeamStore = defineStore('team', () => {
     }
   }
 
-  async function autoSyncNoKaryawan(realTeamsList: LocalTeam[], unassignedList: any[]) {
+  async function autoSyncNoKaryawan(realTeamsList: LocalTeam[], unassignedList: any[], persist = false) {
     const existingNiks = new Set<string>()
 
     // 1. Process real teams
@@ -110,7 +110,7 @@ export const useTeamStore = defineStore('team', () => {
           }
         }
       }
-      if (teamChanged) {
+      if (teamChanged && persist) {
         await saveTeamToDB(team)
       }
     }
@@ -131,7 +131,7 @@ export const useTeamStore = defineStore('team', () => {
       }
     }
 
-    if (unassignedChanged) {
+    if (unassignedChanged && persist) {
       unassignedMembers.value = unassignedList
       await saveUnassignedToDB()
     }
