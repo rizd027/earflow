@@ -22,7 +22,6 @@ export const pendingSyncCount = ref(0)
 
 let isSyncInProgress = false
 let realtimeChannel: any = null
-let realtimeDebounceTimer: any = null
 
 // ISO timestamp of the last successful sync — used for delta queries
 const LAST_SYNC_AT_KEY = 'earflow_last_sync_at'
@@ -594,10 +593,7 @@ export async function performFullSync(onDataUpdated?: () => void): Promise<{
     // 2. Full pull and reconcile from Supabase (null = full pull, complete reconciliation)
     const pullResult = await pullCloudDataFromSupabase(null)
 
-    // 3. Sync current user profile
-    await syncUserProfileToCloud()
-
-    // 4. Record sync timestamp
+    // 3. Record sync timestamp
     const nowIso = new Date().toISOString()
     setLastSyncAt(nowIso)
 
@@ -977,14 +973,6 @@ export function initSupabaseRealtime(onCloudChange?: (tableName: string) => void
           window.dispatchEvent(new CustomEvent('supabase-data-updated'))
         }
         if (onCloudChange) onCloudChange(table)
-
-        // Debounced safety reconciliation
-        clearTimeout(realtimeDebounceTimer)
-        realtimeDebounceTimer = setTimeout(async () => {
-          if (!isSyncInProgress && navigator.onLine) {
-            await performFullSync()
-          }
-        }, 3000)
       })
       .subscribe((status) => {
         if (status === 'SUBSCRIBED') {
@@ -1041,18 +1029,17 @@ export function initSyncService(onDataUpdated?: () => void) {
         performFullSync(onDataUpdated)
       }
     })
+
+    // 3. Connect Realtime channel
+    if (isCloudEnabled.value) {
+      initSupabaseRealtime((_tableName) => {
+        if (onDataUpdated) onDataUpdated()
+      })
+    }
   }
 
-  // 3. IMMEDIATELY trigger sync on load without 1000ms delay!
-  if (navigator.onLine && isCloudEnabled.value) {
+  // 4. Trigger initial sync once at startup
+  if (navigator.onLine && isCloudEnabled.value && !isSyncInProgress) {
     performFullSync(onDataUpdated)
-    initSupabaseRealtime((_tableName) => {
-      if (onDataUpdated) onDataUpdated()
-    })
   }
-}
-
-// Immediate run on startup
-if (typeof window !== 'undefined') {
-  initSyncService()
 }

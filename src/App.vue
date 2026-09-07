@@ -44,7 +44,7 @@ import { useOverrideStore } from '@/stores/overrideStore'
 import { useShiftStore } from '@/stores/shiftStore'
 import { useAuthStore } from '@/stores/authStore'
 import { useSalaryStore } from '@/stores/salaryStore'
-import { isCloudEnabled, performFullSync, initSupabaseRealtime } from '@/services/supabaseSyncService'
+import { isCloudEnabled, initSyncService } from '@/services/supabaseSyncService'
 
 const route = useRoute()
 const showLogModal = ref(false)
@@ -124,10 +124,7 @@ onMounted(async () => {
 
   // 2. Langsung sinkronkan dengan Supabase Cloud di awal pemuatan (immediate startup sync)
   if (isCloudEnabled.value && navigator.onLine) {
-    performFullSync(refreshStoresFromCloud)
-    initSupabaseRealtime(() => {
-      refreshStoresFromCloud()
-    })
+    initSyncService(refreshStoresFromCloud)
   }
 })
 
