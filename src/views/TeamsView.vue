@@ -2416,6 +2416,10 @@ const roleOptions = computed<ComboboxOption[]>(() => {
   return result
 })
 
+function getDefaultRole(): string {
+  return roleOptions.value.length > 0 ? (roleOptions.value[0]?.value ? String(roleOptions.value[0].value) : '') : ''
+}
+
 function handleAddRoleFromCombobox(newOpt: ComboboxOption) {
   const roleName = String(newOpt.value || newOpt.label).trim()
   if (!roleName) return
@@ -2444,6 +2448,9 @@ function handleDeleteRoleFromCombobox(opt: ComboboxOption) {
   if (!roleName) return
   for (const group of authStore.processGroups) {
     authStore.removeRoleFromGroup(group.code, roleName)
+  }
+  if (memberRoleInput.value && memberRoleInput.value.toLowerCase() === roleName.toLowerCase()) {
+    memberRoleInput.value = getDefaultRole()
   }
 }
 
@@ -2817,6 +2824,9 @@ function handleSelectExistingWorkerToAssign(val: string | number) {
 
 function handleAddNewWorkerFromCombobox(newVal: string) {
   memberNameInput.value = newVal
+  if (!memberRoleInput.value) {
+    memberRoleInput.value = getDefaultRole()
+  }
   memberNoInput.value = ''
   memberJoinedDateInput.value = getLocalDateStr()
   memberPhoneInput.value = ''
@@ -2828,7 +2838,7 @@ function triggerAddTeamMember() {
   currentTeamId.value = selectedTeamToEdit.value ? selectedTeamToEdit.value.id : ''
   targetTeamId.value = currentTeamId.value
   memberNameInput.value = ''
-  memberRoleInput.value = 'Operator Solder'
+  memberRoleInput.value = getDefaultRole()
   memberNoInput.value = ''
   memberJoinedDateInput.value = getLocalDateStr()
   memberPhoneInput.value = ''
@@ -2841,7 +2851,7 @@ function triggerAddTeamMember() {
 function triggerAddMasterWorker(teamId?: string) {
   targetTeamId.value = teamId || UNASSIGNED_TEAM_ID
   memberNameInput.value = ''
-  memberRoleInput.value = 'Operator Solder'
+  memberRoleInput.value = getDefaultRole()
   memberNoInput.value = ''
   memberJoinedDateInput.value = getLocalDateStr()
   memberPhoneInput.value = ''

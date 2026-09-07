@@ -4,9 +4,24 @@ import { getDB, seedInitialLocalData, addToOutbox, type LocalTeam } from '@/serv
 import { getLocalDateStr } from '@/stores/productionStore'
 import { matchWorkerToNikRecord, isTempWorkerNo } from '@/data/noKaryawanData'
 import { useShiftStore } from '@/stores/shiftStore'
+import { useAuthStore } from '@/stores/authStore'
 import { supabase } from '@/supabase/client'
 import { isCloudEnabled } from '@/services/supabaseSyncService'
 
+function getDefaultWorkerRole(): string {
+  try {
+    const authStore = useAuthStore()
+    for (const group of authStore.processGroups || []) {
+      for (const role of group.roles || []) {
+        const trimmed = (role || '').trim()
+        if (trimmed) return trimmed
+      }
+    }
+  } catch {
+    // fallback
+  }
+  return 'SOLDER'
+}
 
 export interface WorkerItem {
   id: string
@@ -314,7 +329,7 @@ export const useTeamStore = defineStore('team', () => {
     const newWorker = {
       id: workerId,
       full_name: cleanName,
-      role: role || 'Operator Solder',
+      role: role || getDefaultWorkerRole(),
       avatar_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(cleanName)}`,
       no_karyawan: cleanNo || '',
       joined_date: joinedDate || getLocalDateStr(),
@@ -374,7 +389,7 @@ export const useTeamStore = defineStore('team', () => {
     const newMember = {
       id: workerId,
       full_name: cleanName,
-      role: role || 'Operator Solder',
+      role: role || getDefaultWorkerRole(),
       avatar_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(cleanName)}`,
       no_karyawan: cleanNo || '',
       joined_date: joinedDate || getLocalDateStr(),
