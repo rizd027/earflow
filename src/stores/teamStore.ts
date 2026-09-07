@@ -77,27 +77,7 @@ export const useTeamStore = defineStore('team', () => {
   }
 
   async function autoSyncNoKaryawan(realTeamsList: LocalTeam[], unassignedList: any[]) {
-    let hasChanges = false
     const existingNiks = new Set<string>()
-
-    const EXITED_WORKER_NAMES = new Set([
-      'fikriarifin', 'fikriarifini',
-      'anggunlestari',
-      'dheniakbar', 'dheniakbark',
-      'natama',
-      'sevvi',
-      'nadhira',
-      'ichanandalifola',
-      'fatimaaprilia', 'fatimaaprillia',
-      'anesaputri',
-      'saskia',
-      'nabiladwi',
-      'nurulafidatun',
-      'sindysetya',
-      'putriajarsari', 'putrianjarsarisulasmi',
-      'anandaputri', 'anandaputrieronika',
-      'dwisintya', 'dwisintyaindah'
-    ])
 
     // 1. Process real teams
     for (const team of realTeamsList) {
@@ -108,25 +88,11 @@ export const useTeamStore = defineStore('team', () => {
         }
         if (!member.no_karyawan || isTempWorkerNo(member.no_karyawan) || member.no_karyawan === '-') {
           const matched = matchWorkerToNikRecord(member.full_name)
-          if (matched) {
+          if (matched && !existingNiks.has(matched.no_karyawan)) {
             member.no_karyawan = matched.no_karyawan
             existingNiks.add(matched.no_karyawan)
             teamChanged = true
-            hasChanges = true
           }
-        }
-
-        const cleanName = member.full_name.toLowerCase().replace(/\\/g, '').replace(/[^a-z0-9]/g, '')
-        if (EXITED_WORKER_NAMES.has(cleanName) && member.status !== 'Keluar') {
-          member.status = 'Keluar'
-          // Mark as exited before the current month so they're hidden from now on
-          if (!member.exit_date) member.exit_date = '2026-07'
-          teamChanged = true
-          hasChanges = true
-        } else if (EXITED_WORKER_NAMES.has(cleanName) && member.status === 'Keluar' && !member.exit_date) {
-          member.exit_date = '2026-07'
-          teamChanged = true
-          hasChanges = true
         }
       }
       if (teamChanged) {
@@ -142,33 +108,17 @@ export const useTeamStore = defineStore('team', () => {
       }
       if (!member.no_karyawan || isTempWorkerNo(member.no_karyawan) || member.no_karyawan === '-') {
         const matched = matchWorkerToNikRecord(member.full_name)
-        if (matched) {
+        if (matched && !existingNiks.has(matched.no_karyawan)) {
           member.no_karyawan = matched.no_karyawan
           existingNiks.add(matched.no_karyawan)
           unassignedChanged = true
-          hasChanges = true
         }
-      }
-
-      const cleanName = member.full_name.toLowerCase().replace(/\\/g, '').replace(/[^a-z0-9]/g, '')
-      if (EXITED_WORKER_NAMES.has(cleanName) && member.status !== 'Keluar') {
-        member.status = 'Keluar'
-        if (!member.exit_date) member.exit_date = '2026-07'
-        unassignedChanged = true
-        hasChanges = true
-      } else if (EXITED_WORKER_NAMES.has(cleanName) && member.status === 'Keluar' && !member.exit_date) {
-        member.exit_date = '2026-07'
-        unassignedChanged = true
-        hasChanges = true
       }
     }
 
     if (unassignedChanged) {
       unassignedMembers.value = unassignedList
       await saveUnassignedToDB()
-    }
-    if (hasChanges) {
-      // Auto-sync completed
     }
   }
 

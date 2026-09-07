@@ -1092,14 +1092,19 @@ const reportRows = computed(() => {
     workers = workers.filter(w => matchesRoleFilter(w, selectedRoleFilter.value))
   }
 
-  // Filter out workers with status 'Keluar' if they have no production logs in targetMonthStr
+  // Filter out workers with status 'Keluar' based on exit_date / logs, and future joined workers
   const targetMonthStr = selectedMonthYear.value || getLocalDateStr().slice(0, 7)
+  const monthLogs = productionStore.logs.filter(l => l.date && l.date.startsWith(targetMonthStr))
   workers = workers.filter(w => {
     const isOut = (w.status || '').toLowerCase().includes('keluar') || (w.status || '').toLowerCase().includes('out')
     if (isOut) {
-      const hasLogsInMonth = productionStore.logs.some(
-        l => l.date && l.date.startsWith(targetMonthStr) && isWorkerInLog(l, w)
-      )
+      if (w.exit_date && targetMonthStr > w.exit_date) return false
+      const hasLogsInMonth = monthLogs.some(l => isWorkerInLog(l, w))
+      if (!hasLogsInMonth) return false
+    }
+    const isFutureJoined = !!(w.joined_date && w.joined_date.slice(0, 7) > targetMonthStr)
+    if (isFutureJoined) {
+      const hasLogsInMonth = monthLogs.some(l => isWorkerInLog(l, w))
       if (!hasLogsInMonth) return false
     }
     return true
@@ -1139,8 +1144,8 @@ const reportRows = computed(() => {
     const activeInputTargetStr = (targetValueInput.value && targetValueInput.value > 0) ? String(targetValueInput.value) : undefined
     const defaultTarget = activeInputTargetStr || ((workerTeam && workerTeam.hourly_target > 0) ? String(workerTeam.hourly_target) : String(DEFAULT_DAILY_TARGET))
 
-    const workerNo = wOverride.workerNo !== undefined ? wOverride.workerNo : ((w.no_karyawan && !isTempWorkerNo(w.no_karyawan) && w.no_karyawan !== '-') ? w.no_karyawan : '')
-    const workerName = wOverride.workerName !== undefined ? wOverride.workerName : w.full_name
+    const workerNo = (w.no_karyawan && !isTempWorkerNo(w.no_karyawan) && w.no_karyawan !== '-') ? w.no_karyawan : ''
+    const workerName = w.full_name
     const defaultProcess = w.role || selectedProcessInput.value || processDefault
     const rawProcess = wOverride.process !== undefined ? wOverride.process : defaultProcess
     const process = authStore.getProcessCodeForRole(rawProcess)

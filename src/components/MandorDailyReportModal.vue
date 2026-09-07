@@ -891,97 +891,76 @@ const formattedSelectedDate = computed(() => {
 
 function buildRowsForWorkers(workerList: typeof teamStore.allWorkers, logsForDate: typeof productionStore.logs) {
   const rows = []
-  const TOTAL_ROWS = Math.max(32, workerList.length)
+  const TOTAL_ROWS = workerList.length
 
   for (let i = 1; i <= TOTAL_ROWS; i++) {
     const worker = workerList[i - 1]
-    const workerId = worker ? worker.id : `row_${i}`
-    const wOverride = overrideStore.getWorkerOverride(workerId) || {}
+    if (!worker) continue
+    const workerId = worker.id
     const dOverride = overrideStore.getDailyOverride(workerId, selectedDate.value, selectedShiftId.value) || {}
 
-    if (worker) {
-      const workerTeam = teamStore.teams.find(t => t.id === worker.team_id)
-      const baseTargetQty = (workerTeam && workerTeam.hourly_target > 0) ? workerTeam.hourly_target : (targetValueInput.value || DEFAULT_DAILY_TARGET)
-      const teamMemberCount = workerTeam ? (workerTeam.members ? workerTeam.members.length : 1) : 1
+    const workerTeam = teamStore.teams.find(t => t.id === worker.team_id)
+    const baseTargetQty = (workerTeam && workerTeam.hourly_target > 0) ? workerTeam.hourly_target : (targetValueInput.value || DEFAULT_DAILY_TARGET)
+    const teamMemberCount = workerTeam ? (workerTeam.members ? workerTeam.members.length : 1) : 1
 
-      const workerLogs = logsForDate.filter(l => isWorkerInLog(l, worker))
+    const workerLogs = logsForDate.filter(l => isWorkerInLog(l, worker))
 
-      let baseProdQty = 0
-      for (const log of workerLogs) {
-        baseProdQty += getWorkerShareForLog(log, teamMemberCount)
-      }
-      baseProdQty = Math.max(0, baseProdQty)
-
-      const prodQty = dOverride.prodQty !== undefined ? dOverride.prodQty : baseProdQty
-      const isPresent = workerLogs.length > 0 || prodQty > 0
-
-      const remarks = workerLogs.map(l => l.notes).filter(Boolean).filter(n => !n?.includes('Reset hasil')).join('; ')
-      const workerStatus = (worker.status || '').toLowerCase()
-      const isOut = workerStatus.includes('keluar') || workerStatus.includes('out')
-      const isOnLeave = workerStatus.includes('cuti')
-      const isNewInInterval = isWorkerNewOnDate(worker.joined_date, selectedDate.value, 7)
-      const isBeforeJoined = !!worker.joined_date && selectedDate.value < worker.joined_date
-      const effectiveRole = (worker.role || '').toUpperCase()
-      const isQc = effectiveRole.includes('QC') || effectiveRole.includes('CHECK') || (workerTeam?.name || '').toUpperCase().includes('QC') || (dOverride.remark || remarks || '').toLowerCase().includes('check')
-      const isSpk = effectiveRole.includes('SPK') || effectiveRole.includes('SPEAKER') || (workerTeam?.name || '').toUpperCase().includes('SPK') || (dOverride.remark || remarks || '').toUpperCase().includes('SPK')
-
-      let defaultRemark = ''
-      if (isBeforeJoined && !isPresent) {
-        defaultRemark = 'Belum Bergabung'
-      } else if (isOut && !isPresent) {
-        defaultRemark = 'Keluar'
-      } else if (isOnLeave && !isPresent) {
-        defaultRemark = 'Cuti'
-      } else if (isPresent) {
-        const basePresentText = isQc ? 'Check' : (isSpk ? 'SPK-A1' : (remarks || t('mandorReport.remarkPresent')))
-        defaultRemark = isNewInInterval ? `${basePresentText} (${t('mandorReport.remarkNew')})` : basePresentText
-      } else {
-        defaultRemark = t('mandorReport.remarkAbsent')
-      }
-
-      const workerNo = wOverride.workerNo !== undefined ? wOverride.workerNo : ((worker.no_karyawan && !isTempWorkerNo(worker.no_karyawan) && worker.no_karyawan !== '-') ? worker.no_karyawan : '')
-      const workerName = wOverride.workerName !== undefined ? wOverride.workerName : worker.full_name
-      const targetQty = dOverride.targetQty !== undefined ? dOverride.targetQty : baseTargetQty
-      const remark = dOverride.remark !== undefined ? dOverride.remark : defaultRemark
-
-      rows.push({
-        no: i,
-        workerId,
-        workerNo,
-        workerName,
-        targetQty,
-        prodQty,
-        remark,
-        isQc,
-        isSpk,
-        isPresent
-      })
-    } else {
-      const workerNo = wOverride.workerNo !== undefined ? wOverride.workerNo : ''
-      const workerName = wOverride.workerName !== undefined ? wOverride.workerName : ''
-      const targetQty = dOverride.targetQty !== undefined ? dOverride.targetQty : 0
-      const prodQty = dOverride.prodQty !== undefined ? dOverride.prodQty : 0
-      const remark = dOverride.remark !== undefined ? dOverride.remark : ''
-
-      rows.push({
-        no: i,
-        workerId,
-        workerNo,
-        workerName,
-        targetQty,
-        prodQty,
-        remark,
-        isQc: false,
-        isSpk: false,
-        isPresent: false
-      })
+    let baseProdQty = 0
+    for (const log of workerLogs) {
+      baseProdQty += getWorkerShareForLog(log, teamMemberCount)
     }
+    baseProdQty = Math.max(0, baseProdQty)
+
+    const prodQty = dOverride.prodQty !== undefined ? dOverride.prodQty : baseProdQty
+    const isPresent = workerLogs.length > 0 || prodQty > 0
+
+    const remarks = workerLogs.map(l => l.notes).filter(Boolean).filter(n => !n?.includes('Reset hasil')).join('; ')
+    const workerStatus = (worker.status || '').toLowerCase()
+    const isOut = workerStatus.includes('keluar') || workerStatus.includes('out')
+    const isOnLeave = workerStatus.includes('cuti')
+    const isNewInInterval = isWorkerNewOnDate(worker.joined_date, selectedDate.value, 7)
+    const isBeforeJoined = !!worker.joined_date && selectedDate.value < worker.joined_date
+    const effectiveRole = (worker.role || '').toUpperCase()
+    const isQc = effectiveRole.includes('QC') || effectiveRole.includes('CHECK') || (workerTeam?.name || '').toUpperCase().includes('QC') || (dOverride.remark || remarks || '').toLowerCase().includes('check')
+    const isSpk = effectiveRole.includes('SPK') || effectiveRole.includes('SPEAKER') || (workerTeam?.name || '').toUpperCase().includes('SPK') || (dOverride.remark || remarks || '').toUpperCase().includes('SPK')
+
+    let defaultRemark = ''
+    if (isBeforeJoined && !isPresent) {
+      defaultRemark = 'Belum Bergabung'
+    } else if (isOut && !isPresent) {
+      defaultRemark = 'Keluar'
+    } else if (isOnLeave && !isPresent) {
+      defaultRemark = 'Cuti'
+    } else if (isPresent) {
+      const basePresentText = isQc ? 'Check' : (isSpk ? 'SPK-A1' : (remarks || t('mandorReport.remarkPresent')))
+      defaultRemark = isNewInInterval ? `${basePresentText} (${t('mandorReport.remarkNew')})` : basePresentText
+    } else {
+      defaultRemark = t('mandorReport.remarkAbsent')
+    }
+
+    const workerNo = (worker.no_karyawan && !isTempWorkerNo(worker.no_karyawan) && worker.no_karyawan !== '-') ? worker.no_karyawan : ''
+    const workerName = worker.full_name
+    const targetQty = dOverride.targetQty !== undefined ? dOverride.targetQty : baseTargetQty
+    const remark = dOverride.remark !== undefined ? dOverride.remark : defaultRemark
+
+    rows.push({
+      no: i,
+      workerId,
+      workerNo,
+      workerName,
+      targetQty,
+      prodQty,
+      remark,
+      isQc,
+      isSpk,
+      isPresent
+    })
   }
 
   return rows
 }
 
-// Compute report rows up to 32 fixed rows for a pristine single A4 sheet fit
+// Compute report rows based strictly on web app workers
 const reportRows = computed(() => {
   let workerList = [...teamStore.allWorkers]
   if (selectedTeamId.value) {
@@ -996,12 +975,13 @@ const reportRows = computed(() => {
 
   const logsForDate = productionStore.logs.filter(l => l.date === selectedDate.value && l.total_qty > 0 && l.hour_slot !== 'Reset Hasil Tim')
 
-  // Filter out workers with status 'Keluar' if they have no production logs in selectedDate's month
+  // Filter out workers with status 'Keluar' if they have no production logs in selectedDate's month or exit_date < selectedDate month
   const selectedMonthStr = selectedDate.value ? selectedDate.value.slice(0, 7) : getLocalDateStr().slice(0, 7)
   const monthLogs = productionStore.logs.filter(l => l.date && l.date.startsWith(selectedMonthStr))
   workerList = workerList.filter(w => {
     const isOut = (w.status || '').toLowerCase().includes('keluar') || (w.status || '').toLowerCase().includes('out')
     if (isOut) {
+      if (w.exit_date && selectedMonthStr > w.exit_date) return false
       const hasLogsInMonth = monthLogs.some(l => isWorkerInLog(l, w))
       if (!hasLogsInMonth) return false
     }
@@ -1040,17 +1020,7 @@ const totalDayProduction = computed(() => {
 })
 
 const totalExpectedWorkers = computed(() => {
-  let list = teamStore.allWorkers
-  if (selectedTeamId.value) {
-    list = list.filter(w => w.team_id === selectedTeamId.value)
-  }
-  if (selectedShiftObj.value && selectedShiftId.value !== 'all_shifts') {
-    list = list.filter(w => isWorkerMatchingShift(w, selectedShiftObj.value, teamStore.teams))
-  }
-  if (selectedRoleFilter.value) {
-    list = list.filter(w => matchesRoleFilter(w, selectedRoleFilter.value))
-  }
-  return list.length
+  return reportRows.value.length
 })
 
 const totalPresentWorkers = computed(() => {
@@ -1080,10 +1050,18 @@ function exportExcel() {
     : undefined
 
   const logsForDate = productionStore.logs.filter(l => l.date === selectedDate.value && l.total_qty > 0 && l.hour_slot !== 'Reset Hasil Tim')
+  const selectedMonthStr = selectedDate.value ? selectedDate.value.slice(0, 7) : getLocalDateStr().slice(0, 7)
+  const monthLogs = productionStore.logs.filter(l => l.date && l.date.startsWith(selectedMonthStr))
 
   const baseWorkerList = teamStore.allWorkers.filter(w => {
     if (selectedTeamId.value && w.team_id !== selectedTeamId.value) return false
     if (selectedShiftObj.value && selectedShiftId.value !== 'all_shifts' && !isWorkerMatchingShift(w, selectedShiftObj.value, teamStore.teams)) return false
+    const isOut = (w.status || '').toLowerCase().includes('keluar') || (w.status || '').toLowerCase().includes('out')
+    if (isOut) {
+      if (w.exit_date && selectedMonthStr > w.exit_date) return false
+      const hasLogsInMonth = monthLogs.some(l => isWorkerInLog(l, w))
+      if (!hasLogsInMonth) return false
+    }
     return true
   })
 

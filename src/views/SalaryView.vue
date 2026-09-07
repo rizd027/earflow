@@ -921,8 +921,22 @@ const calculatedRows = computed(() => {
     }
   }
 
-  // 3. Map all workers with instant O(1) lookups
-  return workers.map(worker => {
+  // 3. Filter eligible workers for the selected month
+  const eligibleWorkers = workers.filter(w => {
+    const isOut = (w.status || '').toLowerCase().includes('keluar') || (w.status || '').toLowerCase().includes('out')
+    const hasActivity = workerLogData.has(w.id) || (workerOvData.get(w.id)?.presentDates.size || 0) > 0 || (workerOvData.get(w.id)?.prodQty || 0) > 0
+    if (hasActivity) return true
+
+    if (isOut) {
+      if (w.exit_date && month > w.exit_date) return false
+    }
+    const isFuture = !!(w.joined_date && w.joined_date.slice(0, 7) > month)
+    if (isFuture) return false
+    return true
+  })
+
+  // 4. Map eligible workers with instant O(1) lookups
+  return eligibleWorkers.map(worker => {
     const ov = workerOvData.get(worker.id)
     const lg = workerLogData.get(worker.id)
 

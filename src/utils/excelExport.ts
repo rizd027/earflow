@@ -424,6 +424,13 @@ export async function exportMonthlyWithTemplate(options: {
       setCell(ws, rowIdx, COL_SELISIH, workerFullTotal - targetBulan)
     })
 
+    // ── Clear any leftover rows from template (prevent ghost row numbering/cells) ──
+    for (let r = ROW_DATA_START + options.workers.length; r < ROW_TOTAL_DAILY; r++) {
+      for (let c = 0; c <= COL_SELISIH; c++) {
+        setCell(ws, r, c, null)
+      }
+    }
+
     // ── Row 128: Total produksi hari itu ─────────────────────────────
     let sheetDailyTotal = 0
     for (let i = 0; i < numDays; i++) {
