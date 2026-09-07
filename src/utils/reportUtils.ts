@@ -22,23 +22,28 @@ export function isWorkerInLog(
 
   const hasPresentList = Array.isArray(log.present_member_ids) && log.present_member_ids.length > 0
   if (hasPresentList) {
-    const matchesPresent = log.present_member_ids.some(id => {
+    return log.present_member_ids.some(id => {
       if (!id) return false
       const idClean = id.toLowerCase().trim()
       const idNum = idClean.replace(/\D/g, '')
 
-      if (wId && idClean === wId) return true
-      if (wNo && idClean === wNo) return true
-      if (wName && (idClean === wName || idClean.includes(wName) || wName.includes(idClean))) return true
+      if (wId && (idClean === wId || idClean.replace(/[-_]/g, '') === wId.replace(/[-_]/g, ''))) return true
+      if (wNo && (idClean === wNo || idClean.replace(/[-_]/g, '') === wNo.replace(/[-_]/g, ''))) return true
+      if (wName && (idClean === wName || (wName.length >= 3 && (idClean.includes(wName) || wName.includes(idClean))))) return true
       if (idNum && ((wNumId && idNum === wNumId) || (wNumNo && idNum === wNumNo))) return true
 
       return false
     })
-
-    if (matchesPresent) return true
   }
 
-  // Fallback for legacy logs or matching team membership
+  // Fallback ONLY for legacy logs that do NOT have present_member_ids recorded
+  if (log.team_id === 'unassigned' || !log.team_id) {
+    return false
+  }
+  if (log.team_name && log.team_name.toLowerCase().trim().includes('belum masuk')) {
+    return false
+  }
+
   const teamIdMatch = !!log.team_id && !!worker.team_id && log.team_id === worker.team_id
   const teamNameMatch = !!log.team_name && !!worker.team_name && log.team_name.toLowerCase().trim() === worker.team_name.toLowerCase().trim()
   return teamIdMatch || teamNameMatch
@@ -84,12 +89,27 @@ export function calculateWorkerProdMap(
 
   for (const w of allWorkers) {
     prodMap.set(w.id, 0)
-    if (w.id) idToWorker.set(w.id.toLowerCase().trim(), w)
-    if (w.no_karyawan) idToWorker.set(w.no_karyawan.toLowerCase().trim(), w)
-    if (w.full_name) idToWorker.set(w.full_name.toLowerCase().trim(), w)
+    if (w.id) {
+      const cleanId = w.id.toLowerCase().trim()
+      idToWorker.set(cleanId, w)
+      idToWorker.set(cleanId.replace(/[-_]/g, ''), w)
+      const num = w.id.replace(/\D/g, '')
+      if (num) idToWorker.set(num, w)
+    }
+    if (w.no_karyawan) {
+      const cleanNo = w.no_karyawan.toLowerCase().trim()
+      idToWorker.set(cleanNo, w)
+      idToWorker.set(cleanNo.replace(/[-_]/g, ''), w)
+      const num = w.no_karyawan.replace(/\D/g, '')
+      if (num) idToWorker.set(num, w)
+    }
+    if (w.full_name) {
+      idToWorker.set(w.full_name.toLowerCase().trim(), w)
+      idToWorker.set(w.full_name.toLowerCase().trim().replace(/\s+/g, ''), w)
+    }
 
     const teamKey = w.team_id || (w.team_name ? w.team_name.toLowerCase().trim() : '')
-    if (teamKey) {
+    if (teamKey && teamKey !== 'unassigned' && !teamKey.includes('belum masuk')) {
       let tList = teamToWorkers.get(teamKey)
       if (!tList) {
         tList = []
@@ -107,7 +127,7 @@ export function calculateWorkerProdMap(
       for (const rawId of log.present_member_ids!) {
         if (!rawId) continue
         const cleanId = rawId.toLowerCase().trim()
-        const directMatch = idToWorker.get(cleanId)
+        const directMatch = idToWorker.get(cleanId) || idToWorker.get(cleanId.replace(/[-_]/g, '')) || (cleanId.replace(/\D/g, '') ? idToWorker.get(cleanId.replace(/\D/g, '')) : undefined)
         if (directMatch) {
           if (!matchedWorkers.includes(directMatch)) matchedWorkers.push(directMatch)
         } else {
@@ -120,7 +140,7 @@ export function calculateWorkerProdMap(
       }
     } else {
       const tKey = log.team_id || (log.team_name ? log.team_name.toLowerCase().trim() : '')
-      if (tKey && teamToWorkers.has(tKey)) {
+      if (tKey && tKey !== 'unassigned' && teamToWorkers.has(tKey)) {
         matchedWorkers = teamToWorkers.get(tKey)!
       }
     }

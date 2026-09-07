@@ -86,17 +86,11 @@ export const useTeamStore = defineStore('team', () => {
         if (member.no_karyawan && !isTempWorkerNo(member.no_karyawan)) {
           existingNiks.add(member.no_karyawan.trim())
         }
-        const matched = matchWorkerToNikRecord(member.full_name)
-        if (matched) {
-          if (!member.no_karyawan || isTempWorkerNo(member.no_karyawan) || member.no_karyawan === '-') {
-            if (matched.no_karyawan && !existingNiks.has(matched.no_karyawan)) {
-              member.no_karyawan = matched.no_karyawan
-              existingNiks.add(matched.no_karyawan)
-              teamChanged = true
-            }
-          }
-          if (matched.status === 'Aktif' && member.status === 'Keluar' && !member.exit_date) {
-            member.status = 'Aktif'
+        if (!member.no_karyawan || isTempWorkerNo(member.no_karyawan) || member.no_karyawan === '-') {
+          const matched = matchWorkerToNikRecord(member.full_name)
+          if (matched && !existingNiks.has(matched.no_karyawan)) {
+            member.no_karyawan = matched.no_karyawan
+            existingNiks.add(matched.no_karyawan)
             teamChanged = true
           }
         }
@@ -112,17 +106,11 @@ export const useTeamStore = defineStore('team', () => {
       if (member.no_karyawan && !isTempWorkerNo(member.no_karyawan)) {
         existingNiks.add(member.no_karyawan.trim())
       }
-      const matched = matchWorkerToNikRecord(member.full_name)
-      if (matched) {
-        if (!member.no_karyawan || isTempWorkerNo(member.no_karyawan) || member.no_karyawan === '-') {
-          if (matched.no_karyawan && !existingNiks.has(matched.no_karyawan)) {
-            member.no_karyawan = matched.no_karyawan
-            existingNiks.add(matched.no_karyawan)
-            unassignedChanged = true
-          }
-        }
-        if (matched.status === 'Aktif' && member.status === 'Keluar' && !member.exit_date) {
-          member.status = 'Aktif'
+      if (!member.no_karyawan || isTempWorkerNo(member.no_karyawan) || member.no_karyawan === '-') {
+        const matched = matchWorkerToNikRecord(member.full_name)
+        if (matched && !existingNiks.has(matched.no_karyawan)) {
+          member.no_karyawan = matched.no_karyawan
+          existingNiks.add(matched.no_karyawan)
           unassignedChanged = true
         }
       }
