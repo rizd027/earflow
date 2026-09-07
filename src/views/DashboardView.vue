@@ -443,8 +443,10 @@
                     :readonly="isReadOnly"
                     :value="formatSpkLembar(localTargetMap[row.workerId] ?? row.targetQty)"
                     @focus="activeInputKey = `target_${row.workerId}`; ($event.target as HTMLInputElement).select()"
-                    @blur="activeInputKey = null"
+                    @blur="activeInputKey = null; updateSpkTargetLembar(row.workerId, ($event.target as HTMLInputElement).value)"
+                    @change="updateSpkTargetLembar(row.workerId, ($event.target as HTMLInputElement).value)"
                     @input="updateSpkTargetLembar(row.workerId, ($event.target as HTMLInputElement).value)"
+                    @keydown.enter="($event.target as HTMLInputElement).blur()"
                     min="0"
                     step="0.5"
                     class="w-24 h-8 px-2 pr-7 text-right rounded bg-slate-950 border text-amber-300 text-xs font-mono font-bold focus:outline-none"
@@ -463,8 +465,10 @@
                   :readonly="isReadOnly"
                   :value="localTargetMap[row.workerId] ?? row.targetQty"
                   @focus="activeInputKey = `target_${row.workerId}`; ($event.target as HTMLInputElement).select()"
-                  @blur="activeInputKey = null"
+                  @blur="activeInputKey = null; updateTarget(row.workerId, ($event.target as HTMLInputElement).value)"
+                  @change="updateTarget(row.workerId, ($event.target as HTMLInputElement).value)"
                   @input="updateTarget(row.workerId, ($event.target as HTMLInputElement).value)"
+                  @keydown.enter="($event.target as HTMLInputElement).blur()"
                   min="0"
                   placeholder="Target..."
                   class="w-24 h-8 px-2 text-right rounded bg-slate-950 border text-cyan-300 text-xs font-mono font-bold focus:outline-none"
@@ -481,8 +485,10 @@
                   :readonly="isReadOnly"
                   :value="localTargetMap[row.workerId] ?? row.targetQty"
                   @focus="activeInputKey = `target_${row.workerId}`; ($event.target as HTMLInputElement).select()"
-                  @blur="activeInputKey = null"
+                  @blur="activeInputKey = null; updateTarget(row.workerId, ($event.target as HTMLInputElement).value)"
+                  @change="updateTarget(row.workerId, ($event.target as HTMLInputElement).value)"
                   @input="updateTarget(row.workerId, ($event.target as HTMLInputElement).value)"
+                  @keydown.enter="($event.target as HTMLInputElement).blur()"
                   min="0"
                   class="w-24 h-8 px-2 text-right rounded bg-slate-950 border text-teal-300 text-xs font-mono font-bold focus:outline-none"
                   :class="isReadOnly ? 'border-slate-800 text-slate-400 cursor-not-allowed bg-slate-900/50' : 'border-slate-700 focus:border-teal-400'"
@@ -503,8 +509,10 @@
                       :readonly="isReadOnly"
                       :value="formatSpkLembar(localProdMap[row.workerId] ?? row.prodQty)"
                       @focus="activeInputKey = `prod_${row.workerId}`; ($event.target as HTMLInputElement).select()"
-                      @blur="activeInputKey = null"
+                      @blur="activeInputKey = null; updateSpkProdLembar(row.workerId, ($event.target as HTMLInputElement).value)"
+                      @change="updateSpkProdLembar(row.workerId, ($event.target as HTMLInputElement).value)"
                       @input="updateSpkProdLembar(row.workerId, ($event.target as HTMLInputElement).value)"
+                      @keydown.enter="($event.target as HTMLInputElement).blur()"
                       min="0"
                       step="0.5"
                       class="w-20 h-8 px-2 pr-7 text-right rounded bg-slate-950 border text-amber-300 text-xs font-mono font-bold focus:outline-none"
@@ -539,8 +547,10 @@
                     :readonly="isReadOnly"
                     :value="localProdMap[row.workerId] ?? row.prodQty"
                     @focus="activeInputKey = `prod_${row.workerId}`; ($event.target as HTMLInputElement).select()"
-                    @blur="activeInputKey = null"
+                    @blur="activeInputKey = null; updateProd(row.workerId, ($event.target as HTMLInputElement).value)"
+                    @change="updateProd(row.workerId, ($event.target as HTMLInputElement).value)"
                     @input="updateProd(row.workerId, ($event.target as HTMLInputElement).value)"
+                    @keydown.enter="($event.target as HTMLInputElement).blur()"
                     min="0"
                     placeholder="0"
                     class="w-20 h-8 px-2 text-right rounded bg-slate-950 border text-cyan-300 text-xs font-mono font-bold focus:outline-none"
@@ -572,8 +582,10 @@
                   :readonly="isReadOnly"
                   :value="localProdMap[row.workerId] ?? row.prodQty"
                   @focus="activeInputKey = `prod_${row.workerId}`; ($event.target as HTMLInputElement).select()"
-                  @blur="activeInputKey = null"
+                  @blur="activeInputKey = null; updateProd(row.workerId, ($event.target as HTMLInputElement).value)"
+                  @change="updateProd(row.workerId, ($event.target as HTMLInputElement).value)"
                   @input="updateProd(row.workerId, ($event.target as HTMLInputElement).value)"
+                  @keydown.enter="($event.target as HTMLInputElement).blur()"
                   min="0"
                   class="w-24 h-8 px-2 text-right rounded bg-slate-950 border text-teal-300 text-xs font-mono font-bold focus:outline-none"
                   :class="isReadOnly ? 'border-slate-800 text-slate-400 cursor-not-allowed bg-slate-900/50' : 'border-slate-700 focus:border-teal-400'"
@@ -635,8 +647,10 @@
                 :readonly="isReadOnly"
                 :value="localRemarkMap[row.workerId] ?? row.remark"
                 @focus="activeInputKey = `remark_${row.workerId}`"
-                @blur="activeInputKey = null"
+                @blur="activeInputKey = null; updateRemark(row.workerId, ($event.target as HTMLInputElement).value)"
+                @change="updateRemark(row.workerId, ($event.target as HTMLInputElement).value)"
                 @input="updateRemark(row.workerId, ($event.target as HTMLInputElement).value)"
+                @keydown.enter="($event.target as HTMLInputElement).blur()"
                 :placeholder="row.isQc ? 'Check...' : (row.isSpk ? 'Catatan SPK-A1...' : 'Catatan...')"
                 class="w-full h-8 px-2 rounded bg-slate-950 border text-slate-300 text-[11px] font-mono focus:outline-none truncate"
                 :class="isReadOnly ? 'border-slate-800 text-slate-500 cursor-not-allowed bg-slate-900/50' : 'border-slate-800 focus:border-slate-600'"
@@ -1605,39 +1619,34 @@ function toggleAttendance(row: WorkerRow) {
   auditStore.logAction('Absensi', `Toggle Absensi (${row.workerName})`, `Status diubah ke ${newRemark} (${selectedDate.value})`)
 }
 
-// Debounced writers ke store — hanya dipanggil setelah user berhenti mengetik
-const _writeTarget = debounce((workerId: string, dateStr: string, val: number) => {
-  overrideStore.setDailyOverride(workerId, dateStr, 'targetQty', val, 'all_shifts')
+// Debounced audit loggers — dipanggil setelah user selesai mengetik agar tidak membebani audit log
+const _logAuditTarget = debounce((workerId: string, dateStr: string, val: number) => {
   const w = teamStore.allWorkers.find(item => item.id === workerId)
   auditStore.logAction('Target', `Edit Target (${w ? w.full_name : workerId})`, `Target harian set ke ${val} Pcs (${dateStr})`)
-}, 600)
+}, 800)
 
-const _writeProd = debounce((workerId: string, dateStr: string, val: number) => {
-  overrideStore.setDailyOverride(workerId, dateStr, 'prodQty', val, 'all_shifts')
+const _logAuditProd = debounce((workerId: string, dateStr: string, val: number) => {
   const w = teamStore.allWorkers.find(item => item.id === workerId)
   auditStore.logAction('Target', `Edit Realisasi (${w ? w.full_name : workerId})`, `Hasil produksi set ke ${val} Pcs (${dateStr})`)
-}, 600)
+}, 800)
 
-const _writeRemark = debounce((workerId: string, dateStr: string, val: string) => {
-  overrideStore.setDailyOverride(workerId, dateStr, 'remark', val, 'all_shifts')
+const _logAuditRemark = debounce((workerId: string, dateStr: string, val: string) => {
   const w = teamStore.allWorkers.find(item => item.id === workerId)
   auditStore.logAction('Absensi', `Edit Catatan (${w ? w.full_name : workerId})`, `Catatan set ke "${val}" (${dateStr})`)
-}, 600)
+}, 800)
 
-const _writeWorkHours = debounce((workerId: string, dateStr: string, val: string) => {
-  overrideStore.setDailyOverride(workerId, dateStr, 'workHours', val, 'all_shifts')
+const _logAuditWorkHours = debounce((workerId: string, dateStr: string, val: string) => {
   const w = teamStore.allWorkers.find(item => item.id === workerId)
   auditStore.logAction('Absensi', `Edit Jam Kerja (${w ? w.full_name : workerId})`, `Jam kerja set ke "${val}" (${dateStr})`)
-}, 600)
+}, 800)
 
 function updateTarget(workerId: string, rawVal: string) {
   if (isReadOnly.value) return
   const val = Number(rawVal)
   if (isNaN(val) || val < 0) return
-  // Update local state immediately untuk UX responsif
   localTargetMap.value[workerId] = val
-  // Debounce write ke store
-  _writeTarget(workerId, selectedDate.value, val)
+  overrideStore.setDailyOverride(workerId, selectedDate.value, 'targetQty', val, 'all_shifts')
+  _logAuditTarget(workerId, selectedDate.value, val)
 }
 
 function updateSpkTargetLembar(workerId: string, rawVal: string) {
@@ -1646,7 +1655,8 @@ function updateSpkTargetLembar(workerId: string, rawVal: string) {
   if (isNaN(lembar) || lembar < 0) return
   const pcs = Math.round(lembar * SPK_PCS_PER_SHEET)
   localTargetMap.value[workerId] = pcs
-  _writeTarget(workerId, selectedDate.value, pcs)
+  overrideStore.setDailyOverride(workerId, selectedDate.value, 'targetQty', pcs, 'all_shifts')
+  _logAuditTarget(workerId, selectedDate.value, pcs)
 }
 
 function updateProd(workerId: string, rawVal: string) {
@@ -1654,7 +1664,8 @@ function updateProd(workerId: string, rawVal: string) {
   const val = Number(rawVal)
   if (isNaN(val) || val < 0) return
   localProdMap.value[workerId] = val
-  _writeProd(workerId, selectedDate.value, val)
+  overrideStore.setDailyOverride(workerId, selectedDate.value, 'prodQty', val, 'all_shifts')
+  _logAuditProd(workerId, selectedDate.value, val)
 }
 
 function updateSpkProdLembar(workerId: string, rawVal: string) {
@@ -1663,13 +1674,22 @@ function updateSpkProdLembar(workerId: string, rawVal: string) {
   if (isNaN(lembar) || lembar < 0) return
   const pcs = Math.round(lembar * SPK_PCS_PER_SHEET)
   localProdMap.value[workerId] = pcs
-  _writeProd(workerId, selectedDate.value, pcs)
+  overrideStore.setDailyOverride(workerId, selectedDate.value, 'prodQty', pcs, 'all_shifts')
+  _logAuditProd(workerId, selectedDate.value, pcs)
 }
 
 function updateWorkHours(workerId: string, val: string) {
   if (isReadOnly.value) return
   localWorkHoursMap.value[workerId] = val
-  _writeWorkHours(workerId, selectedDate.value, val)
+  overrideStore.setDailyOverride(workerId, selectedDate.value, 'workHours', val, 'all_shifts')
+  _logAuditWorkHours(workerId, selectedDate.value, val)
+}
+
+function updateRemark(workerId: string, val: string) {
+  if (isReadOnly.value) return
+  localRemarkMap.value[workerId] = val
+  overrideStore.setDailyOverride(workerId, selectedDate.value, 'remark', val, 'all_shifts')
+  _logAuditRemark(workerId, selectedDate.value, val)
 }
 
 function toggleQcCheck(row: WorkerRow) {
@@ -1718,12 +1738,6 @@ function toggleSpkCheck(row: WorkerRow) {
     localProdMap.value[row.workerId] = currentTarget
     auditStore.logAction('Absensi', `SPK-A1 Selesai (${row.workerName})`, `Menandai karyawan SPK sudah selesai SPK-A1 (${currentTarget} Pcs / ${formatSpkLembar(currentTarget)} Lbr) (${selectedDate.value})`)
   }
-}
-
-function updateRemark(workerId: string, val: string) {
-  if (isReadOnly.value) return
-  localRemarkMap.value[workerId] = val
-  _writeRemark(workerId, selectedDate.value, val)
 }
 
 function markAllPresent() {
