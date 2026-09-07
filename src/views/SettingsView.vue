@@ -551,6 +551,7 @@ import { useAuthStore } from '@/stores/authStore'
 import { useOverrideStore } from '@/stores/overrideStore'
 import { useAuditStore } from '@/stores/auditStore'
 import { useShiftStore } from '@/stores/shiftStore'
+import { useSalaryStore } from '@/stores/salaryStore'
 import { exportBackupData, importBackupData, clearAllLocalData } from '@/services/db'
 import {
   Smartphone,
@@ -597,6 +598,7 @@ const authStore = useAuthStore()
 const overrideStore = useOverrideStore()
 const auditStore = useAuditStore()
 const shiftStore = useShiftStore()
+const salaryStore = useSalaryStore()
 
 const isTestingCloud = ref(false)
 
@@ -771,6 +773,7 @@ async function handleExportBackup() {
     // 1. Ensure all in-memory cell overrides and worker overrides are flushed to IndexedDB first
     await overrideStore.flushPendingOverrides()
     await overrideStore.saveAllToIndexedDB()
+    salaryStore.saveToStorage()
 
     const backupObj = await exportBackupData()
     const jsonStr = JSON.stringify(backupObj, null, 2)
@@ -821,6 +824,7 @@ async function handleShareBackup() {
     // 1. Ensure all in-memory cell overrides and worker overrides are flushed to IndexedDB first
     await overrideStore.flushPendingOverrides()
     await overrideStore.saveAllToIndexedDB()
+    salaryStore.saveToStorage()
 
     const backupObj = await exportBackupData()
     const jsonStr = JSON.stringify(backupObj, null, 2)
@@ -893,9 +897,14 @@ async function handleImportBackup(event: Event) {
   reader.onload = async (e) => {
     try {
       const content = e.target?.result as string
-      const parsed = JSON.parse(content)
+      let parsed: any
+      try {
+        parsed = JSON.parse(content)
+      } catch (parseErr) {
+        throw new Error('File yang dipilih bukan file JSON yang valid')
+      }
 
-      await importBackupData(parsed)
+      const res = await importBackupData(parsed)
 
       // Force reload all Pinia stores to reflect the newly restored data immediately
       await teamStore.loadTeams(true)
@@ -904,28 +913,29 @@ async function handleImportBackup(event: Event) {
       await auditStore.loadLogs()
       shiftStore.reloadFromStorage()
       authStore.reloadFromStorage()
+      salaryStore.reloadFromStorage()
       foremanInput.value = authStore.foremanName
 
-      await auditStore.logAction('System', 'Restore Backup Data', 'Memulihkan seluruh data aplikasi dari file backup JSON')
+      await auditStore.logAction('System', 'Restore Backup Data', `Memulihkan data: ${res.teamsCount} tim, ${res.workersCount} karyawan, ${res.logsCount} log produksi`)
 
-      // Automatically sync restored data to Supabase Cloud if online
-      if (isCloudConnected.value || navigator.onLine) {
+      // Automatically sync restored data to Supabase Cloud if cloud is connected
+      if (isCloudConnected.value) {
         try {
           await forceUploadAllToCloud()
           statusType.value = 'success'
-          statusMessage.value = 'Data backup berhasil dipulihkan & langsung di-upload ke Cloud Supabase!'
+          statusMessage.value = `Data backup berhasil dipulihkan (${res.teamsCount} Tim, ${res.workersCount} Karyawan, ${res.logsCount} Log) & disinkronkan ke Cloud!`
         } catch {
           statusType.value = 'success'
-          statusMessage.value = t('settings.importSuccess')
+          statusMessage.value = `Data backup berhasil dipulihkan: ${res.teamsCount} Tim, ${res.workersCount} Karyawan, ${res.logsCount} Log Produksi.`
         }
       } else {
         statusType.value = 'success'
-        statusMessage.value = t('settings.importSuccess')
+        statusMessage.value = `Data backup berhasil dipulihkan: ${res.teamsCount} Tim, ${res.workersCount} Karyawan, ${res.logsCount} Log Produksi.`
       }
-    } catch (err) {
+    } catch (err: any) {
       statusType.value = 'error'
-      statusMessage.value = t('settings.importError')
-      console.error(err)
+      statusMessage.value = `${t('settings.importError')}: ${err?.message || err}`
+      console.error('Import backup error:', err)
     } finally {
       target.value = ''
     }

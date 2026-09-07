@@ -208,6 +208,8 @@ export const useSalaryStore = defineStore('salary', () => {
     getEffectiveDailyRate,
     getEffectivePieceRate,
     calculateSalary,
-    saveToStorage
+    saveToStorage,
+    loadFromStorage,
+    reloadFromStorage: loadFromStorage
   }
 })

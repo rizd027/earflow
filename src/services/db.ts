@@ -233,6 +233,14 @@ export interface BackupPayload {
   }
 }
 
+export interface ImportBackupResult {
+  success: boolean
+  teamsCount: number
+  workersCount: number
+  logsCount: number
+  overridesCount: number
+}
+
 export async function exportBackupData(): Promise<BackupPayload> {
   const db = await getDB()
   const teams = await db.getAll('teams')
@@ -262,9 +270,16 @@ export async function exportBackupData(): Promise<BackupPayload> {
   }
 }
 
-export async function importBackupData(payload: BackupPayload): Promise<boolean> {
-  if (!payload || typeof payload !== 'object' || !payload.data) {
-    throw new Error('Format file backup tidak valid')
+export async function importBackupData(payload: any): Promise<ImportBackupResult> {
+  if (!payload || typeof payload !== 'object') {
+    throw new Error('Format file backup tidak valid (bukan objek JSON)')
+  }
+
+  // Normalize data payload — support both wrapped payload.data and flat payload
+  const data = (payload.data && typeof payload.data === 'object') ? payload.data : payload
+
+  if (!data.teams && !data.logs && !data.overrides && !data.localStorageData && !data.shifts) {
+    throw new Error('File backup tidak memiliki struktur data EarFlow yang dikenali')
   }
 
   const db = await getDB()
@@ -278,36 +293,73 @@ export async function importBackupData(payload: BackupPayload): Promise<boolean>
   await tx.objectStore('outbox').clear()
 
   const now = new Date().toISOString()
+  let teamsCount = 0
+  let workersCount = 0
+  let logsCount = 0
+  let overridesCount = 0
 
-  if (Array.isArray(payload.data.teams)) {
-    for (const team of payload.data.teams) {
+  // 1. Teams & Workers
+  const teamsArray = Array.isArray(data.teams) ? data.teams : (Array.isArray(data.team) ? data.team : [])
+  for (const team of teamsArray) {
+    if (team && team.id) {
       await tx.objectStore('teams').put({ ...team, updated_at: team.updated_at || now })
+      if (team.id !== 'unassigned') teamsCount++
+      workersCount += Array.isArray(team.members) ? team.members.length : 0
     }
   }
-  if (Array.isArray(payload.data.logs)) {
-    for (const log of payload.data.logs) {
+
+  // 2. Production Logs
+  const logsArray = Array.isArray(data.logs) ? data.logs : (Array.isArray(data.production_logs) ? data.production_logs : [])
+  for (const log of logsArray) {
+    if (log && log.id) {
       await tx.objectStore('logs').put({ ...log, updated_at: log.updated_at || log.created_at || now })
+      logsCount++
     }
   }
-  if (Array.isArray(payload.data.users)) {
-    for (const user of payload.data.users) {
+
+  // 3. Users
+  const usersArray = Array.isArray(data.users) ? data.users : (Array.isArray(data.user) ? data.user : [])
+  for (const user of usersArray) {
+    if (user && user.id) {
       await tx.objectStore('users').put(user)
     }
   }
-  if (Array.isArray(payload.data.overrides)) {
-    for (const override of payload.data.overrides) {
-      await tx.objectStore('overrides').put({ ...override, updated_at: (override as any).updated_at || now })
+
+  // 4. Overrides (handle array of records OR legacy object { daily, worker })
+  if (Array.isArray(data.overrides)) {
+    for (const override of data.overrides) {
+      if (override && override.key) {
+        await tx.objectStore('overrides').put({ ...override, updated_at: override.updated_at || now })
+        overridesCount++
+      }
+    }
+  } else if (data.overrides && typeof data.overrides === 'object') {
+    if (data.overrides.daily && typeof data.overrides.daily === 'object') {
+      for (const [k, v] of Object.entries(data.overrides.daily)) {
+        await tx.objectStore('overrides').put({ key: k, type: 'daily', data: v, updated_at: now })
+        overridesCount++
+      }
+    }
+    if (data.overrides.worker && typeof data.overrides.worker === 'object') {
+      for (const [k, v] of Object.entries(data.overrides.worker)) {
+        await tx.objectStore('overrides').put({ key: k, type: 'worker', data: v, updated_at: now })
+        overridesCount++
+      }
     }
   }
-  if (Array.isArray(payload.data.audit_logs)) {
-    for (const auditLog of payload.data.audit_logs) {
-      await tx.objectStore('audit_logs').put(auditLog)
+
+  // 5. Audit Logs
+  if (Array.isArray(data.audit_logs)) {
+    for (const auditLog of data.audit_logs) {
+      if (auditLog && auditLog.id) {
+        await tx.objectStore('audit_logs').put(auditLog)
+      }
     }
   }
 
   await tx.done
 
-  // Restore localStorage
+  // 6. Restore localStorage settings
   const keysToRemove: string[] = []
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i)
@@ -315,13 +367,24 @@ export async function importBackupData(payload: BackupPayload): Promise<boolean>
   }
   keysToRemove.forEach(k => localStorage.removeItem(k))
 
-  if (payload.data.localStorageData && typeof payload.data.localStorageData === 'object') {
-    for (const [key, val] of Object.entries(payload.data.localStorageData)) {
-      if (val !== undefined && val !== null) localStorage.setItem(key, val)
+  if (data.localStorageData && typeof data.localStorageData === 'object') {
+    for (const [key, val] of Object.entries(data.localStorageData)) {
+      if (val !== undefined && val !== null) localStorage.setItem(key, typeof val === 'string' ? val : JSON.stringify(val))
     }
   }
 
-  return true
+  // If shifts were provided directly as array outside of localStorageData
+  if (Array.isArray(data.shifts) && data.shifts.length > 0) {
+    localStorage.setItem('earflow_shifts', JSON.stringify(data.shifts))
+  }
+
+  return {
+    success: true,
+    teamsCount,
+    workersCount,
+    logsCount,
+    overridesCount
+  }
 }
 
 // ─── Full Reset ─────────────────────────────────────────────────────────────
