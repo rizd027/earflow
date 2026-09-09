@@ -229,7 +229,11 @@
                         ? 'bg-amber-300 text-amber-950 font-black border-2 border-amber-600 shadow-inner'
                         : 'bg-amber-50 border border-amber-400 focus:border-amber-600 focus:bg-white'"
                     />
-                    <span v-else class="text-[10px] block truncate max-w-[140px]" :class="row.remark.includes('Cuti') || row.remark.includes('Keluar') ? 'text-rose-600 font-bold italic' : ''">{{ row.remark }}</span>
+                    <span v-else class="text-[10px] block truncate max-w-[140px]" :class="[
+                      row.remark.includes('Cuti') || row.remark.includes('Keluar') ? 'text-rose-600 font-bold italic' : '',
+                      row.remark === 'Izin' ? 'text-amber-800 font-bold' : '',
+                      row.remark === 'Sakit' ? 'text-blue-800 font-bold' : ''
+                    ]">{{ row.remark }}</span>
                   </td>
                 </tr>
               </tbody>
@@ -1028,7 +1032,7 @@ const totalPresentWorkers = computed(() => {
   return reportRows.value.filter(r => {
     if (!r.workerName || !r.workerName.trim()) return false
     const rem = (r.remark || '').toLowerCase().trim()
-    return rem !== absentLabel && !rem.includes('absen') && !rem.includes('absent') && !rem.includes('tidak hadir')
+    return rem !== absentLabel && !rem.includes('absen') && !rem.includes('absent') && !rem.includes('tidak hadir') && !rem.includes('izin') && !rem.includes('sakit') && !rem.includes('cuti') && !rem.includes('keluar')
   }).length
 })
 

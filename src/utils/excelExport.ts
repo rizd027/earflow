@@ -301,7 +301,7 @@ export async function exportMonthlyWithTemplate(options: {
     remark: string
   }[]
   workerIds: string[]
-  dailyQty: Record<string, Record<number, number>>
+  dailyQty: Record<string, Record<number, number | string>>
   dailyTotals: Record<number, number>
   presentCounts: Record<number, number>
   absentCounts: Record<number, number>
@@ -404,9 +404,15 @@ export async function exportMonthlyWithTemplate(options: {
       let workerHalfTotal = 0
       for (let i = 0; i < numDays; i++) {
         const day = startDay + i
-        const qty = options.dailyQty[workerId]?.[day] ?? 0
-        setCell(ws, rowIdx, COL_DAILY_START + i, qty > 0 ? qty : null)
-        workerHalfTotal += qty
+        const cellVal = options.dailyQty[workerId]?.[day]
+        if (typeof cellVal === 'number' && cellVal > 0) {
+          setCell(ws, rowIdx, COL_DAILY_START + i, cellVal)
+          workerHalfTotal += cellVal
+        } else if (typeof cellVal === 'string' && (cellVal === 'i' || cellVal === 's' || cellVal === 'I' || cellVal === 'S')) {
+          setCell(ws, rowIdx, COL_DAILY_START + i, cellVal)
+        } else {
+          setCell(ws, rowIdx, COL_DAILY_START + i, null)
+        }
       }
 
       setCell(ws, rowIdx, COL_NO, worker.no)
@@ -416,8 +422,10 @@ export async function exportMonthlyWithTemplate(options: {
       setCell(ws, rowIdx, COL_TARGET, worker.target)
       setCell(ws, rowIdx, COL_CATATAN, worker.remark || '')
 
-      // Extended totals
-      const workerFullTotal = Object.values(options.dailyQty[workerId] || {}).reduce((a, b) => a + b, 0)
+      // Extended totals (safely sum numbers only)
+      const workerFullTotal = Object.values(options.dailyQty[workerId] || {}).reduce<number>((a, b) => {
+        return a + (typeof b === 'number' ? b : 0)
+      }, 0)
       const targetBulan = worker.target * options.daysInMonth
       setCell(ws, rowIdx, COL_TOTAL_PROD, workerFullTotal)
       setCell(ws, rowIdx, COL_TARGET_BULAN, targetBulan)

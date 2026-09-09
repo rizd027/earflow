@@ -58,6 +58,58 @@ export const useTeamStore = defineStore('team', () => {
   const isLoading = ref(false)
   const isLoaded = ref(false)
 
+  function sanitizeMemberList(members: any[]): any[] {
+    const seenIds = new Set<string>()
+    const seenNiks = new Set<string>()
+    const result: any[] = []
+
+    for (const m of members) {
+      if (!m || !m.id) continue
+
+      // Fix known ID collision where Dina Fitriani was mislabeled as Dini Triarinda with W-875083
+      if (m.id === 'W-875083' && (m.avatar_url?.includes('Dina%20Fitriani') || m.exit_date === '2026-08')) {
+        m.id = 'W-80160'
+        m.full_name = 'Dina Fitriani'
+        m.no_karyawan = '80160'
+        m.status = 'Keluar'
+        m.exit_date = '2026-08'
+        m.avatar_url = 'https://api.dicebear.com/7.x/avataaars/svg?seed=Dina%20Fitriani'
+      }
+
+      // Deduplicate duplicate Aulia april liana
+      if (m.id === 'W-80137' && (m.full_name || '').toLowerCase().includes('aulia april')) {
+        continue
+      }
+
+      // Prevent duplicate worker IDs
+      if (seenIds.has(m.id)) continue
+      seenIds.add(m.id)
+
+      // Prevent duplicate official non-temporary NIKs
+      const cleanNik = (m.no_karyawan && !isTempWorkerNo(m.no_karyawan) && m.no_karyawan !== '-')
+        ? m.no_karyawan.trim()
+        : ''
+      if (cleanNik && cleanNik !== '80140') {
+        if (seenNiks.has(cleanNik)) continue
+        seenNiks.add(cleanNik)
+      }
+
+      result.push(m)
+    }
+    return result
+  }
+
+  function addToUnassigned(membersToAdd: any[]) {
+    const existingIds = new Set(unassignedMembers.value.map(m => m.id))
+    for (const m of membersToAdd) {
+      if (!m || !m.id) continue
+      if (!existingIds.has(m.id)) {
+        unassignedMembers.value.push(m)
+        existingIds.add(m.id)
+      }
+    }
+  }
+
   async function loadTeams(force = false) {
     if (isLoaded.value && !force && teams.value.length > 0) return
     isLoading.value = true
@@ -78,11 +130,24 @@ export const useTeamStore = defineStore('team', () => {
         }
       }
 
-      teams.value = realTeams
-      unassignedMembers.value = unassignedList
+      // Sanitize and deduplicate both real teams and unassigned list
+      const sanitizedTeams = realTeams.map(t => ({
+        ...t,
+        members: sanitizeMemberList(t.members || [])
+      }))
+      const sanitizedUnassigned = sanitizeMemberList(unassignedList)
+
+      teams.value = sanitizedTeams
+      unassignedMembers.value = sanitizedUnassigned
 
       // Auto-sync worker NIKs against master no_karyawan list (in-memory, do not auto-overwrite cloud)
-      await autoSyncNoKaryawan(realTeams, unassignedList, false)
+      await autoSyncNoKaryawan(sanitizedTeams, sanitizedUnassigned, false)
+
+      // If sanitization fixed local duplicates, persist cleaned unassigned to local DB
+      if (sanitizedUnassigned.length !== unassignedList.length) {
+        await saveUnassignedToDB()
+      }
+
       isLoaded.value = true
     } catch (err) {
       console.error('Failed to load teams from local db:', err)
@@ -230,8 +295,8 @@ export const useTeamStore = defineStore('team', () => {
   async function deleteTeam(teamId: string) {
     const teamToDelete = teams.value.find(t => t.id === teamId)
     if (teamToDelete && teamToDelete.members.length > 0) {
-      // Move members of deleted team to unassigned pool
-      unassignedMembers.value.push(...teamToDelete.members)
+      // Move members of deleted team to unassigned pool safely with deduplication
+      addToUnassigned(teamToDelete.members)
       await saveUnassignedToDB()
     }
     teams.value = teams.value.filter(t => t.id !== teamId)
@@ -250,10 +315,10 @@ export const useTeamStore = defineStore('team', () => {
   }
 
   async function deleteAllTeams() {
-    // Move all members from every team into the unassigned pool first
+    // Move all members from every team into the unassigned pool first safely with deduplication
     for (const team of teams.value) {
       if (team.members.length > 0) {
-        unassignedMembers.value.push(...team.members)
+        addToUnassigned(team.members)
       }
     }
     if (unassignedMembers.value.length > 0) {
@@ -551,7 +616,7 @@ export const useTeamStore = defineStore('team', () => {
       await saveTeamToDB(sourceTeam)
 
       if (targetTeamId === UNASSIGNED_TEAM_ID) {
-        unassignedMembers.value.push(memberObj)
+        addToUnassigned([memberObj])
         await saveUnassignedToDB()
       } else {
         const targetTeam = teams.value.find(t => t.id === targetTeamId)
@@ -588,25 +653,28 @@ export const useTeamStore = defineStore('team', () => {
       team.members = team.members.filter(m => m.id !== memberId)
       await saveTeamToDB(team)
       
-      unassignedMembers.value.push(memberObj)
+      addToUnassigned([memberObj])
       await saveUnassignedToDB()
     }
   }
 
-  // All Workers Master List (Assigned + Unassigned)
+  // All Workers Master List (Assigned + Unassigned) - Guaranteed 100% Unique Worker IDs
   const allWorkers = computed<WorkerItem[]>(() => {
     const list: WorkerItem[] = []
+    const seenIds = new Set<string>()
 
-    // 1. Unassigned workers
-    for (const member of unassignedMembers.value) {
+    const addWorker = (member: any, teamId: string, teamName: string) => {
+      if (!member || !member.id || seenIds.has(member.id)) return
+      seenIds.add(member.id)
+
       const cleanNo = (member.no_karyawan && !isTempWorkerNo(member.no_karyawan) && member.no_karyawan !== '-') ? member.no_karyawan.trim() : ''
       list.push({
         id: member.id,
         full_name: member.full_name,
         role: member.role,
         avatar_url: member.avatar_url,
-        team_id: UNASSIGNED_TEAM_ID,
-        team_name: UNASSIGNED_TEAM_NAME,
+        team_id: teamId,
+        team_name: teamName,
         no_karyawan: cleanNo,
         joined_date: member.joined_date || getLocalDateStr(),
         phone_number: member.phone_number || '-',
@@ -616,26 +684,18 @@ export const useTeamStore = defineStore('team', () => {
       })
     }
 
-    // 2. Assigned workers by team
+    // 1. Assigned workers by team take priority
     for (const team of teams.value) {
-      for (const member of team.members) {
-        const cleanNo = (member.no_karyawan && !isTempWorkerNo(member.no_karyawan) && member.no_karyawan !== '-') ? member.no_karyawan.trim() : ''
-        list.push({
-          id: member.id,
-          full_name: member.full_name,
-          role: member.role,
-          avatar_url: member.avatar_url,
-          team_id: team.id,
-          team_name: team.name,
-          no_karyawan: cleanNo,
-          joined_date: member.joined_date || getLocalDateStr(),
-          phone_number: member.phone_number || '-',
-          shift: member.shift || 'Shift Pagi',
-          status: member.status,
-          exit_date: member.exit_date
-        })
+      for (const member of (team.members || [])) {
+        addWorker(member, team.id, team.name)
       }
     }
+
+    // 2. Unassigned workers
+    for (const member of unassignedMembers.value) {
+      addWorker(member, UNASSIGNED_TEAM_ID, UNASSIGNED_TEAM_NAME)
+    }
+
     return list
   })
 

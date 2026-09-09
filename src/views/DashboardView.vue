@@ -10,7 +10,7 @@
             ref="searchInputRef"
             type="text"
             v-model="searchQueryInput"
-            @input="onSearchInput"
+            @input="onSearchInput($event)"
             placeholder="Cari karyawan..."
             @focus="isSearchFocused = true"
             @click="isSearchFocused = true"
@@ -252,6 +252,28 @@
           <span class="text-[10px] opacity-75">({{ presentWorkersCount }})</span>
         </button>
         <button
+          v-if="izinWorkersCount > 0"
+          type="button"
+          @click="statusFilter = statusFilter === 'izin' ? '' : 'izin'"
+          class="px-2.5 py-1 rounded-md text-[11px] font-bold transition flex items-center gap-1 cursor-pointer"
+          :class="statusFilter === 'izin' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : 'text-slate-400 hover:text-slate-200'"
+        >
+          <Clock class="w-3 h-3 text-amber-400" />
+          <span>Izin</span>
+          <span class="text-[10px] opacity-75">({{ izinWorkersCount }})</span>
+        </button>
+        <button
+          v-if="sakitWorkersCount > 0"
+          type="button"
+          @click="statusFilter = statusFilter === 'sakit' ? '' : 'sakit'"
+          class="px-2.5 py-1 rounded-md text-[11px] font-bold transition flex items-center gap-1 cursor-pointer"
+          :class="statusFilter === 'sakit' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/40' : 'text-slate-400 hover:text-slate-200'"
+        >
+          <HeartPulse class="w-3 h-3 text-blue-400" />
+          <span>Sakit</span>
+          <span class="text-[10px] opacity-75">({{ sakitWorkersCount }})</span>
+        </button>
+        <button
           type="button"
           @click="statusFilter = 'absent'"
           class="px-2.5 py-1 rounded-md text-[11px] font-bold transition flex items-center gap-1 cursor-pointer"
@@ -353,67 +375,17 @@
               </div>
             </td>
 
-            <!-- Absensi Toggle Button -->
-            <td class="py-3 px-3 text-center">
-              <!-- QC Specific Absensi / Check Button -->
-              <button
-                v-if="row.isQc"
-                :disabled="isReadOnly"
-                @click="toggleQcCheck(row)"
-                class="px-2.5 py-1 rounded-md text-[11px] font-bold flex items-center justify-center gap-1.5 w-full border shadow-xs transition"
-                :class="[
-                  isReadOnly ? 'cursor-not-allowed opacity-70' : 'active:scale-95',
-                  row.isPresent && row.prodQty >= row.targetQty && row.prodQty > 0
-                    ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40 hover:bg-cyan-500/30 font-black'
-                    : (row.isPresent
-                        ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/25'
-                        : 'bg-rose-500/15 text-rose-300 border-rose-500/40 hover:bg-rose-500/25')
-                ]"
-                :title="row.isPresent && row.prodQty >= row.targetQty && row.prodQty > 0 ? 'Sudah Check Semua Produk' : 'Klik untuk menandai sudah masuk & check semua produk'"
-              >
-                <Check v-if="row.isPresent" class="w-3.5 h-3.5 text-cyan-400 stroke-[3]" />
-                <X v-else class="w-3.5 h-3.5 text-rose-400" />
-                <span>{{ row.isPresent && row.prodQty >= row.targetQty && row.prodQty > 0 ? 'Checked ✓' : (row.isPresent ? 'Check' : 'Absen') }}</span>
-              </button>
-
-              <!-- SPK Specific Absensi / SPK-A1 Button -->
-              <button
-                v-else-if="row.isSpk"
-                :disabled="isReadOnly"
-                @click="toggleSpkCheck(row)"
-                class="px-2.5 py-1 rounded-md text-[11px] font-bold flex items-center justify-center gap-1.5 w-full border shadow-xs transition"
-                :class="[
-                  isReadOnly ? 'cursor-not-allowed opacity-70' : 'active:scale-95',
-                  row.isPresent && row.prodQty >= row.targetQty && row.prodQty > 0
-                    ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30 font-black'
-                    : (row.isPresent
-                        ? 'bg-amber-500/15 text-amber-300 border-amber-500/40 hover:bg-amber-500/25'
-                        : 'bg-rose-500/15 text-rose-300 border-rose-500/40 hover:bg-rose-500/25')
-                ]"
-                :title="row.isPresent && row.prodQty >= row.targetQty && row.prodQty > 0 ? 'Sudah SPK-A1 Selesai' : 'Klik untuk menandai sudah masuk & SPK-A1'"
-              >
-                <Check v-if="row.isPresent" class="w-3.5 h-3.5 text-amber-400 stroke-[3]" />
-                <X v-else class="w-3.5 h-3.5 text-rose-400" />
-                <span>{{ row.isPresent && row.prodQty >= row.targetQty && row.prodQty > 0 ? 'SPK-A1 ✓' : (row.isPresent ? 'SPK-A1' : 'Absen') }}</span>
-              </button>
-
-              <!-- Standard Worker Absensi Toggle -->
-              <button
-                v-else
-                :disabled="isReadOnly"
-                @click="toggleAttendance(row)"
-                class="px-2.5 py-1 rounded-md text-[11px] font-bold flex items-center justify-center gap-1.5 w-full border shadow-xs transition"
-                :class="[
-                  isReadOnly ? 'cursor-not-allowed opacity-70' : 'active:scale-95',
-                  row.isPresent
-                    ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/25'
-                    : 'bg-rose-500/15 text-rose-300 border-rose-500/40 hover:bg-rose-500/25'
-                ]"
-              >
-                <Check v-if="row.isPresent" class="w-3.5 h-3.5 text-emerald-400" />
-                <X v-else class="w-3.5 h-3.5 text-rose-400" />
-                <span>{{ row.isPresent ? 'Hadir' : 'Absen' }}</span>
-              </button>
+            <!-- Absensi Dropdown Selector (Hadir / Izin / Sakit / Absen) -->
+            <td class="py-3 px-2 text-center">
+              <div class="w-28 mx-auto">
+                <AttendanceDropdown
+                  :model-value="row.attendanceStatus"
+                  :is-qc="row.isQc"
+                  :is-spk="row.isSpk"
+                  :is-read-only="isReadOnly"
+                  @change="setWorkerAttendance(row, $event)"
+                />
+              </div>
             </td>
 
             <!-- Jam Kerja Input -->
@@ -741,65 +713,16 @@
               <span>Stats</span>
             </button>
 
-            <!-- Absensi Button (QC Specific) -->
-            <button
-              v-if="row.isQc"
-              :disabled="isReadOnly"
-              @click="toggleQcCheck(row)"
-              class="px-2.5 py-1 rounded-lg text-xs font-black flex items-center gap-1 border shrink-0 transition shadow-2xs"
-              :class="[
-                isReadOnly ? 'cursor-not-allowed opacity-70' : 'active:scale-95',
-                row.isPresent && row.prodQty >= row.targetQty && row.prodQty > 0
-                  ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50 dark:bg-cyan-500/25 font-black'
-                  : (row.isPresent
-                      ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border-emerald-400 dark:bg-emerald-500/20 dark:text-emerald-100 dark:border-emerald-500/50'
-                      : 'bg-rose-50 hover:bg-rose-100 text-rose-950 border-rose-400 dark:bg-rose-500/20 dark:text-rose-100 dark:border-rose-500/50')
-              ]"
-              :title="row.isPresent && row.prodQty >= row.targetQty && row.prodQty > 0 ? 'Sudah Check Semua Produk' : 'Klik untuk menandai QC sudah check semua produk'"
-            >
-              <Check v-if="row.isPresent" class="w-3.5 h-3.5 text-cyan-400 stroke-[3]" />
-              <X v-else class="w-3.5 h-3.5 text-rose-400 stroke-[2.5]" />
-              <span>{{ row.isPresent && row.prodQty >= row.targetQty && row.prodQty > 0 ? 'Checked ✓' : (row.isPresent ? 'Check' : 'Absen') }}</span>
-            </button>
-
-            <!-- Absensi Button (SPK Specific) -->
-            <button
-              v-else-if="row.isSpk"
-              :disabled="isReadOnly"
-              @click="toggleSpkCheck(row)"
-              class="px-2.5 py-1 rounded-lg text-xs font-black flex items-center gap-1 border shrink-0 transition shadow-2xs"
-              :class="[
-                isReadOnly ? 'cursor-not-allowed opacity-70' : 'active:scale-95',
-                row.isPresent && row.prodQty >= row.targetQty && row.prodQty > 0
-                  ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 dark:bg-amber-500/25 font-black'
-                  : (row.isPresent
-                      ? 'bg-amber-50 hover:bg-amber-100 text-amber-950 border-amber-400 dark:bg-amber-500/20 dark:text-amber-100 dark:border-amber-500/50'
-                      : 'bg-rose-50 hover:bg-rose-100 text-rose-950 border-rose-400 dark:bg-rose-500/20 dark:text-rose-100 dark:border-rose-500/50')
-              ]"
-              :title="row.isPresent && row.prodQty >= row.targetQty && row.prodQty > 0 ? 'Sudah SPK-A1 Selesai' : 'Klik untuk menandai SPK sudah masuk & SPK-A1'"
-            >
-              <Check v-if="row.isPresent" class="w-3.5 h-3.5 text-amber-400 stroke-[3]" />
-              <X v-else class="w-3.5 h-3.5 text-rose-400 stroke-[2.5]" />
-              <span>{{ row.isPresent && row.prodQty >= row.targetQty && row.prodQty > 0 ? 'SPK-A1 ✓' : (row.isPresent ? 'SPK-A1' : 'Absen') }}</span>
-            </button>
-
-            <!-- Absensi Button (Standard) -->
-            <button
-              v-else
-              :disabled="isReadOnly"
-              @click="toggleAttendance(row)"
-              class="px-2.5 py-1 rounded-lg text-xs font-black flex items-center gap-1 border shrink-0 transition shadow-2xs"
-              :class="[
-                isReadOnly ? 'cursor-not-allowed opacity-70' : 'active:scale-95',
-                row.isPresent
-                  ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border-emerald-400 dark:bg-emerald-500/20 dark:text-emerald-100 dark:border-emerald-500/50'
-                  : 'bg-rose-50 hover:bg-rose-100 text-rose-950 border-rose-400 dark:bg-rose-500/20 dark:text-rose-100 dark:border-rose-500/50'
-              ]"
-            >
-              <Check v-if="row.isPresent" class="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-300 stroke-[2.5]" />
-              <X v-else class="w-3.5 h-3.5 text-rose-700 dark:text-rose-300 stroke-[2.5]" />
-              <span>{{ row.isPresent ? 'Hadir' : 'Absen' }}</span>
-            </button>
+            <!-- Absensi Dropdown Selector (Hadir / Izin / Sakit / Absen) -->
+            <div class="w-28 shrink-0">
+              <AttendanceDropdown
+                :model-value="row.attendanceStatus"
+                :is-qc="row.isQc"
+                :is-spk="row.isSpk"
+                :is-read-only="isReadOnly"
+                @change="setWorkerAttendance(row, $event)"
+              />
+            </div>
           </div>
         </div>
 
@@ -988,7 +911,12 @@
           />
         </div>
       </div>
-
+      <div
+        v-if="filteredWorkerRows.length === 0"
+        class="py-10 text-center text-slate-500 text-xs bg-slate-900/40 rounded-lg border border-slate-800/80 p-5 font-mono"
+      >
+        Tidak ada data karyawan yang cocok dengan filter atau pencarian.
+      </div>
     </div>
 
     <!-- Load More Button when items exceed visible count -->
@@ -1072,6 +1000,7 @@ import { useAuditStore } from '@/stores/auditStore'
 import { useShiftStore } from '@/stores/shiftStore'
 import { useHeaderMenuStore } from '@/stores/headerMenuStore'
 import CustomSelect, { type SelectOption } from '@/components/CustomSelect.vue'
+import AttendanceDropdown from '@/components/AttendanceDropdown.vue'
 
 const MandorDailyReportModal = defineAsyncComponent(() => import('@/components/MandorDailyReportModal.vue'))
 const MonthlyProductionRecapModal = defineAsyncComponent(() => import('@/components/MonthlyProductionRecapModal.vue'))
@@ -1092,6 +1021,7 @@ import {
   Clock,
   ChevronLeft,
   ChevronRight,
+  HeartPulse,
   Wrench,
   BarChart3,
   Lock,
@@ -1161,16 +1091,21 @@ const searchQueryInput = ref('')
 const searchQuery = ref('')
 let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null
 
-function onSearchInput() {
+function onSearchInput(e?: Event) {
   if (searchDebounceTimer) clearTimeout(searchDebounceTimer)
-  if (!searchQueryInput.value) {
-    searchQuery.value = ''
-    return
-  }
+  const val = (e && e.target) ? (e.target as HTMLInputElement).value : searchQueryInput.value
+  searchQueryInput.value = val
   searchDebounceTimer = setTimeout(() => {
-    searchQuery.value = searchQueryInput.value
-  }, 120)
+    searchQuery.value = val
+  }, 100)
 }
+
+watch(searchQueryInput, (newVal) => {
+  if (searchDebounceTimer) clearTimeout(searchDebounceTimer)
+  searchDebounceTimer = setTimeout(() => {
+    searchQuery.value = newVal || ''
+  }, 100)
+})
 
 const searchInputRef = ref<HTMLInputElement | null>(null)
 const isSearchFocused = ref(false)
@@ -1274,6 +1209,8 @@ function formatSpkLembar(qtyPcs: number): string {
   return Number.isInteger(lbr) ? String(lbr) : lbr.toFixed(2).replace(/\.?0+$/, '')
 }
 
+export type AttendanceStatus = 'Hadir' | 'Izin' | 'Sakit' | 'Absen'
+
 interface WorkerRow {
   workerId: string
   workerNo: string
@@ -1283,6 +1220,7 @@ interface WorkerRow {
   role?: string
   isSpk: boolean
   isQc: boolean
+  attendanceStatus: AttendanceStatus
   isPresent: boolean
   workHours: string
   targetQty: number
@@ -1336,13 +1274,30 @@ const workerRows = computed<WorkerRow[]>(() => {
     const hasProdOverride = dOverride.prodQty !== undefined
     const prodQtyVal = hasProdOverride ? dOverride.prodQty! : baseProdQty
 
+    const remNorm = (dOverride.remark || '').toLowerCase().trim()
+    let attendanceStatus: AttendanceStatus = 'Absen'
     let isPresent = false
-    if (dOverride.remark === 'Hadir ✓' || dOverride.remark === 'Hadir' || dOverride.remark === 'Check' || dOverride.remark === 'SPK-A1' || (dOverride.remark && dOverride.remark.toUpperCase().includes('SPK-A1'))) {
+
+    if (remNorm === 'izin' || remNorm === 'i') {
+      attendanceStatus = 'Izin'
+      isPresent = false
+    } else if (remNorm === 'sakit' || remNorm === 's') {
+      attendanceStatus = 'Sakit'
+      isPresent = false
+    } else if (remNorm === 'absen' || remNorm === 'tidak hadir' || remNorm === 'absen ✕') {
+      attendanceStatus = 'Absen'
+      isPresent = prodQtyVal > 0
+    } else if (remNorm === 'hadir' || remNorm === 'hadir ✓' || remNorm === 'check' || remNorm.includes('check') || remNorm.includes('spk')) {
+      attendanceStatus = 'Hadir'
       isPresent = true
-    } else if (dOverride.remark === 'Absen ✕' || dOverride.remark === 'Absen') {
-      isPresent = prodQtyVal > 0
     } else {
-      isPresent = prodQtyVal > 0
+      if (prodQtyVal > 0) {
+        attendanceStatus = 'Hadir'
+        isPresent = true
+      } else {
+        attendanceStatus = 'Absen'
+        isPresent = false
+      }
     }
 
     const defaultWorkHours = workerTeam ? (workerTeam.shift ? shiftStore.formatShiftDisplay(workerTeam.shift) : '06:00 - 13:00') : '06:00 - 13:00'
@@ -1373,6 +1328,10 @@ const workerRows = computed<WorkerRow[]>(() => {
       defaultRemark = 'Keluar'
     } else if (isOnLeave && !isPresent) {
       defaultRemark = 'Cuti'
+    } else if (attendanceStatus === 'Izin') {
+      defaultRemark = 'Izin'
+    } else if (attendanceStatus === 'Sakit') {
+      defaultRemark = 'Sakit'
     } else if (isPresent) {
       defaultRemark = isQc ? 'Check' : (isSpk ? 'SPK-A1' : (isNewInInterval ? 'Hadir (Baru)' : 'Hadir'))
     }
@@ -1388,6 +1347,7 @@ const workerRows = computed<WorkerRow[]>(() => {
       role,
       isSpk,
       isQc,
+      attendanceStatus,
       isPresent,
       workHours,
       targetQty,
@@ -1548,17 +1508,23 @@ const filteredWorkerRows = computed(() => {
 
     // Filter Status
     if (statusFilter.value === 'present' && !row.isPresent) return false
-    if (statusFilter.value === 'absent' && row.isPresent) return false
+    if (statusFilter.value === 'izin' && row.attendanceStatus !== 'Izin') return false
+    if (statusFilter.value === 'sakit' && row.attendanceStatus !== 'Sakit') return false
+    if (statusFilter.value === 'absent' && (row.isPresent || row.attendanceStatus === 'Izin' || row.attendanceStatus === 'Sakit')) return false
     if (statusFilter.value === 'reached' && !row.isTargetReached) return false
     if (statusFilter.value === 'pending' && (row.isTargetReached || !row.isPresent)) return false
 
-    // Search Query
+    // Search Query (Smart multi-token search e.g. "Dinda kh" matches "Dinda Khoirunnisak")
     if (searchQuery.value.trim()) {
-      const q = searchQuery.value.toLowerCase().trim()
-      const nameMatch = row.workerName.toLowerCase().includes(q)
-      const noMatch = row.workerNo.toLowerCase().includes(q)
-      const teamMatch = row.teamName.toLowerCase().includes(q)
-      if (!nameMatch && !noMatch && !teamMatch) return false
+      const tokens = searchQuery.value.toLowerCase().trim().split(/\s+/).filter(Boolean)
+      const wName = (row.workerName || '').toLowerCase()
+      const wNo = (row.workerNo || '').toLowerCase()
+      const tName = (row.teamName || '').toLowerCase()
+
+      const allTokensMatch = tokens.every(token =>
+        wName.includes(token) || wNo.includes(token) || tName.includes(token)
+      )
+      if (!allTokensMatch) return false
     }
 
     return true
@@ -1567,6 +1533,8 @@ const filteredWorkerRows = computed(() => {
 
 const totalWorkersCount = computed(() => workerRows.value.length)
 const presentWorkersCount = computed(() => workerRows.value.filter(r => r.isPresent).length)
+const izinWorkersCount = computed(() => workerRows.value.filter(r => r.attendanceStatus === 'Izin').length)
+const sakitWorkersCount = computed(() => workerRows.value.filter(r => r.attendanceStatus === 'Sakit').length)
 const absentWorkersCount = computed(() => workerRows.value.filter(r => !r.isPresent).length)
 
 const visibleWorkerCount = ref(35)
@@ -1600,24 +1568,44 @@ function openWorkerReport(row: WorkerRow) {
   showWorkerReportModal.value = true
 }
 
-function toggleAttendance(row: WorkerRow) {
+function setWorkerAttendance(row: WorkerRow, status: AttendanceStatus) {
   if (isReadOnly.value) return
 
-  const newStatus = !row.isPresent
-  let newRemark = newStatus ? 'Hadir' : 'Absen'
-  if (newStatus && row.isQc) {
-    newRemark = 'Check'
-  } else if (newStatus && row.isSpk) {
-    newRemark = 'SPK-A1'
-  }
-  overrideStore.setDailyOverride(row.workerId, selectedDate.value, 'remark', newRemark, 'all_shifts')
-
-  if (!newStatus) {
+  if (status === 'Hadir') {
+    if (row.isQc) {
+      const currentTarget = localTargetMap.value[row.workerId] ?? (row.targetQty > 0 ? row.targetQty : 500)
+      const currentProd = localProdMap.value[row.workerId] ?? row.prodQty
+      const targetVal = currentProd > 0 ? currentProd : currentTarget
+      overrideStore.setDailyOverride(row.workerId, selectedDate.value, 'remark', 'Check', 'all_shifts')
+      overrideStore.setDailyOverride(row.workerId, selectedDate.value, 'prodQty', targetVal, 'all_shifts')
+      localRemarkMap.value[row.workerId] = 'Check'
+      localProdMap.value[row.workerId] = targetVal
+      auditStore.logAction('Absensi', `QC Hadir (${row.workerName})`, `Status QC di-set Hadir (${selectedDate.value})`)
+    } else if (row.isSpk) {
+      const currentTarget = localTargetMap.value[row.workerId] ?? (row.targetQty > 0 ? row.targetQty : (10 * SPK_PCS_PER_SHEET))
+      const currentProd = localProdMap.value[row.workerId] ?? row.prodQty
+      const targetVal = currentProd > 0 ? currentProd : currentTarget
+      overrideStore.setDailyOverride(row.workerId, selectedDate.value, 'remark', 'SPK-A1', 'all_shifts')
+      overrideStore.setDailyOverride(row.workerId, selectedDate.value, 'prodQty', targetVal, 'all_shifts')
+      localRemarkMap.value[row.workerId] = 'SPK-A1'
+      localProdMap.value[row.workerId] = targetVal
+      auditStore.logAction('Absensi', `SPK Hadir (${row.workerName})`, `Status SPK di-set Hadir (${selectedDate.value})`)
+    } else {
+      overrideStore.setDailyOverride(row.workerId, selectedDate.value, 'remark', 'Hadir', 'all_shifts')
+      localRemarkMap.value[row.workerId] = 'Hadir'
+      auditStore.logAction('Absensi', `Hadir (${row.workerName})`, `Status di-set Hadir (${selectedDate.value})`)
+    }
+  } else {
+    // Izin, Sakit, or Absen
+    overrideStore.setDailyOverride(row.workerId, selectedDate.value, 'remark', status, 'all_shifts')
     overrideStore.setDailyOverride(row.workerId, selectedDate.value, 'prodQty', 0, 'all_shifts')
+    localProdMap.value[row.workerId] = 0
+    localRemarkMap.value[row.workerId] = status
+    auditStore.logAction('Absensi', `${status} (${row.workerName})`, `Status di-set ${status} (${selectedDate.value})`)
   }
-
-  auditStore.logAction('Absensi', `Toggle Absensi (${row.workerName})`, `Status diubah ke ${newRemark} (${selectedDate.value})`)
 }
+
+
 
 // Debounced audit loggers — dipanggil setelah user selesai mengetik agar tidak membebani audit log
 const _logAuditTarget = debounce((workerId: string, dateStr: string, val: number) => {

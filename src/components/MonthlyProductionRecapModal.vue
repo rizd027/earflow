@@ -231,7 +231,7 @@
                   >
                     <input
                       v-if="isEditing"
-                      type="number"
+                      type="text"
                       :value="matrixAndSummary.matrix[row.workerId]?.[dInfo.day]?.inputValue"
                       :placeholder="dInfo.isSunday ? 'MG' : '-'"
                       @focus="($event.target as HTMLInputElement).select()"
@@ -938,7 +938,25 @@ function resetCellOverrides() {
 
 function saveCellOverride(workerId: string, day: number, value: string) {
   const dateStr = getDateStrForDay(day)
-  overrideStore.setDailyOverride(workerId, dateStr, 'prodQty', value, selectedShiftId.value)
+  const valNorm = (value || '').toLowerCase().trim()
+  if (valNorm === 'i' || valNorm === 'izin') {
+    overrideStore.setDailyOverride(workerId, dateStr, 'remark', 'Izin', selectedShiftId.value)
+    overrideStore.setDailyOverride(workerId, dateStr, 'prodQty', 0, selectedShiftId.value)
+  } else if (valNorm === 's' || valNorm === 'sakit') {
+    overrideStore.setDailyOverride(workerId, dateStr, 'remark', 'Sakit', selectedShiftId.value)
+    overrideStore.setDailyOverride(workerId, dateStr, 'prodQty', 0, selectedShiftId.value)
+  } else if (valNorm === 'a' || valNorm === 'absen' || valNorm === 'alpha') {
+    overrideStore.setDailyOverride(workerId, dateStr, 'remark', 'Absen', selectedShiftId.value)
+    overrideStore.setDailyOverride(workerId, dateStr, 'prodQty', 0, selectedShiftId.value)
+  } else if (valNorm === '' || valNorm === '-') {
+    overrideStore.setDailyOverride(workerId, dateStr, 'prodQty', 0, selectedShiftId.value)
+  } else {
+    const num = Number(value)
+    overrideStore.setDailyOverride(workerId, dateStr, 'prodQty', isNaN(num) ? 0 : num, selectedShiftId.value)
+    if (!isNaN(num) && num > 0) {
+      overrideStore.setDailyOverride(workerId, dateStr, 'remark', 'Hadir', selectedShiftId.value)
+    }
+  }
 }
 
 function saveWorkerOverride(workerId: string, field: string, value: string) {
@@ -1284,28 +1302,39 @@ const matrixAndSummary = computed(() => {
 
       const isQcRow = row.isQc
       const isSpkRow = row.isSpk
+      const remNorm = (dOverride?.remark || '').toLowerCase().trim()
+      const isIzin = remNorm === 'izin' || remNorm === 'i'
+      const isSakit = remNorm === 'sakit' || remNorm === 's'
+
       let display = '-'
-      if (isEdited && dOverride?.prodQty !== undefined) {
+      let inputValue = ''
+      let bgClass = ''
+
+      if (isIzin) {
+        display = 'i'
+        inputValue = 'i'
+        bgClass = 'bg-amber-100 text-amber-950 font-black text-center'
+        qty = 0
+      } else if (isSakit) {
+        display = 's'
+        inputValue = 's'
+        bgClass = 'bg-blue-100 text-blue-950 font-black text-center'
+        qty = 0
+      } else if (isEdited && dOverride?.prodQty !== undefined) {
         display = isQcRow && dOverride.prodQty > 0
           ? 'CHECK'
           : (isSpkRow && (dOverride.prodQty > 0 || (dOverride.remark && (dOverride.remark.toUpperCase().includes('SPK') || dOverride.remark.toUpperCase().includes('SPK-A1'))))
               ? 'SPK-A1'
-              : String(dOverride.prodQty))
+              : (dOverride.prodQty > 0 ? String(dOverride.prodQty) : (dOverride.prodQty === 0 && (remNorm === 'hadir' || remNorm === 'check') ? '0' : '-')))
+        inputValue = qty > 0 ? String(qty) : (dOverride.prodQty === 0 ? '0' : '')
+        bgClass = 'bg-amber-100/80 font-bold'
       } else if (qty > 0) {
         display = isQcRow ? 'CHECK' : (isSpkRow ? 'SPK-A1' : String(qty))
+        inputValue = String(qty)
+        bgClass = 'font-black text-black'
       } else if (dayInfo.isSunday) {
         display = 'MG'
-      }
-
-      const inputValue = qty > 0 ? String(qty) : ''
-
-      let bgClass = ''
-      if (isEdited) {
-        bgClass = 'bg-amber-100/80 font-bold'
-      } else if (dayInfo.isSunday) {
         bgClass = 'bg-rose-100 text-rose-950 font-bold'
-      } else if (qty > 0) {
-        bgClass = 'font-black text-black'
       }
 
       rowMatrix[d] = {
@@ -1362,16 +1391,22 @@ async function exportExcel() {
   const matrix = matrixAndSummary.value.matrix
   const summary = matrixAndSummary.value
 
-  // Build daily qty map: { workerId: { dayNumber: qty } }
-  const dailyQtyMap: Record<string, Record<number, number>> = {}
+  // Build daily qty map: { workerId: { dayNumber: qty | 'i' | 's' } }
+  const dailyQtyMap: Record<string, Record<number, number | string>> = {}
   const workerIdsList: string[] = []
 
   const workersList = reportRows.value.map((r: any) => {
     workerIdsList.push(r.workerId)
-    const dayMap: Record<number, number> = {}
+    const dayMap: Record<number, number | string> = {}
     days.forEach((d: any) => {
-      const qty = matrix[r.workerId]?.[d.day]?.qty ?? 0
-      if (qty > 0) dayMap[d.day] = qty
+      const cell = matrix[r.workerId]?.[d.day]
+      if (cell) {
+        if (cell.display === 'i' || cell.display === 's') {
+          dayMap[d.day] = cell.display
+        } else if (cell.qty > 0) {
+          dayMap[d.day] = cell.qty
+        }
+      }
     })
     dailyQtyMap[r.workerId] = dayMap
 
