@@ -32,6 +32,11 @@ export const useOverrideStore = defineStore('override', () => {
 
   const isLoaded = ref(false)
 
+  const pendingPersistMap = new Map<string, { type: 'daily' | 'worker'; data: any }>()
+  // Track recent local edits with timestamp to prevent cloud/storage reloads from stomping on active user keystrokes
+  const recentLocalEdits = new Map<string, { time: number; type: 'daily' | 'worker'; data: any }>()
+  let persistDebounceTimer: any = null
+
   /**
    * Load overrides from IndexedDB, with legacy localStorage auto-migration.
    */
@@ -50,14 +55,45 @@ export const useOverrideStore = defineStore('override', () => {
           else if (rec.type === 'worker') wMap[rec.key] = rec.data
         }
 
+        // Strictly preserve any local edits made within the last 15 seconds
+        const now = Date.now()
+        for (const [k, edit] of recentLocalEdits.entries()) {
+          if (now - edit.time < 15000) {
+            if (edit.type === 'daily' && edit.data) dMap[k] = edit.data
+            else if (edit.type === 'worker' && edit.data) wMap[k] = edit.data
+          } else {
+            recentLocalEdits.delete(k)
+          }
+        }
+
         // Preserve any active in-memory edits currently in pending queue
         for (const [k, v] of pendingPersistMap.entries()) {
           if (v.type === 'daily' && v.data) dMap[k] = v.data
           else if (v.type === 'worker' && v.data) wMap[k] = v.data
         }
 
-        dailyMap.value = dMap
-        workerMap.value = wMap
+        // In-place reactive merge: mutate keys only if changed to avoid full component re-render cascades
+        for (const [k, v] of Object.entries(dMap)) {
+          if (JSON.stringify(dailyMap.value[k]) !== JSON.stringify(v)) {
+            dailyMap.value[k] = v
+          }
+        }
+        for (const k of Object.keys(dailyMap.value)) {
+          if (!(k in dMap) && !recentLocalEdits.has(k) && !pendingPersistMap.has(k)) {
+            delete dailyMap.value[k]
+          }
+        }
+
+        for (const [k, v] of Object.entries(wMap)) {
+          if (JSON.stringify(workerMap.value[k]) !== JSON.stringify(v)) {
+            workerMap.value[k] = v
+          }
+        }
+        for (const k of Object.keys(workerMap.value)) {
+          if (!(k in wMap) && !recentLocalEdits.has(k) && !pendingPersistMap.has(k)) {
+            delete workerMap.value[k]
+          }
+        }
       } else {
         // Migration check from localStorage
         const saved = localStorage.getItem(STORAGE_KEY)
@@ -96,9 +132,6 @@ export const useOverrideStore = defineStore('override', () => {
       console.warn('Failed to save all cell overrides:', e)
     }
   }
-
-  const pendingPersistMap = new Map<string, { type: 'daily' | 'worker'; data: any }>()
-  let persistDebounceTimer: any = null
 
   async function flushPendingOverrides() {
     if (pendingPersistMap.size === 0) return
@@ -167,7 +200,7 @@ export const useOverrideStore = defineStore('override', () => {
   function persistSingleOverride(key: string, type: 'daily' | 'worker', data: any) {
     pendingPersistMap.set(key, { type, data })
     clearTimeout(persistDebounceTimer)
-    persistDebounceTimer = setTimeout(flushPendingOverrides, 600)
+    persistDebounceTimer = setTimeout(flushPendingOverrides, 800)
   }
 
 
@@ -300,6 +333,7 @@ export const useOverrideStore = defineStore('override', () => {
       existing[field] = val
       // Direct property assignment triggers Vue's reactive proxy for that key only
       dailyMap.value[key] = existing
+      recentLocalEdits.set(key, { time: Date.now(), type: 'daily', data: existing })
       persistSingleOverride(key, 'daily', existing)
     }
   }
@@ -315,6 +349,7 @@ export const useOverrideStore = defineStore('override', () => {
     current[field] = value
     // Targeted in-place mutation — avoids full workerMap replace
     workerMap.value[workerId] = current
+    recentLocalEdits.set(workerId, { time: Date.now(), type: 'worker', data: current })
     persistSingleOverride(workerId, 'worker', current)
   }
 

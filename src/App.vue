@@ -101,6 +101,11 @@ const onThemeChanged = (e: any) => {
 }
 
 const refreshStoresFromCloud = () => {
+  // Never reload stores while the user is actively typing or editing an input/select/textarea
+  const activeEl = document.activeElement
+  if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'SELECT')) {
+    return
+  }
   teamStore.loadTeams(true)
   productionStore.loadLogs(true)
   overrideStore.loadFromStorage(true)

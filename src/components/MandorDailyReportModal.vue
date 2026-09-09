@@ -151,9 +151,11 @@
                   <td class="sticky left-[24px] z-10 border border-black p-0.5 text-black font-mono text-center font-semibold bg-white print:static">
                     <input
                       v-if="isEditing"
-                      :value="row.workerNo"
-                      @focus="($event.target as HTMLInputElement).select()"
-                      @input="saveCellOverrideDebounced(row.no, 'workerNo', ($event.target as HTMLInputElement).value)"
+                      :value="localWorkerNoMap[row.workerId] ?? row.workerNo"
+                      @focus="activeInputKey = `no_${row.workerId}`; ($event.target as HTMLInputElement).select()"
+                      @input="handleInput(row.workerId, 'workerNo', ($event.target as HTMLInputElement).value)"
+                      @blur="handleBlur(row.workerId, 'workerNo', ($event.target as HTMLInputElement).value)"
+                      @keydown.enter="($event.target as HTMLInputElement).blur()"
                       class="w-full h-8 sm:h-6 px-1.5 text-center rounded text-xs sm:text-[10px] font-mono focus:outline-none"
                       :class="isRowFieldEdited(row.workerId, 'workerNo')
                         ? 'bg-amber-300 text-amber-950 font-black border-2 border-amber-600 shadow-inner'
@@ -166,9 +168,11 @@
                   <td class="sticky left-[100px] z-10 border border-black p-0.5 text-left px-2 font-black text-black bg-white shadow-[2px_0_4px_-1px_rgba(0,0,0,0.15)] print:static print:shadow-none">
                     <input
                       v-if="isEditing"
-                      :value="row.workerName"
-                      @focus="($event.target as HTMLInputElement).select()"
-                      @input="saveCellOverrideDebounced(row.no, 'workerName', ($event.target as HTMLInputElement).value)"
+                      :value="localWorkerNameMap[row.workerId] ?? row.workerName"
+                      @focus="activeInputKey = `name_${row.workerId}`; ($event.target as HTMLInputElement).select()"
+                      @input="handleInput(row.workerId, 'workerName', ($event.target as HTMLInputElement).value)"
+                      @blur="handleBlur(row.workerId, 'workerName', ($event.target as HTMLInputElement).value)"
+                      @keydown.enter="($event.target as HTMLInputElement).blur()"
                       class="w-full h-8 sm:h-6 px-1.5 text-left rounded text-xs sm:text-[10px] font-mono font-bold focus:outline-none"
                       :class="isRowFieldEdited(row.workerId, 'workerName')
                         ? 'bg-amber-300 text-amber-950 font-black border-2 border-amber-600 shadow-inner'
@@ -182,9 +186,11 @@
                     <input
                       v-if="isEditing"
                       type="number"
-                      :value="row.targetQty"
-                      @focus="($event.target as HTMLInputElement).select()"
-                      @input="saveCellOverrideDebounced(row.no, 'targetQty', ($event.target as HTMLInputElement).value)"
+                      :value="localTargetMap[row.workerId] ?? (row.targetQty || '')"
+                      @focus="activeInputKey = `target_${row.workerId}`; ($event.target as HTMLInputElement).select()"
+                      @input="handleInput(row.workerId, 'targetQty', ($event.target as HTMLInputElement).value)"
+                      @blur="handleBlur(row.workerId, 'targetQty', ($event.target as HTMLInputElement).value)"
+                      @keydown.enter="($event.target as HTMLInputElement).blur()"
                       class="w-full h-8 sm:h-6 px-1.5 text-right rounded text-xs sm:text-[10px] font-mono font-bold focus:outline-none"
                       :class="isRowFieldEdited(row.workerId, 'targetQty')
                         ? 'bg-amber-300 text-amber-950 font-black border-2 border-amber-600 shadow-inner'
@@ -198,9 +204,11 @@
                     <input
                       v-if="isEditing"
                       type="number"
-                      :value="row.prodQty"
-                      @focus="($event.target as HTMLInputElement).select()"
-                      @input="saveCellOverrideDebounced(row.no, 'prodQty', ($event.target as HTMLInputElement).value)"
+                      :value="localProdMap[row.workerId] ?? (row.prodQty || '')"
+                      @focus="activeInputKey = `prod_${row.workerId}`; ($event.target as HTMLInputElement).select()"
+                      @input="handleInput(row.workerId, 'prodQty', ($event.target as HTMLInputElement).value)"
+                      @blur="handleBlur(row.workerId, 'prodQty', ($event.target as HTMLInputElement).value)"
+                      @keydown.enter="($event.target as HTMLInputElement).blur()"
                       class="w-full h-8 sm:h-6 px-1.5 text-right rounded text-xs sm:text-[10px] font-mono font-black focus:outline-none"
                       :class="isRowFieldEdited(row.workerId, 'prodQty')
                         ? 'bg-amber-300 text-amber-950 font-black border-2 border-amber-600 shadow-inner'
@@ -221,9 +229,11 @@
                   <td class="border border-black p-0.5 text-left px-2 text-black min-w-[110px]" :title="row.remark">
                     <input
                       v-if="isEditing"
-                      :value="row.remark"
-                      @focus="($event.target as HTMLInputElement).select()"
-                      @input="saveCellOverrideDebounced(row.no, 'remark', ($event.target as HTMLInputElement).value)"
+                      :value="localRemarkMap[row.workerId] ?? (row.remark || '')"
+                      @focus="activeInputKey = `remark_${row.workerId}`; ($event.target as HTMLInputElement).select()"
+                      @input="handleInput(row.workerId, 'remark', ($event.target as HTMLInputElement).value)"
+                      @blur="handleBlur(row.workerId, 'remark', ($event.target as HTMLInputElement).value)"
+                      @keydown.enter="($event.target as HTMLInputElement).blur()"
                       class="w-full h-8 sm:h-6 px-1.5 text-left rounded text-xs sm:text-[9px] font-mono focus:outline-none"
                       :class="isRowFieldEdited(row.workerId, 'remark')
                         ? 'bg-amber-300 text-amber-950 font-black border-2 border-amber-600 shadow-inner'
@@ -583,12 +593,19 @@ import { ref, computed, watch, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 // Debounce helper to reduce store writes on every keystroke
-function debounce<T extends (...args: any[]) => void>(fn: T, delay: number): T {
-  let timer: ReturnType<typeof setTimeout>
-  return ((...args: any[]) => {
-    clearTimeout(timer)
+function debounce<T extends (...args: any[]) => void>(fn: T, delay: number) {
+  let timer: any = null
+  const debounced = (...args: Parameters<T>) => {
+    if (timer) clearTimeout(timer)
     timer = setTimeout(() => fn(...args), delay)
-  }) as T
+  }
+  debounced.cancel = () => {
+    if (timer) {
+      clearTimeout(timer)
+      timer = null
+    }
+  }
+  return debounced
 }
 import { useProductionStore, getLocalDateStr } from '@/stores/productionStore'
 import { useTeamStore } from '@/stores/teamStore'
@@ -777,19 +794,49 @@ function matchesRoleFilter(w: any, filterVal: string): boolean {
   return roleUpper.includes(filterVal.toUpperCase()) || (w.role || '').toLowerCase() === filterVal.toLowerCase()
 }
 
-function saveCellOverride(rowNo: number, field: string, value: any) {
-  const rowWorker = reportRows.value[rowNo - 1]
-  const workerId = rowWorker?.workerId || `row_${rowNo}`
+// ─── Local Input State Buffer (Zero-Bounce Architecture) ──────────────────────
+const localWorkerNoMap = ref<Record<string, string>>({})
+const localWorkerNameMap = ref<Record<string, string>>({})
+const localTargetMap = ref<Record<string, number | string>>({})
+const localProdMap = ref<Record<string, number | string>>({})
+const localRemarkMap = ref<Record<string, string>>({})
+const activeInputKey = ref<string | null>(null)
 
+function saveCellOverride(workerId: string, field: string, value: any) {
   if (field === 'workerNo' || field === 'workerName') {
     overrideStore.setWorkerOverride(workerId, field as keyof WorkerOverride, value)
+  } else if (field === 'prodQty' || field === 'targetQty') {
+    const trimmed = String(value ?? '').trim()
+    const num = Number(trimmed)
+    overrideStore.setDailyOverride(workerId, selectedDate.value, field as keyof DailyOverride, (trimmed === '' || isNaN(num)) ? 0 : num, selectedShiftId.value)
   } else {
     overrideStore.setDailyOverride(workerId, selectedDate.value, field as keyof DailyOverride, value, selectedShiftId.value)
   }
 }
 
-// Debounced version for text fields — fires 300ms after last keystroke
-const saveCellOverrideDebounced = debounce(saveCellOverride, 300)
+const debouncedSaveCellOverride = debounce((workerId: string, field: string, value: any) => {
+  saveCellOverride(workerId, field, value)
+}, 500)
+
+function handleInput(workerId: string, field: string, value: any) {
+  if (field === 'workerNo') localWorkerNoMap.value[workerId] = value
+  else if (field === 'workerName') localWorkerNameMap.value[workerId] = value
+  else if (field === 'targetQty') localTargetMap.value[workerId] = value
+  else if (field === 'prodQty') localProdMap.value[workerId] = value
+  else if (field === 'remark') localRemarkMap.value[workerId] = value
+  debouncedSaveCellOverride(workerId, field, value)
+}
+
+function handleBlur(workerId: string, field: string, value: any) {
+  debouncedSaveCellOverride.cancel?.()
+  if (field === 'workerNo') localWorkerNoMap.value[workerId] = value
+  else if (field === 'workerName') localWorkerNameMap.value[workerId] = value
+  else if (field === 'targetQty') localTargetMap.value[workerId] = value
+  else if (field === 'prodQty') localProdMap.value[workerId] = value
+  else if (field === 'remark') localRemarkMap.value[workerId] = value
+  saveCellOverride(workerId, field, value)
+  activeInputKey.value = null
+}
 
 function isRowFieldEdited(workerId: string, field: string): boolean {
   if (!workerId) return false
@@ -1018,6 +1065,18 @@ const reportRows = computed(() => {
 
   return buildRowsForWorkers(workerList, logsForDate)
 })
+
+watch(reportRows, (rows) => {
+  for (const row of rows) {
+    const k = row.workerId
+    if (activeInputKey.value !== `no_${k}`) localWorkerNoMap.value[k] = row.workerNo
+    if (activeInputKey.value !== `name_${k}`) localWorkerNameMap.value[k] = row.workerName
+    if (activeInputKey.value !== `target_${k}`) localTargetMap.value[k] = row.targetQty
+    if (activeInputKey.value !== `prod_${k}`) localProdMap.value[k] = row.prodQty
+    if (activeInputKey.value !== `remark_${k}`) localRemarkMap.value[k] = row.remark
+  }
+}, { immediate: true })
+
 
 const totalDayProduction = computed(() => {
   return reportRows.value.reduce((acc, r) => acc + (r.prodQty || 0), 0)

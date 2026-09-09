@@ -175,9 +175,11 @@
                   <td class="print-col-nik sticky left-[20px] z-10 border border-black p-0.5 text-black font-mono text-center font-semibold text-[8px] bg-white print:static">
                     <input
                       v-if="isEditing"
-                      :value="row.workerNo"
-                      @focus="($event.target as HTMLInputElement).select()"
-                      @input="saveWorkerOverrideDebounced(row.workerId, 'workerNo', ($event.target as HTMLInputElement).value)"
+                      :value="localWorkerNoMap[row.workerId] ?? row.workerNo"
+                      @focus="activeWorkerKey = `no_${row.workerId}`; ($event.target as HTMLInputElement).select()"
+                      @input="handleWorkerInput(row.workerId, 'workerNo', ($event.target as HTMLInputElement).value)"
+                      @blur="handleWorkerBlur(row.workerId, 'workerNo', ($event.target as HTMLInputElement).value)"
+                      @keydown.enter="($event.target as HTMLInputElement).blur()"
                       class="w-full h-4 px-0.5 text-center bg-amber-50 border border-amber-400 text-black rounded text-[8px] font-mono focus:outline-none focus:bg-white"
                     />
                     <span v-else class="text-black">{{ row.workerNo }}</span>
@@ -187,9 +189,11 @@
                   <td class="print-col-name sticky left-[65px] z-10 border border-black p-0.5 text-black font-mono text-left px-1 font-bold text-[9px] truncate max-w-[130px] bg-white shadow-[2px_0_4px_-1px_rgba(0,0,0,0.15)] print:static print:shadow-none">
                     <input
                       v-if="isEditing"
-                      :value="row.workerName"
-                      @focus="($event.target as HTMLInputElement).select()"
-                      @input="saveWorkerOverrideDebounced(row.workerId, 'workerName', ($event.target as HTMLInputElement).value)"
+                      :value="localWorkerNameMap[row.workerId] ?? row.workerName"
+                      @focus="activeWorkerKey = `name_${row.workerId}`; ($event.target as HTMLInputElement).select()"
+                      @input="handleWorkerInput(row.workerId, 'workerName', ($event.target as HTMLInputElement).value)"
+                      @blur="handleWorkerBlur(row.workerId, 'workerName', ($event.target as HTMLInputElement).value)"
+                      @keydown.enter="($event.target as HTMLInputElement).blur()"
                       class="w-full h-4 px-1 text-left bg-amber-50 border border-amber-400 text-black rounded text-[8px] font-mono focus:outline-none focus:bg-white"
                     />
                     <span v-else class="text-black">{{ row.workerName }}</span>
@@ -199,9 +203,11 @@
                   <td class="print-col-process border border-black p-0.5 text-black font-mono text-center text-[8px] bg-white truncate max-w-[80px]">
                     <input
                       v-if="isEditing"
-                      :value="row.process"
-                      @focus="($event.target as HTMLInputElement).select()"
-                      @input="saveWorkerOverrideDebounced(row.workerId, 'process', ($event.target as HTMLInputElement).value)"
+                      :value="localProcessMap[row.workerId] ?? row.process"
+                      @focus="activeWorkerKey = `proc_${row.workerId}`; ($event.target as HTMLInputElement).select()"
+                      @input="handleWorkerInput(row.workerId, 'process', ($event.target as HTMLInputElement).value)"
+                      @blur="handleWorkerBlur(row.workerId, 'process', ($event.target as HTMLInputElement).value)"
+                      @keydown.enter="($event.target as HTMLInputElement).blur()"
                       list="recap-process-types-list"
                       class="w-full h-4 px-0.5 text-center bg-amber-50 border border-amber-400 text-black rounded text-[8px] font-mono focus:outline-none focus:bg-white font-semibold"
                     />
@@ -212,9 +218,11 @@
                   <td class="print-col-target border border-black p-0.5 text-black font-mono text-center text-[8px] bg-white">
                     <input
                       v-if="isEditing"
-                      :value="row.target"
-                      @focus="($event.target as HTMLInputElement).select()"
-                      @change="saveWorkerOverride(row.workerId, 'target', ($event.target as HTMLInputElement).value)"
+                      :value="localTargetMap[row.workerId] ?? (row.target || '')"
+                      @focus="activeWorkerKey = `target_${row.workerId}`; ($event.target as HTMLInputElement).select()"
+                      @input="handleWorkerInput(row.workerId, 'target', ($event.target as HTMLInputElement).value)"
+                      @blur="handleWorkerBlur(row.workerId, 'target', ($event.target as HTMLInputElement).value)"
+                      @keydown.enter="($event.target as HTMLInputElement).blur()"
                       placeholder="Target..."
                       class="w-full h-4 px-0.5 text-center bg-amber-50 border border-amber-400 text-black rounded text-[8px] font-mono focus:outline-none focus:bg-white"
                     />
@@ -232,10 +240,12 @@
                     <input
                       v-if="isEditing"
                       type="text"
-                      :value="matrixAndSummary.matrix[row.workerId]?.[dInfo.day]?.inputValue"
+                      :value="getCellVal(row.workerId, dInfo.day)"
                       :placeholder="dInfo.isSunday ? 'MG' : '-'"
-                      @focus="($event.target as HTMLInputElement).select()"
-                      @change="saveCellOverride(row.workerId, dInfo.day, ($event.target as HTMLInputElement).value)"
+                      @focus="activeCellKey = getCellKey(row.workerId, dInfo.day); ($event.target as HTMLInputElement).select()"
+                      @input="handleCellInput(row.workerId, dInfo.day, ($event.target as HTMLInputElement).value)"
+                      @blur="handleCellBlur(row.workerId, dInfo.day, ($event.target as HTMLInputElement).value)"
+                      @keydown.enter="($event.target as HTMLInputElement).blur()"
                       class="w-full h-full min-h-[22px] px-0.5 text-center text-[9.5px] font-mono focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       :class="matrixAndSummary.matrix[row.workerId]?.[dInfo.day]?.isEdited
                         ? 'bg-amber-300 text-amber-950 font-black border-2 border-amber-600 shadow-inner'
@@ -255,9 +265,11 @@
                   <td class="print-col-remark border border-black p-0.5 text-left px-1 text-[8px] font-mono text-black bg-white">
                     <input
                       v-if="isEditing"
-                      :value="row.remark"
-                      @focus="($event.target as HTMLInputElement).select()"
-                      @input="saveWorkerOverrideDebounced(row.workerId, 'remark', ($event.target as HTMLInputElement).value)"
+                      :value="localRemarkMap[row.workerId] ?? (row.remark || '')"
+                      @focus="activeWorkerKey = `rem_${row.workerId}`; ($event.target as HTMLInputElement).select()"
+                      @input="handleWorkerInput(row.workerId, 'remark', ($event.target as HTMLInputElement).value)"
+                      @blur="handleWorkerBlur(row.workerId, 'remark', ($event.target as HTMLInputElement).value)"
+                      @keydown.enter="($event.target as HTMLInputElement).blur()"
                       class="w-full h-4 px-1 text-left bg-amber-50 border border-amber-400 text-black rounded text-[8px] font-mono focus:outline-none focus:bg-white"
                     />
                     <span v-else class="text-black">{{ row.remark || '-' }}</span>
@@ -700,12 +712,19 @@ import { computed, ref, watch, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 // Debounce helper to reduce store writes on every keystroke
-function debounce<T extends (...args: any[]) => void>(fn: T, delay: number): T {
-  let timer: ReturnType<typeof setTimeout>
-  return ((...args: any[]) => {
-    clearTimeout(timer)
+function debounce<T extends (...args: any[]) => void>(fn: T, delay: number) {
+  let timer: any = null
+  const debounced = (...args: Parameters<T>) => {
+    if (timer) clearTimeout(timer)
     timer = setTimeout(() => fn(...args), delay)
-  }) as T
+  }
+  debounced.cancel = () => {
+    if (timer) {
+      clearTimeout(timer)
+      timer = null
+    }
+  }
+  return debounced
 }
 import { useTeamStore } from '@/stores/teamStore'
 import { useProductionStore, getLocalDateStr } from '@/stores/productionStore'
@@ -936,6 +955,30 @@ function resetCellOverrides() {
   overrideStore.resetAllOverrides()
 }
 
+// ─── Local Input State Buffer (Zero-Bounce Architecture) ──────────────────────
+// Cells and worker overrides read from local buffer maps first.
+// Edits write immediately to the local buffer, then debounce-persist to overrideStore.
+// Background store/cloud re-computations will NEVER overwrite cells the user is currently editing.
+const localCellMap = ref<Record<string, string>>({})
+const activeCellKey = ref<string | null>(null)
+
+const localWorkerNoMap = ref<Record<string, string>>({})
+const localWorkerNameMap = ref<Record<string, string>>({})
+const localProcessMap = ref<Record<string, string>>({})
+const localTargetMap = ref<Record<string, string>>({})
+const localRemarkMap = ref<Record<string, string>>({})
+const activeWorkerKey = ref<string | null>(null)
+
+function getCellKey(workerId: string, day: number): string {
+  return `${workerId}_${day}`
+}
+
+function getCellVal(workerId: string, day: number): string {
+  const k = getCellKey(workerId, day)
+  if (localCellMap.value[k] !== undefined) return localCellMap.value[k]
+  return matrixAndSummary.value.matrix[workerId]?.[day]?.inputValue || ''
+}
+
 function saveCellOverride(workerId: string, day: number, value: string) {
   const dateStr = getDateStrForDay(day)
   const valNorm = (value || '').toLowerCase().trim()
@@ -959,12 +1002,52 @@ function saveCellOverride(workerId: string, day: number, value: string) {
   }
 }
 
+const debouncedSaveCell = debounce((workerId: string, day: number, value: string) => {
+  saveCellOverride(workerId, day, value)
+}, 500)
+
+function handleCellInput(workerId: string, day: number, value: string) {
+  const k = getCellKey(workerId, day)
+  localCellMap.value[k] = value
+  debouncedSaveCell(workerId, day, value)
+}
+
+function handleCellBlur(workerId: string, day: number, value: string) {
+  debouncedSaveCell.cancel?.()
+  const k = getCellKey(workerId, day)
+  localCellMap.value[k] = value
+  saveCellOverride(workerId, day, value)
+  activeCellKey.value = null
+}
+
 function saveWorkerOverride(workerId: string, field: string, value: string) {
   overrideStore.setWorkerOverride(workerId, field as keyof WorkerOverride, value)
 }
 
-// Debounced version for text fields (name, remark, process, etc.) — fires 300ms after typing stops
-const saveWorkerOverrideDebounced = debounce(saveWorkerOverride, 300)
+const debouncedSaveWorker = debounce((workerId: string, field: string, value: string) => {
+  saveWorkerOverride(workerId, field, value)
+}, 500)
+
+function handleWorkerInput(workerId: string, field: string, value: string) {
+  if (field === 'workerNo') localWorkerNoMap.value[workerId] = value
+  else if (field === 'workerName') localWorkerNameMap.value[workerId] = value
+  else if (field === 'process') localProcessMap.value[workerId] = value
+  else if (field === 'target') localTargetMap.value[workerId] = value
+  else if (field === 'remark') localRemarkMap.value[workerId] = value
+  debouncedSaveWorker(workerId, field, value)
+}
+
+function handleWorkerBlur(workerId: string, field: string, value: string) {
+  debouncedSaveWorker.cancel?.()
+  if (field === 'workerNo') localWorkerNoMap.value[workerId] = value
+  else if (field === 'workerName') localWorkerNameMap.value[workerId] = value
+  else if (field === 'process') localProcessMap.value[workerId] = value
+  else if (field === 'target') localTargetMap.value[workerId] = value
+  else if (field === 'remark') localRemarkMap.value[workerId] = value
+  saveWorkerOverride(workerId, field, value)
+  activeWorkerKey.value = null
+}
+
 
 const foremanName = computed(() => {
   return authStore.foremanName || 'Karen & Lala'
@@ -1376,6 +1459,32 @@ const matrixAndSummary = computed(() => {
     grandTotal
   }
 })
+
+// Sync matrixAndSummary to localCellMap, skipping currently focused cell
+watch(matrixAndSummary, (summary) => {
+  const matrix = summary.matrix
+  for (const [wId, days] of Object.entries(matrix)) {
+    for (const [day, cell] of Object.entries(days)) {
+      const k = `${wId}_${day}`
+      if (activeCellKey.value !== k) {
+        localCellMap.value[k] = cell.inputValue
+      }
+    }
+  }
+}, { immediate: true })
+
+// Sync reportRows to worker local maps, skipping currently focused worker field
+watch(reportRows, (rows) => {
+  for (const row of rows) {
+    const k = row.workerId
+    if (activeWorkerKey.value !== `no_${k}`) localWorkerNoMap.value[k] = row.workerNo
+    if (activeWorkerKey.value !== `name_${k}`) localWorkerNameMap.value[k] = row.workerName
+    if (activeWorkerKey.value !== `proc_${k}`) localProcessMap.value[k] = row.process
+    if (activeWorkerKey.value !== `target_${k}`) localTargetMap.value[k] = row.target || ''
+    if (activeWorkerKey.value !== `rem_${k}`) localRemarkMap.value[k] = row.remark || ''
+  }
+}, { immediate: true })
+
 
 
 const printDayColStyle = computed(() => ({

@@ -123,11 +123,11 @@
                   <td class="border border-slate-900 p-0.5 whitespace-nowrap">
                     <input
                       v-if="isEditing"
-                      :value="row.workHours === '-' ? '' : (row.workHours || '')"
+                      :value="localWorkHoursMap[row.day] ?? (row.workHours === '-' ? '' : (row.workHours || ''))"
                       placeholder="-"
-                      @focus="($event.target as HTMLInputElement).select()"
-                      @change="saveCellOverride(row.day, 'workHours', ($event.target as HTMLInputElement).value)"
-                      @blur="saveCellOverride(row.day, 'workHours', ($event.target as HTMLInputElement).value)"
+                      @focus="activeDayInputKey = `hours_${row.day}`; ($event.target as HTMLInputElement).select()"
+                      @input="handleDayInput(row.day, 'workHours', ($event.target as HTMLInputElement).value)"
+                      @blur="handleDayBlur(row.day, 'workHours', ($event.target as HTMLInputElement).value)"
                       @keydown.enter="($event.target as HTMLInputElement).blur()"
                       class="w-full h-8 sm:h-6 px-1.5 text-center rounded-xs text-xs sm:text-[10.5px] font-mono font-bold text-slate-950 focus:outline-none transition-all shadow-inner"
                       :class="isDayFieldEdited(row.day, 'workHours')
@@ -147,8 +147,8 @@
                   <td class="border border-slate-900 p-0.5 text-center" :title="row.process">
                     <div v-if="isEditing" class="w-full px-0.5">
                       <select
-                        :value="row.process || workerDefaultProcess"
-                        @change="saveCellOverride(row.day, 'process', ($event.target as HTMLSelectElement).value)"
+                        :value="localProcessMap[row.day] ?? (row.process || workerDefaultProcess)"
+                        @change="handleDayBlur(row.day, 'process', ($event.target as HTMLSelectElement).value)"
                         class="w-full h-8 sm:h-6 px-1 text-center font-bold font-mono text-xs sm:text-[10.5px] rounded-xs bg-amber-500/10 border border-amber-500/60 focus:border-amber-600 focus:bg-white text-slate-950 focus:outline-none"
                       >
                         <option
@@ -170,11 +170,11 @@
                     <input
                       v-if="isEditing"
                       type="number"
-                      :value="row.targetQty !== undefined && row.targetQty !== null && row.targetQty > 0 ? row.targetQty : (isDayFieldEdited(row.day, 'targetQty') ? (row.targetQty || 0) : '')"
+                      :value="localTargetMap[row.day] ?? (row.targetQty > 0 ? row.targetQty : '')"
                       placeholder="0"
-                      @focus="($event.target as HTMLInputElement).select()"
-                      @change="saveCellOverride(row.day, 'targetQty', ($event.target as HTMLInputElement).value)"
-                      @blur="saveCellOverride(row.day, 'targetQty', ($event.target as HTMLInputElement).value)"
+                      @focus="activeDayInputKey = `target_${row.day}`; ($event.target as HTMLInputElement).select()"
+                      @input="handleDayInput(row.day, 'targetQty', ($event.target as HTMLInputElement).value)"
+                      @blur="handleDayBlur(row.day, 'targetQty', ($event.target as HTMLInputElement).value)"
                       @keydown.enter="($event.target as HTMLInputElement).blur()"
                       class="w-full h-8 sm:h-6 px-1.5 text-right rounded-xs text-xs sm:text-[10.5px] font-mono font-bold text-slate-950 focus:outline-none transition-all shadow-inner [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       :class="isDayFieldEdited(row.day, 'targetQty')
@@ -191,11 +191,11 @@
                     <input
                       v-if="isEditing"
                       type="number"
-                      :value="row.prodQty !== undefined && row.prodQty !== null && row.prodQty > 0 ? row.prodQty : (isDayFieldEdited(row.day, 'prodQty') ? (row.prodQty || 0) : '')"
+                      :value="localProdMap[row.day] ?? (row.prodQty > 0 ? row.prodQty : '')"
                       placeholder="0"
-                      @focus="($event.target as HTMLInputElement).select()"
-                      @change="saveCellOverride(row.day, 'prodQty', ($event.target as HTMLInputElement).value)"
-                      @blur="saveCellOverride(row.day, 'prodQty', ($event.target as HTMLInputElement).value)"
+                      @focus="activeDayInputKey = `prod_${row.day}`; ($event.target as HTMLInputElement).select()"
+                      @input="handleDayInput(row.day, 'prodQty', ($event.target as HTMLInputElement).value)"
+                      @blur="handleDayBlur(row.day, 'prodQty', ($event.target as HTMLInputElement).value)"
                       @keydown.enter="($event.target as HTMLInputElement).blur()"
                       class="w-full h-8 sm:h-6 px-1.5 text-right rounded-xs text-xs sm:text-[10.5px] font-mono font-extrabold focus:outline-none transition-all shadow-inner [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       :class="isDayFieldEdited(row.day, 'prodQty')
@@ -222,11 +222,11 @@
                   <td class="border border-slate-900 p-0.5 text-left px-1 text-[10px] sm:text-[9px] text-slate-600 min-w-[140px]" :title="row.remark">
                     <input
                       v-if="isEditing"
-                      :value="row.remark === '-' ? '' : (row.remark || '')"
+                      :value="localRemarkMap[row.day] ?? (row.remark === '-' ? '' : (row.remark || ''))"
                       placeholder="-"
-                      @focus="($event.target as HTMLInputElement).select()"
-                      @change="saveCellOverride(row.day, 'remark', ($event.target as HTMLInputElement).value)"
-                      @blur="saveCellOverride(row.day, 'remark', ($event.target as HTMLInputElement).value)"
+                      @focus="activeDayInputKey = `remark_${row.day}`; ($event.target as HTMLInputElement).select()"
+                      @input="handleDayInput(row.day, 'remark', ($event.target as HTMLInputElement).value)"
+                      @blur="handleDayBlur(row.day, 'remark', ($event.target as HTMLInputElement).value)"
                       @keydown.enter="($event.target as HTMLInputElement).blur()"
                       class="w-full h-8 sm:h-6 px-1.5 text-left rounded-xs text-[11px] sm:text-[9px] font-mono focus:outline-none transition-all shadow-inner"
                       :class="isDayFieldEdited(row.day, 'remark')
@@ -544,6 +544,25 @@ const workerDefaultProcess = computed(() => {
 // Edit Cell mode state
 const isEditing = ref(false)
 
+// Debounce helper to prevent input bounce and batch background writes
+function debounce<T extends (...args: any[]) => void>(fn: T, delay: number): T & { cancel?: () => void } {
+  let timer: any = null
+  const debounced = ((...args: any[]) => {
+    clearTimeout(timer)
+    timer = setTimeout(() => fn(...args), delay)
+  }) as any
+  debounced.cancel = () => clearTimeout(timer)
+  return debounced
+}
+
+// ─── Local Input State Buffer (Zero-Bounce Architecture) ──────────────────────
+const localWorkHoursMap = ref<Record<number, string>>({})
+const localProcessMap = ref<Record<number, string>>({})
+const localTargetMap = ref<Record<number, number | string>>({})
+const localProdMap = ref<Record<number, number | string>>({})
+const localRemarkMap = ref<Record<number, string>>({})
+const activeDayInputKey = ref<string | null>(null)
+
 function getDateStrForDay(day: number): string {
   const { yearStr, monthStr } = parseMonthYear(selectedMonthYear.value)
   const dayStr = day.toString().padStart(2, '0')
@@ -579,6 +598,31 @@ function saveCellOverride(day: number, field: string, value: any) {
     overrideStore.setDailyOverride(props.worker.id, dateStr, field as keyof DailyOverride, value)
   }
 }
+
+const debouncedSaveCell = debounce((day: number, field: string, value: any) => {
+  saveCellOverride(day, field, value)
+}, 500)
+
+function handleDayInput(day: number, field: string, value: any) {
+  if (field === 'workHours') localWorkHoursMap.value[day] = value
+  else if (field === 'process') localProcessMap.value[day] = value
+  else if (field === 'targetQty') localTargetMap.value[day] = value
+  else if (field === 'prodQty') localProdMap.value[day] = value
+  else if (field === 'remark') localRemarkMap.value[day] = value
+  debouncedSaveCell(day, field, value)
+}
+
+function handleDayBlur(day: number, field: string, value: any) {
+  debouncedSaveCell.cancel?.()
+  if (field === 'workHours') localWorkHoursMap.value[day] = value
+  else if (field === 'process') localProcessMap.value[day] = value
+  else if (field === 'targetQty') localTargetMap.value[day] = value
+  else if (field === 'prodQty') localProdMap.value[day] = value
+  else if (field === 'remark') localRemarkMap.value[day] = value
+  saveCellOverride(day, field, value)
+  activeDayInputKey.value = null
+}
+
 
 function resetCellOverrides() {
   if (props.worker) {
@@ -880,6 +924,18 @@ const dailyReportRows = computed(() => {
 
   return rows
 })
+
+watch(dailyReportRows, (rows) => {
+  for (const row of rows) {
+    const d = row.day
+    if (activeDayInputKey.value !== `hours_${d}`) localWorkHoursMap.value[d] = row.workHours === '-' ? '' : (row.workHours || '')
+    if (activeDayInputKey.value !== `process_${d}`) localProcessMap.value[d] = row.process || workerDefaultProcess.value
+    if (activeDayInputKey.value !== `target_${d}`) localTargetMap.value[d] = (row.targetQty !== undefined && row.targetQty !== null && row.targetQty > 0) ? row.targetQty : (isDayFieldEdited(d, 'targetQty') ? (row.targetQty || 0) : '')
+    if (activeDayInputKey.value !== `prod_${d}`) localProdMap.value[d] = (row.prodQty !== undefined && row.prodQty !== null && row.prodQty > 0) ? row.prodQty : (isDayFieldEdited(d, 'prodQty') ? (row.prodQty || 0) : '')
+    if (activeDayInputKey.value !== `remark_${d}`) localRemarkMap.value[d] = row.remark === '-' ? '' : (row.remark || '')
+  }
+}, { immediate: true })
+
 
 const isQcWorker = computed(() => {
   if (!props.worker) return false
